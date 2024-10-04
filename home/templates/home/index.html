@@ -12,10 +12,10 @@
     <h3>Available Reports:</h3>
     <ul>
       {% for report in reports %}
-        <li><a href="{{ report }}">{{ report }}</a></li>
-      {% endfor %} 
-    <ul>
+      <li><a href="{{ report.url }}">{{ report.name }}</a></li>
+      {% endfor %}
+    </ul>
 
-    <button>Make Report</button>
+    <a href="{{make_report_url}}">Make Report</a>
   </body>
 </html>

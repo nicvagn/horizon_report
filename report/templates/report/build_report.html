@@ -3,78 +3,129 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>report builder</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>CFC Report Builder</title>
+    <!-- link rel="stylesheet" href="styles.css" /-->
+
+    <style>
+      #players_section {
+        display: flex;
+        width: 100%;
+        height: max-content;
+        justify-content: space-evenly;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      .title {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        font-family: Tahoma, Verdana, sans-serif;
+        font-size: x-large;
+      }
+    </style>
   </head>
 
   <body>
-    <h1>report builder</h1>
-
+    <span>
+      <h1 class="title">SK Horizon CC: CFC Report Builder</h1>
+    </span>
     <forum method="post">
-      <p>
-        <label for="tournament_name">Tournament Name: </label>
-        <input
-          id="tournament_name"
-          name="Tournament Name"
-          type="text"
-          value=""
-          placeholder="Tournament Name"
-        />
-      </p>
+      <span>
+        <p>
+          <label for="tournament_name">Tournament Name: </label>
+          <input
+            id="tournament_name"
+            name="Tournament Name"
+            type="text"
+            value=""
+            placeholder="Tournament Name"
+          />
+        </p>
 
-      <p>
-        <label for="TD_name">Tournament Director: </label>
-        <input
-          id="TD_name"
-          name="Tournament_Director_Name"
-          type="text"
-          value=""
-          placeholder="Tournament Director Name"
-        />
-      </p>
+        <p>
+          <label for="TD_cfc">Tournament Director CFC id: </label>
+          <input
+            id="TD_cfc"
+            name="Tournament_Director_CFC"
+            type="text"
+            value=""
+            placeholder="Tournament Director CFC id"
+          />
 
-      <h2>Tournament Player's</h2>
-      <table id="players">
-        <tr>
-          <th>Name</th>
-          <th>CFC ID:</th>
-        </tr>
-
-        <tr>
-          <td>John Koolaid</td>
-          <td>122321</td>
-        </tr>
-
-        <tr>
-          <td>Rob Koolaid</td>
-          <td>122321</td>
-        </tr>
-        <tr>
-          <td>Jake Bell</td>
-          <td>122321</td>
-        </tr>
-        <tr>
-          <td>John Something</td>
-          <td>122321</td>
-        </tr>
-        <tr>
-          <td>Stacey Bowser</td>
-          <td>122321</td>
-        </tr>
-        <tr>
-          <td>John Killman</td>
-          <td>122321</td>
-        </tr>
-        <tr>
-          <td>John Koolaid</td>
-          <td>122321</td>
-        </tr>
-      </table>
+          <label for="TO_cfc">Tournament Organizer CFC id: </label>
+          <input
+            id="TO_cfc"
+            name="Tournament_Organizer_CFC"
+            type="text"
+            value=""
+            placeholder="Tournament Organizer CFC id"
+          />
+        </p>
+      </span>
 
       <span>
-        <input id="submit_btn" type="submit" value="submit" />
+        <label for="tournament_type">Tournament Type:</label>
+        <input id="swiss" type="radio" name="tournament_type" value="swiss" />
+        <label for="swiss">swiss</label>
+        <input
+          id="round_robin"
+          type="radio"
+          name="tournament_type"
+          value="round robin"
+        />
+        <label for="round_robin">robin robin</label>
+        <input
+          id="double_round_robin"
+          type="radio"
+          name="tournament_type"
+          value="double round robin"
+        />
+        <label for="double_round_robin">double robin robin</label>
+      </span>
+
+      <section id="players_section">
+        <aside id="tournament_players">
+          <h4>In Tournament</h4>
+          <table id="players">
+            <tr>
+              <th>Name</th>
+              <th>CFC ID:</th>
+            </tr>
+
+            {% for player in tournament_players %}
+            <tr>
+              <td>{{player.name}}</td>
+              <td>{{player.cfc_id}}</td>
+            </tr>
+            {% endfor %}
+          </table>
+        </aside>
+
+        <aside id="database_players">
+          <h4>Player Database</h4>
+          <table id="players">
+            <tr>
+              <th>Name</th>
+              <th>CFC ID:</th>
+            </tr>
+
+            {% for player in database_players %}
+            <tr>
+              <td>{{player.name}}</td>
+              <td>{{player.cfc_id}}</td>
+            </tr>
+            {% endfor %}
+          </table>
+        </aside>
+      </section>
+      <span>
+        <input id="submit_btn" type="submit" value="Make Report" />
         <input id="add_player_btn" type="button" value="add player" />
       </span>
     </forum>
   </body>
 </html>
+
