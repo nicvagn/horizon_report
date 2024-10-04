@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>report builder</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <h1>report builder</h1>
+
+    <forum method="post">
+      <p>
+        <label for="tournament_name">Tournament Name: </label>
+        <input
+          id="tournament_name"
+          name="Tournament Name"
+          type="text"
+          value=""
+          placeholder="Tournament Name"
+        />
+      </p>
+
+      <p>
+        <label for="TD_name">Tournament Director: </label>
+        <input
+          id="TD_name"
+          name="Tournament_Director_Name"
+          type="text"
+          value=""
+          placeholder="Tournament Director Name"
+        />
+      </p>
+
+      <h2>Tournament Player's</h2>
+      <table id="players">
+        <tr>
+          <th>Name</th>
+          <th>CFC ID:</th>
+        </tr>
+
+        <tr>
+          <td>John Koolaid</td>
+          <td>122321</td>
+        </tr>
+
+        <tr>
+          <td>Rob Koolaid</td>
+          <td>122321</td>
+        </tr>
+        <tr>
+          <td>Jake Bell</td>
+          <td>122321</td>
+        </tr>
+        <tr>
+          <td>John Something</td>
+          <td>122321</td>
+        </tr>
+        <tr>
+          <td>Stacey Bowser</td>
+          <td>122321</td>
+        </tr>
+        <tr>
+          <td>John Killman</td>
+          <td>122321</td>
+        </tr>
+        <tr>
+          <td>John Koolaid</td>
+          <td>122321</td>
+        </tr>
+      </table>
+
+      <span>
+        <input id="submit_btn" type="submit" value="submit" />
+        <input id="add_player_btn" type="button" value="add player" />
+      </span>
+    </forum>
+  </body>
+</html>

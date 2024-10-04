@@ -3,12 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>HTML5 Boilerplate</title>
+    <title>Horizon Report</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
 
   <body>
-    <h1>home Title</h1>
-    <script src="scripts.js"></script>
+    <h1>Horizon Report</h1>
+    <h3>Available Reports:</h3>
+    <ul>
+      {% for report in reports %}
+        <li><a href="{{ report }}">{{ report }}</a></li>
+      {% endfor %} 
+    <ul>
+
+    <button>Make Report</button>
   </body>
 </html>
