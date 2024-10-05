@@ -1,3 +1,4 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -17,3 +18,11 @@ def index(request):
         "reports": reports,
         "make_report_url": reverse("report-new")
     })
+
+
+def new_report(request):
+    return HttpResponseRedirect(reverse("report-new"))
+
+
+def tournament_report(request, report):
+    return render(request, reverse("report-view"), {"report": report})

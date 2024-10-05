@@ -2,4 +2,4 @@
 venv
 ctr
 **/__pycache__
-
+**/migrations/*

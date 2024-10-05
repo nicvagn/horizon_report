@@ -1,17 +1,14 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-reports = [{
-    "name": "report1",
-    "url": "report url"
-}, {
-    "name": "report2 url",
-    "url": "report2 url"
-}]
+
+#TODO: these views do not work.
+def report_view(request, report):
+    """display a CFC report"""
+    return render(request, "report/show_report.html", report)
 
 
-def index(request):
-    return render(request, "report/build_report.html", {
-        "reports": reports,
-        "make_report_url": reverse("report-new")
-    })
+def create_report(request):
+    """create a report for the cfc"""
+    return render(request, "report/create_report.html")
