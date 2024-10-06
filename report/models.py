@@ -18,3 +18,9 @@ class TournamentDirector(models.Model):
     """A tournament director for a chess tournament."""
     name = models.CharField(max_length=20)
     cfc_id = models.CharField(max_length=6)
+
+
+class TournamentOrganizer(models.Model):
+    """A tournament director for a chess tournament."""
+    name = models.CharField(max_length=20)
+    cfc_id = models.CharField(max_length=6)

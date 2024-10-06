@@ -1,10 +1,10 @@
-<!doctype html>
+{% extends "base.html" %}
+<!-- doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CFC Report Builder</title>
-    <!-- link rel="stylesheet" href="styles.css" /-->
 
     <link
       rel="stylesheet"
@@ -29,105 +29,107 @@
         justify-content: center;
       }
     </style>
-  </head>
+  </head -->
 
-  <body>
-    <span>
-      <h1 class="title">SK Horizon CC: CFC Report Builder</h1>
-    </span>
-    <forum method="post">
-      <span>
-        <p>
-          <label for="tournament_name">Tournament Name: </label>
-          <input
-            id="tournament_name"
-            name="Tournament Name"
-            type="text"
-            value=""
-            placeholder="Tournament Name"
-          />
-        </p>
+{% block page_title %} Horizon: CFC Report Builder {% endblock %} 
 
-        <p>
-          <label for="TD_cfc">Tournament Director CFC id: </label>
-          <input
-            id="TD_cfc"
-            name="Tournament_Director_CFC"
-            type="text"
-            value=""
-            placeholder="Tournament Director CFC id"
-          />
+{% block content %}
+<span>
+  <h1 class="title">SK Horizon CC: CFC Report Builder</h1>
+</span>
+<forum method="post">
+  <span>
+    <p>
+      <label for="tournament_name">Tournament Name: </label>
+      <input
+        id="tournament_name"
+        name="Tournament Name"
+        type="text"
+        value=""
+        placeholder="Tournament Name"
+      />
+    </p>
 
-          <label for="TO_cfc">Tournament Organizer CFC id: </label>
-          <input
-            id="TO_cfc"
-            name="Tournament_Organizer_CFC"
-            type="text"
-            value=""
-            placeholder="Tournament Organizer CFC id"
-          />
-        </p>
-      </span>
+    <p>
+      <label for="TD_cfc">Tournament Director CFC id: </label>
+      <input
+        id="TD_cfc"
+        name="Tournament_Director_CFC"
+        type="text"
+        value=""
+        placeholder="Tournament Director CFC id"
+      />
 
-      <span>
-        <label for="tournament_type">Tournament Type:</label>
-        <input id="swiss" type="radio" name="tournament_type" value="swiss" />
-        <label for="swiss">swiss</label>
-        <input
-          id="round_robin"
-          type="radio"
-          name="tournament_type"
-          value="round robin"
-        />
-        <label for="round_robin">robin robin</label>
-        <input
-          id="double_round_robin"
-          type="radio"
-          name="tournament_type"
-          value="double round robin"
-        />
-        <label for="double_round_robin">double robin robin</label>
-      </span>
+      <label for="TO_cfc">Tournament Organizer CFC id: </label>
+      <input
+        id="TO_cfc"
+        name="Tournament_Organizer_CFC"
+        type="text"
+        value=""
+        placeholder="Tournament Organizer CFC id"
+      />
+    </p>
+  </span>
 
-      <section id="players_section">
-        <aside id="tournament_players">
-          <h4>In Tournament</h4>
-          <table id="players">
-            <tr>
-              <th>Name</th>
-              <th>CFC ID:</th>
-            </tr>
+  <span>
+    <label for="tournament_type">Tournament Type:</label>
+    <input id="swiss" type="radio" name="tournament_type" value="swiss" />
+    <label for="swiss">swiss</label>
+    <input
+      id="round_robin"
+      type="radio"
+      name="tournament_type"
+      value="round robin"
+    />
+    <label for="round_robin">robin robin</label>
+    <input
+      id="double_round_robin"
+      type="radio"
+      name="tournament_type"
+      value="double round robin"
+    />
+    <label for="double_round_robin">double robin robin</label>
+  </span>
 
-            {% for player in tournament_players %}
-            <tr>
-              <td>{{player.name}}</td>
-              <td>{{player.cfc_id}}</td>
-            </tr>
-            {% endfor %}
-          </table>
-        </aside>
+  <section id="players_section">
+    <aside id="tournament_players">
+      <h4>In Tournament</h4>
+      <table id="players">
+        <tr>
+          <th>Name</th>
+          <th>CFC ID:</th>
+        </tr>
 
-        <aside id="database_players">
-          <h4>Player Database</h4>
-          <table id="players">
-            <tr>
-              <th>Name</th>
-              <th>CFC ID:</th>
-            </tr>
+        {% for player in tournament_players %}
+        <tr>
+          <td>{{player.name}}</td>
+          <td>{{player.cfc_id}}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </aside>
 
-            {% for player in database_players %}
-            <tr>
-              <td>player.name</td>
-              <td>player.cfc_id</td>
-            </tr>
-            {% endfor %}
-          </table>
-        </aside>
-      </section>
-      <span>
-        <input id="submit_btn" type="submit" value="Make Report" />
-        <input id="add_player_btn" type="button" value="add player" />
-      </span>
-    </forum>
-  </body>
-</html>
+    <aside id="database_players">
+      <h4>Player Database</h4>
+      <table id="players">
+        <tr>
+          <th>Name</th>
+          <th>CFC ID:</th>
+        </tr>
+
+        {% for player in database_players %}
+        <tr>
+          <td>player.name</td>
+          <td>player.cfc_id</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </aside>
+  </section>
+  <span>
+    <input id="submit_btn" type="submit" value="Make Report" />
+    <input id="add_player_btn" type="button" value="add player" />
+  </span>
+</forum>
+
+{% endblock %}

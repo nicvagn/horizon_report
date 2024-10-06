@@ -1,16 +1,7 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
-    />
-    <title>Horizon Classical</title>
-  </head>
+{% extends "base.html" %}
+  {% block page_title %} report: {{ tournament_title }} {% endblock %}
 
-  <body>
+  {% block content %}
     <h1>{{tournament_title}}</h1>
 
     <h3>Tournament Director CFC id: {{TD_cfc}}</h3>
@@ -22,5 +13,5 @@
       <li>{{player}}</li>
       {% endfor %}
     </ul>
-  </body>
-</html>
+  {% endblock %}
+
