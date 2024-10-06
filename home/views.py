@@ -14,15 +14,12 @@ reports = [{
 
 
 def index(request):
-    return render(request, "home/index.html", {
-        "reports": reports,
-        "make_report_url": reverse("report-new")
-    })
+    return render(request, "home/index.html", {"reports": reports})
 
 
 def new_report(request):
     return HttpResponseRedirect(reverse("report-new"))
 
 
-def tournament_report(request, report):
-    return render(request, reverse("report-view"), {"report": report})
+def view_report(request, report):
+    return HttpResponseRedirect(reverse("report-view"), {"report": report})

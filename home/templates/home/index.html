@@ -1,23 +1,15 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Horizon Report</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
+{% extends "base.html" %} {% block page_title %} Horizon Report {% endblock %}
+{% block content %}
+<h1>Horizon Report</h1>
+<h3>Available Reports:</h3>
+<ul>
+  {% for report in reports %}
+  <li>
+    <a href="{% url 'report-view' %}">{{ report.name }}</a>
+  </li>
+  {% endfor %}
+</ul>
 
-  <body>
-    <h1>Horizon Report</h1>
-    <h3>Available Reports:</h3>
-    <ul>
-      {% for report in reports %}
-      <li>
-        <a href="{% url 'report-view' report=report %}">{{ report.name }}</a>
-      </li>
-      {% endfor %}
-    </ul>
+<a href="{% url 'report-new' %}">Make Report</a>
 
-    <a href="{{make_report_url}}">Make Report</a>
-  </body>
-</html>
+{% endblock %}

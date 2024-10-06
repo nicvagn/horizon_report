@@ -6,6 +6,11 @@
     <title>CFC Report Builder</title>
     <!-- link rel="stylesheet" href="styles.css" /-->
 
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+
     <style>
       #players_section {
         display: flex;
@@ -22,8 +27,6 @@
         width: 100%;
         display: flex;
         justify-content: center;
-        font-family: Tahoma, Verdana, sans-serif;
-        font-size: x-large;
       }
     </style>
   </head>
@@ -114,8 +117,8 @@
 
             {% for player in database_players %}
             <tr>
-              <td>{{player.name}}</td>
-              <td>{{player.cfc_id}}</td>
+              <td>player.name</td>
+              <td>player.cfc_id</td>
             </tr>
             {% endfor %}
           </table>
@@ -128,4 +131,3 @@
     </forum>
   </body>
 </html>
-

@@ -1,14 +1,14 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import reverse
+from django.shortcuts import render, reverse
 
 
 #TODO: these views do not work.
-def report_view(request, report):
+def view_report(request):
     """display a CFC report"""
-    return render(request, "report/show_report.html", report)
+    context = {"players": ["11111", "222222", "333333", "44444"]}
+    return render(request, "report/view_report.html", context)
 
 
 def create_report(request):
     """create a report for the cfc"""
-    return render(request, "report/create_report.html")
+    context = {"players": ["11111", "222222", "333333", "44444"]}
+    return render(request, "report/create_report.html", context)
