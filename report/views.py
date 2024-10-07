@@ -1,3 +1,4 @@
+"""Django views"""
 # horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -16,10 +17,35 @@
 
 from django.shortcuts import render, reverse
 
+from . import models
+
+players = [
+    models.Player(name="NicOlass Vhhhhd", cfc_id="444444"),
+    models.Player(name="NicOlass Vhhhhd", cfc_id="444444"),
+    models.Player(name="NicOlass Vhhhhd", cfc_id="444444"),
+    models.Player(name="NicOlass Vhhhhd", cfc_id="444444"),
+]
+
+TO = models.TournamentOrganizer(name="Vlad the Impailer", cfc_id="123123")
+TD = models.TournamentDirector(name="Jonny Boy", cfc_id="4443434")
+
 
 def view_report(request):
     """display a CFC report"""
-    context = {"players": ["11111", "222222", "333333", "44444"]}
+    player_list = []
+    for p in players:
+        player_list.append(str(p.name))
+    num_players = len(player_list)
+    context = {
+        "title": "The Masters",
+        "province": "SK",
+        "time_format": "blitz",
+        "TD_cfc": TD.cfc_id,
+        "TO_cfc": TO.cfc_id,
+        "tournament_date": "9/11",
+        "players": player_list,
+        "num_players": num_players,
+    }
     return render(request, "report/view_report.html", context)
 
 
