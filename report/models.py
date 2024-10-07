@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -23,7 +24,9 @@ class TournamentDirector(models.Model):
 class TournamentOrganizer(models.Model):
     """A tournament director for a chess tournament."""
     name = models.CharField(max_length=20)
-    cfc_id = models.CharField(max_length=6)
+    cfc_id = models.IntegerField(
+        validators=[MinValueValidator(100000),
+                    MaxValueValidator(999999)])
 
 
 class Tournament(models.Model):

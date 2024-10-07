@@ -1,4 +1,4 @@
-<!doctype html>
+{% extends "base.html" %}
 <!-- horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -15,25 +15,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-{% load static %}
 
-<html lang="en">
+{% block page_title %}
+Add Player
+{% endblock %}
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="{% static 'pico.min.css' %}">
-  <link rel="shortcut icon" type="image/png" href="{% static 'images/pawn-60.png' %}">
-  <title>{% block page_title %}base.html title{% endblock %}</title>
-</head>
+{% block content %}
+<h1>Add Player to Database</h1>
 
-<body>
-  <nav>
+<forum>
+  <label for="name">Name: </label>
+  <input id="name" name="player_name" type="text" value="" placeholder="Player Name" />
+  <label for="cfc_id">CFC ID: </label>
+  <input id="cfc_id" name="player_cfc_id" type="text" value="" placeholder="Player CFC ID" />
+
+  <span>
+    <input id="add_player_btn" type="submit" value="add" />
     <a href="/">
-      <input id="home_btn" type="button" value="home" />
+      <input id="cancel_btn" type="button" value="cancel" />
     </a>
-  </nav>
-  {% block content %}{% endblock %}
-</body>
-
-</html>
+  </span>
+</forum>
+{% endblock %}

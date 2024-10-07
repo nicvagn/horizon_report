@@ -1,37 +1,22 @@
 {% extends "base.html" %}
-<!-- doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CFC Report Builder</title>
+<!-- horizon_pair
+# Copyright (C) 2024  Nicolas Vaagen
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
 
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
-    />
-
-    <style>
-      #players_section {
-        display: flex;
-        width: 100%;
-        height: max-content;
-        justify-content: space-evenly;
-      }
-      table,
-      th,
-      td {
-        border: 1px solid black;
-      }
-      .title {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-      }
-    </style>
-  </head -->
-
-{% block page_title %} Horizon: CFC Report Builder {% endblock %} 
+{% block page_title %}SK Horizon CC: CFC Report Builder {% endblock %} 
 
 {% block content %}
 <span>
@@ -127,8 +112,8 @@
     </aside>
   </section>
   <span>
-    <input id="submit_btn" type="submit" value="Make Report" />
     <input id="add_player_btn" type="button" value="add player" />
+    <input id="submit_btn" type="submit" value="make report" />
   </span>
 </forum>
 

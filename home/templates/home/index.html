@@ -10,6 +10,9 @@
   {% endfor %}
 </ul>
 
-<a href="{% url 'report-new' %}">Make Report</a>
+{% include "players.html" %}
 
+<a href="{% url 'add-player' %}">
+    <input id="add_player_btn" type="button" value="add player" />
+</a>
 {% endblock %}
