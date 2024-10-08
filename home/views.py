@@ -36,7 +36,7 @@ def index(request):
         request, "home/index.html", {
             "reports": reports,
             "players": player_list,
-            "players_heading": "Pla__yhrs",
+            "players_heading": "Player's in Database",
         })
 
 
