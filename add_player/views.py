@@ -21,7 +21,4 @@ from django.urls import reverse
 
 def index(request):
     context = {"players_heading": "Hello World", "players": ["1", "3"]}
-    return render(request, "add_player/index.html", {
-        "players_heading": "Hello World",
-        "players": ["1", "3"]
-    })
+    return render(request, "add_player/index.html", context)
