@@ -1,4 +1,4 @@
-"""cfc_report tests"""
+""" urls for cfc_report """
 # horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -15,6 +15,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.test import TestCase
+from django.contrib import admin
+from django.urls import path
 
-# Create your tests here.
+from . import views
+
+urlpatterns = [
+    path('', views.index, name='index'),
+    path("view/", views.view_report, name="view-report"),
+    path("create/", views.create_report, name="create-report"),
+    path("add-player", views.add_player, name="add-player"),
+]

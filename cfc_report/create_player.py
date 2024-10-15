@@ -1,4 +1,4 @@
-"""cfc_report tests"""
+"""create a player in database"""
 # horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -14,7 +14,26 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import logging
 
-from django.test import TestCase
+from .models import Player
 
-# Create your tests here.
+
+def create_player(name: str, cfc_id) -> Player:
+    """create a chess player with a cfc id"""
+    # make sure cfc id is valid form
+    try:
+        cfc = int(cfc_id)
+
+        # ensure cfc id is 6 characters
+        if cfc < 100000 or cfc > 999999:
+            raise ValueError("CFC ID not 6 characters")
+
+    except ValueError as ex:
+        logging.error("CFC ID not valid form, value: %s", cfc_id)
+        raise ex
+
+    # make player model
+    p = Player(name=name, cfc_id=cfc)
+
+    return p

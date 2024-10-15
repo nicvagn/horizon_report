@@ -1,4 +1,4 @@
-"""views for cfc_report"""
+"views for cfc_report" ""
 # horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -16,11 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.shortcuts import render
 
-from cfc.models import Player, TournamentDirector, TournamentOrganizer
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import reverse
+from .models import Player, TournamentDirector, TournamentOrganizer
 
+# TODO: rm
 reports = [{
     "name": "report1",
     "url": "report url"
@@ -40,16 +38,21 @@ def index(request):
             "players_heading": "Player's in Database",
         })
 
+
 def create_report(request):
-    """create a report for the cfc"""
+    """show view to create a report for the cfc"""
     players = Player.objects.all()
     context = {"players": players}
     return render(request, "create/index.html", context)
-    
+
+
 def view_report(request):
     """display a CFC report"""
-    TO = TournamentOrganizer(name="Vlad the Impaler", cfc_id="123123")
-    TD = TournamentDirector(name="Bob Boy", cfc_id="4443434")
+    # FIXME:
+    TO, _ = TournamentOrganizer.objects.get_or_create(name="Base TO",
+                                                      cfc_id=111111)
+    TD, _ = TournamentDirector.objects.get_or_create(name="Bob Boy",
+                                                     cfc_id=222222)
 
     player_list = Player.objects.all()
     num_players = len(player_list)
@@ -64,3 +67,9 @@ def view_report(request):
         "num_players": num_players,
     }
     return render(request, "show/index.html", context)
+
+
+def add_player(request):
+    """view to add player to system"""
+
+    return render(request, "add_player/index.html", {})
