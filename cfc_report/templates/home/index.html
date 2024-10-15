@@ -1,0 +1,21 @@
+{% extends "base.html" %} {% block page_title %} Horizon Report {% endblock %}
+{% block content %}
+<h1>Horizon Report</h1>
+<h3>Available Reports:</h3>
+<ul>
+  {% for report in reports %}
+  <li>
+    <a href="{% url 'view-report' %}">{{ report.name }}</a>
+  </li>
+  {% endfor %}
+</ul>
+
+{% include "players.html" %}
+
+<a href="{% url 'create-report' %}">
+    <input id="create_report_btn" type="button" value="create report" />
+</a>
+<a href="{% url 'add-player' %}">
+    <input id="add_player_btn" type="button" value="add player" />
+</a>
+{% endblock %}

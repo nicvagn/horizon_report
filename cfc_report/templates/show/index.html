@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+<!-- horizon_pair
+# Copyright (C) 2024  Nicolas Vaagen
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+  {% block page_title %} report: {{ tournament_title }} {% endblock %}
+
+  {% block content %}
+    <h1>Tournament Information</h1>
+    <h2>Title: {{ title }}</h2>
+    <h2>province: {{ province }}</h2>
+    <h2>Time format: {{ time_format }}</h2>
+    <h2>Tournament date: {{ tournament_date }}</h2>
+    <h2>Number of players: {{ num_players }}</h2>
+    <h2>Tournament Director CFC id: {{ TD_cfc }}</h3>
+    <h2>Tournament Organizer CFC id: {{ TO_cfc }}</h3>
+    
+    
+    <h1>Players:</h1>
+    <ul>
+      {% for player in players %}
+      <li>{{player}}</li>
+      {% endfor %}
+    </ul>
+
+    <h1>Rounds:</h1>
+
+    <ol>
+      {% for round in rounds %}
+        <li>
+          {{ round }}
+        </li>
+      {% endfor %}
+    </ol>
+  {% endblock %}
+

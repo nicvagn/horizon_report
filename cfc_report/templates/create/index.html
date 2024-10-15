@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+<!-- horizon_pair
+# Copyright (C) 2024  Nicolas Vaagen
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+{% block page_title %}SK Horizon CC: CFC Report Builder {% endblock %} 
+
+{% block content %}
+<span>
+  <h1 class="title">SK Horizon CC: CFC Report Builder</h1>
+</span>
+<forum method="post">
+  <span>
+    <p>
+      <label for="tournament_name">Tournament Name: </label>
+      <input
+        id="tournament_name"
+        name="Tournament Name"
+        type="text"
+        value=""
+        placeholder="Tournament Name"
+      />
+    </p>
+
+    <p>
+      <label for="TD_cfc">Tournament Director CFC id: </label>
+      <input
+        id="TD_cfc"
+        name="Tournament_Director_CFC"
+        type="text"
+        value=""
+        placeholder="Tournament Director CFC id"
+      />
+
+      <label for="TO_cfc">Tournament Organizer CFC id: </label>
+      <input
+        id="TO_cfc"
+        name="Tournament_Organizer_CFC"
+        type="text"
+        value=""
+        placeholder="Tournament Organizer CFC id"
+      />
+    </p>
+  </span>
+
+  <span>
+    <label for="tournament_type">Tournament Type:</label>
+    <input id="swiss" type="radio" name="tournament_type" value="swiss" />
+    <label for="swiss">swiss</label>
+    <input
+      id="round_robin"
+      type="radio"
+      name="tournament_type"
+      value="round robin"
+    />
+    <label for="round_robin">robin robin</label>
+    <input
+      id="double_round_robin"
+      type="radio"
+      name="tournament_type"
+      value="double round robin"
+    />
+    <label for="double_round_robin">double robin robin</label>
+  </span>
+
+  <section id="players_section">
+    <aside id="tournament_players">
+      <h4>In Tournament:</h4>
+      <table id="players">
+        <tr>
+          <th>Name</th>
+          <th>CFC ID:</th>
+        </tr>
+
+        {% for player in tournament_players %}
+        <tr>
+          <td>{{player.name}}</td>
+          <td>{{player.cfc_id}}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </aside>
+
+    <aside id="database_players">
+      <h4>Player Database:</h4>
+      <table id="players">
+        <tr>
+          <th>Name</th>
+          <th>CFC ID:</th>
+        </tr>
+
+        {% for player in database_players %}
+        <tr>
+          <td>player.name</td>
+          <td>player.cfc_id</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </aside>
+  </section>
+  <span>
+    <input id="add_player_btn" type="button" value="add player" />
+    <input id="submit_btn" type="submit" value="make report" />
+  </span>
+</forum>
+
+{% endblock %}
