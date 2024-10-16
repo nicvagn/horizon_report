@@ -50,6 +50,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "horizon_report.urls"
 
+# dirs added: /static /templates
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

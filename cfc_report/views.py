@@ -17,6 +17,9 @@
 from django.shortcuts import render
 
 from .models import Player, TournamentDirector, TournamentOrganizer
+from .services import database as db
+from .services.player import create_player
+# db functions get_TDs, get_TOs, get_players, add_player
 
 # TODO: rm
 reports = [{
@@ -30,7 +33,7 @@ reports = [{
 
 def index(request):
     """Main index page"""
-    player_list = Player.objects.all()
+    player_list = db.get_players()
     return render(
         request, "home/index.html", {
             "reports": reports,
@@ -41,7 +44,7 @@ def index(request):
 
 def create_report(request):
     """show view to create a report for the cfc"""
-    players = Player.objects.all()
+    players = db.get_players()
     context = {"players": players}
     return render(request, "create/index.html", context)
 
@@ -54,7 +57,7 @@ def view_report(request):
     TD, _ = TournamentDirector.objects.get_or_create(name="Bob Boy",
                                                      cfc_id=222222)
 
-    player_list = Player.objects.all()
+    player_list = db.get_players()
     num_players = len(player_list)
     context = {
         "title": "The Masters",
@@ -62,7 +65,7 @@ def view_report(request):
         "time_format": "blitz",
         "TD_cfc": TD.cfc_id,
         "TO_cfc": TO.cfc_id,
-        "tournament_date": "9/11",
+        "tournament_date": "06/06/87",
         "players": player_list,
         "num_players": num_players,
     }
@@ -70,6 +73,16 @@ def view_report(request):
 
 
 def add_player(request):
-    """view to add player to system"""
+    """view to add player to tournament players database"""
+    # if is the form being submitted
+    if request.method == "POST":
+        query_dict = request.POST
+        print(query_dict)
 
-    return render(request, "add_player/index.html", {})
+        player = create_player(query_dict["player_name"],
+                               query_dict["player_cfc_id"])
+        # add player to db
+        db.add_player(player)
+
+    # render the requested page.
+    return render(request, "add_player/index.html", {"method": request.method})

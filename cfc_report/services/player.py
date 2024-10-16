@@ -1,4 +1,4 @@
-"""create a player in database"""
+"""services relating to cfc_report app"""
 # horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -15,12 +15,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
+from ..models import Player
 
-from .models import Player
+# get the logger for cfc_report module. Should be set up.
+logger = logging.getLogger(__name__)
 
 
-def create_player(name: str, cfc_id) -> Player:
-    """create a chess player with a cfc id"""
+def create_player(name: str, cfc_id: any) -> Player:
+    """create a chess player with a cfc id
+        parameters:
+            name: the players name
+            cfc_id: something that can be casted to an 6 character int
+        returns:
+            The created Player
+    """
     # make sure cfc id is valid form
     try:
         cfc = int(cfc_id)
@@ -30,10 +38,11 @@ def create_player(name: str, cfc_id) -> Player:
             raise ValueError("CFC ID not 6 characters")
 
     except ValueError as ex:
-        logging.error("CFC ID not valid form, value: %s", cfc_id)
+        logger.error("CFC ID not valid form, value: %s", cfc_id)
         raise ex
 
-    # make player model
     p = Player(name=name, cfc_id=cfc)
+
+    logger.info("Player: name=%s, cfc_id=%s made." % (name, cfc_id))
 
     return p
