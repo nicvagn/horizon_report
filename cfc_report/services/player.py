@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
-from ..models import Player
+from cfc_report.models import Player
 
 # get the logger for cfc_report module. Should be set up.
 logger = logging.getLogger(__name__)
@@ -43,6 +43,6 @@ def create_player(name: str, cfc_id: any) -> Player:
 
     p = Player(name=name, cfc_id=cfc)
 
-    logger.info("Player: name=%s, cfc_id=%s made." % (name, cfc_id))
+    logger.info("Player: name=%s, cfc_id=%s made.", name, cfc_id)
 
     return p

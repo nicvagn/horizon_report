@@ -18,16 +18,68 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-# models relating to a CFC Rated chess tournament.
+# custom fields
 
 
 class CfcId(models.IntegerField):
-    """A CFC ID field"""
+    """A CFC ID field
+    validators : 
+        must be x where 1000000 > x > 99999
+    """
     validators = [MinValueValidator(100000), MaxValueValidator(999999)]
 
 
+class PairingSystem(models.CharField):
+    """A tournament pairing system for a chess tournament"""
+    PAIRING_SYSTEMS = {
+        "SW": "swiss",
+        "RR": "round robin",
+        "DR": "double round robin"
+    }
+
+    def __init__(self, *args, **kwargs):
+        kwargs["max_length"] = 2
+        # assert args[0] in self.PAIRING_SYSTEMS.keys()
+        super().__init__(*args, **kwargs)
+
+
+class Province(models.CharField):
+    """A canadian province field
+    max_length: 2
+    must be in form 'SK'
+    """
+    PROVINCES = {
+        "ON": "Ontario",
+        "QC": "Quebec",
+        "NS": "Nova Scotia",
+        "NB": "New Brunswick",
+        "MB": "Manitoba",
+        "BC": "British Columbia",
+        "PE": "Prince Edward Island",
+        "SK": "Saskatchewan",
+        "AB": "Alberta",
+        "NL": "Newfoundland and Labrador",
+    }
+
+    def __init__(self, *args, **kwargs):
+        kwargs["max_length"] = 2
+        # assert len(args) == 1
+        # assert args[0] in self.PROVINCES.keys()
+        super().__init__(*args, **kwargs)
+
+
+# models relating to a CFC Rated chess tournament.
+
 class Player(models.Model):
-    """A chess player with a CFC id"""
+    """A chess player with a CFC id
+
+    Attributes
+    ----------
+    name : models.CharField
+        name of the player
+    cfc_id : CfCId
+        CFC Id of the player
+    """
     name = models.CharField(max_length=20)
     cfc_id = CfcId()
 
@@ -35,8 +87,29 @@ class Player(models.Model):
         return f"Player: {self.name} CFC: {self.cfc_id}"
 
 
+class Roster(models.Model):
+    """A roster of players in a cfc rated tournament
+
+    Attributes
+    ----------
+    players : list(Player)
+        players in roster
+    size : int
+        number of players in this roster
+    """
+    players = []
+
+
 class TournamentDirector(models.Model):
-    """A tournament director for a cfc chess tournament."""
+    """A tournament director for a cfc chess tournament.
+
+    Attributes
+    ----------
+    name : models.CharField
+        name of TournamentDirector
+    cfc_id : CfcId
+        CFC ID of TournamentDirector
+    """
     name = models.CharField(max_length=20)
     cfc_id = CfcId()
 
@@ -45,7 +118,15 @@ class TournamentDirector(models.Model):
 
 
 class TournamentOrganizer(models.Model):
-    """A tournament director for a cfc chess tournament."""
+    """A tournament organizer for a cfc chess tournament.
+
+    Attributes
+    ----------
+    name: models.CharField
+        name of TournamentOrganizer
+    cfc_id: CfcId
+        CFC ID of TournamentOrganizer
+    """
     name = models.CharField(max_length=20)
     cfc_id = CfcId()
 
@@ -53,13 +134,58 @@ class TournamentOrganizer(models.Model):
         return f"Tournament Organizer: {self.name}, CFC: {self.cfc_id}"
 
 
+class Match(models.Model):
+    """A cfc rated chess match
+
+    Attributes
+    ----------
+    white : Player
+        the White player in the match
+    black : Player
+        the black player in the match
+    winner:
+        Player if winner, None if draw
+    """
+
+    white = Player()
+    black = Player()
+    winner = Player()
+
+
 class Tournament(models.Model):
-    """A cfc rated chess tournament"""
+    """A cfc rated chess tournament
+
+    Attributes
+    ----------
+    name : models.CharField
+        name of the tournament
+    num_rounds : models.IntegerField
+        number of rounds
+    date : models.DateField
+        The date of the tournament
+    pairing_system : PairingSystem
+        The pairing system used in this tournament.
+    province : Province
+        The canadian province this tournament was held
+    to_cfc : CfcId
+        The CFC ID of the TournamentOrganizer
+    td_cfc : CfcId
+        The CFC ID of the TournamentDirector
+    """
     name = models.CharField(max_length=30)
     num_rounds = models.IntegerField()
     date = models.DateField()
+    pairing_system = PairingSystem()
+    province = Province()
+    to_cfc = CfcId()  # TournamentOrganizer CFC id
+    td_cfc = CfcId()  # TournamentDirector CFC id
 
     def __str__(self):
-        return f"""Tournament name: { self.name }
-        Number of rounds: { self.num_rounds }
-        date: {self.date}"""
+        return f"""Tournament name: {self.name}
+        Number of rounds: {self.num_rounds}
+        date: {self.date}
+        Pairing System: {self.pairing_system}
+        province: {self.province}
+        TournamentOrganizer CFC: {self.to_cfc}
+        TournamentDirector CFC: {self.td_cfc}
+        """

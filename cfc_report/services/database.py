@@ -15,9 +15,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from django.db.models import QuerySet
 from cfc_report.models import (Player, TournamentDirector,
                                TournamentOrganizer)
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_players() -> QuerySet:
@@ -25,7 +29,9 @@ def get_players() -> QuerySet:
     returns:
         QuerySet of players in db
     """
-    return Player.objects.all()
+    all_players = Player.objects.all()
+    logger.debug("get_players got these players from db: %s", all_players)
+    return all_players
 
 
 def add_player(p: Player) -> None:
@@ -33,6 +39,7 @@ def add_player(p: Player) -> None:
     parameters:
         p: The models.Player object to add
     """
+    logger.debug("player %s added to db", p)
     p.save()
 
 
@@ -41,7 +48,9 @@ def get_TDs() -> QuerySet:
     returns:
         QuerySet of TD's
     """
-    return TournamentDirector.objects.all()
+    tds = TournamentDirector.objects.all()
+    logger.debug("get_TDs got %s", tds)
+    return tds
 
 
 def get_TOs() -> QuerySet:
@@ -49,4 +58,6 @@ def get_TOs() -> QuerySet:
     returns:
         QuerySet of TD's
     """
-    return TournamentOrganizer.objects.all()
+    tos = TournamentOrganizer.objects.all()
+    logger.debug("get_TOs got: %s", tos)
+    return tos
