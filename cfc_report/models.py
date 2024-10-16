@@ -175,6 +175,12 @@ class Tournament(models.Model):
     td_cfc : CfcId
         The CFC ID of the TournamentDirector
     """
+
+    def __init__(self):
+        super().__init__()
+        # start tournament with no players
+        self.players = []
+
     name = models.CharField(max_length=30)
     num_rounds = models.IntegerField()
     date = models.DateField()
@@ -182,8 +188,6 @@ class Tournament(models.Model):
     province = Province()
     to_cfc = CfcId()  # TournamentOrganizer CFC id
     td_cfc = CfcId()  # TournamentDirector CFC id
-    player = models.ForeignKey(
-        Player, on_delete=models.CASCADE)
 
     def add_player(self, player: Player):
         """Choose a player to be in created tournament
