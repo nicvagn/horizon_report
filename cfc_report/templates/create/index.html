@@ -22,7 +22,8 @@
 <span>
   <h1 class="title">SK Horizon CC: CFC Report Builder</h1>
 </span>
-<forum method="post">
+<form action={% url "create-report" %} method="post">
+  {% csrf_token %}
   <span>
     <p>
       <label for="tournament_name">Tournament Name: </label>
@@ -104,17 +105,17 @@
 
         {% for player in database_players %}
         <tr>
-          <td>player.name</td>
-          <td>player.cfc_id</td>
+          <td>{{ player.name }}</td>
+          <td>{{ player.cfc_id }}</td>
+          <td><input id="add_player_to_tournament" type="button" value="add"/></td>
         </tr>
         {% endfor %}
       </table>
     </aside>
   </section>
   <span>
-    <input id="add_player_btn" type="button" value="add player" />
     <input id="submit_btn" type="submit" value="make report" />
   </span>
-</forum>
+</form>
 
 {% endblock %}

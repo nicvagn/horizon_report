@@ -23,10 +23,13 @@ from django.db import models
 
 class CfcId(models.IntegerField):
     """A CFC ID field
-    validators : 
+    validators :
         must be x where 1000000 > x > 99999
     """
     validators = [MinValueValidator(100000), MaxValueValidator(999999)]
+
+    def __init__(self):
+        super().__init__()
 
 
 class PairingSystem(models.CharField):
@@ -179,6 +182,19 @@ class Tournament(models.Model):
     province = Province()
     to_cfc = CfcId()  # TournamentOrganizer CFC id
     td_cfc = CfcId()  # TournamentDirector CFC id
+    player = models.ForeignKey(
+        Player, on_delete=models.CASCADE)
+
+    def add_player(self, player: Player):
+        """Choose a player to be in created tournament
+        Arguments
+        ---------
+        player : Player
+            Chosen player
+        Returns
+        -------
+            None
+        """
 
     def __str__(self):
         return f"""Tournament name: {self.name}
@@ -189,3 +205,18 @@ class Tournament(models.Model):
         TournamentOrganizer CFC: {self.to_cfc}
         TournamentDirector CFC: {self.td_cfc}
         """
+
+
+class Report(models.Model):
+    """A CFC Report for a tournament
+
+    Attributes
+    __________
+    tournament : Tournament
+        The Tournament this report is for
+
+    Methods
+    _______
+
+    """
+    tournament = Tournament()

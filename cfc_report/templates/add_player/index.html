@@ -21,7 +21,7 @@ Add Player
 {% endblock %}
 
 {% block content %}
-<h1>Add Player to Database</h1>
+<h1 class="title">Add Player to Database</h1>
 
 <form action={% url "add-player" %} method="post">
   {% csrf_token %}

@@ -1,5 +1,7 @@
 # cs spell
 cspell*
+# logs
+*.log
 
 *.sqlite3
 

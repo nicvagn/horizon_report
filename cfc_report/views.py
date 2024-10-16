@@ -56,7 +56,7 @@ def create_report(request):
         # create tournament report
 
     players = db.get_players()
-    context = {"players": players}
+    context = {"database_players": db.get_players()}
     return render(request, "create/index.html", context)
 
 
@@ -67,7 +67,7 @@ def view_report(request):
     # FIXME:
     TO, _ = TournamentOrganizer.objects.get_or_create(name="Base TO",
                                                       cfc_id=111111)
-    TD, _ = TournamentDirector.objects.get_or_create(name="Bob Boy",
+    TD, _ = TournamentDirector.objects.get_or_create(name="Base TD",
                                                      cfc_id=222222)
 
     player_list = db.get_players()
@@ -98,7 +98,7 @@ def add_player(request):
         logger.debug("Player %s made.", player)
         # add player to db
         db.add_player(player)
-        logger.debug("Player added to database")
+        logger.debug("Made Player added to database")
 
     # render the requested page.
     return render(request, "add_player/index.html", {"method": request.method})

@@ -1,5 +1,5 @@
-<!doctype html>
-<!-- horizon_pair
+"""help create cfc reports"""
+# horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,28 +14,20 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
-{% load static %}
 
-<html lang="en">
+from cfc_report.models import Player
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="{% static 'pico.min.css' %}">
-  <link rel="stylesheet" href="{% static 'styles.css' %}">
-  <link rel="shortcut icon" type="image/png" href="{% static 'images/pawn-60.png' %}">
-  <title>{% block page_title %}base.html title{% endblock %}</title>
 
-</head>
+class Create:
+    """A organized class of all the functionality needed to make a cfc report
 
-<body>
-  <a href="/" class="padded">
-    <input id="home_btn" type="button" value="home" />
-  </a>
-  <div id="content" class="padded">
-    {% block content %}{% endblock %}
-  </div>
-</body>
+    Methods
+    ---------
+    choose_player : None
+        mark a player to be in created tournament
 
-</html>
+    Attributes
+    ----------
+
+
+    """
