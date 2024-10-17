@@ -33,7 +33,11 @@ class CfcId(models.IntegerField):
 
 
 class PairingSystem(models.CharField):
-    """A tournament pairing system for a chess tournament"""
+    """A tournament pairing system for a chess tournament
+    attributes
+    ----------
+    PAIRING_SYSTEM : dict[str:str]
+    """
     PAIRING_SYSTEMS = {
         "SW": "swiss",
         "RR": "round robin",
@@ -147,7 +151,7 @@ class Match(models.Model):
     black : Player
         the black player in the match
     winner:
-        Player if winner, None if draw
+        Player if winner, False if draw
     """
 
     white = Player()

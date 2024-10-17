@@ -1,4 +1,4 @@
-"""help create cfc reports"""
+"""create cfc reports"""
 # horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -15,19 +15,26 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from cfc_report.models import Player, Tournament
 
-
-class Report:
-    """A organized class of all the functionality needed to make a cfc report
-
-    Methods
-    ---------
-    choose_player : None
-        mark a player to be in created tournament
-
-    Attributes
-    ----------
+logger = logging.getLogger("horizon_report")
 
 
+def create(t: Tournament):
+    """create a report given a Tournament
+    todo
     """
+    report = {
+        "title": t.name,
+        "province": t.province,
+        "time_format": "blitz",
+        "td_cfc": t.td_cfc,
+        "to_cfc": t.to_cfc,
+        "tournament_date": t.date,
+        "players": t.players,
+        "num_players": len(t.players),
+    }
+
+    logger.debug("report created: %s", report)
+    return report

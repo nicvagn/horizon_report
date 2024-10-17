@@ -15,8 +15,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
-from .services.logging import set_up_logger
+from .services.log import set_up_logger
 DEBUG = True
 FILE_HANDLER = True
 # name should be cfc_report. This feels python like
-set_up_logger(logger_name=__name__, debug=DEBUG, file_handler=FILE_HANDLER)
+set_up_logger(logger_name="horizon_report",
+              debug=DEBUG, file_handler=FILE_HANDLER)

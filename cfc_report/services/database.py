@@ -21,7 +21,7 @@ from cfc_report.models import (Player, TournamentDirector,
                                TournamentOrganizer)
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("horizon_report")
 
 
 def get_players() -> QuerySet:

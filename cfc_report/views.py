@@ -22,7 +22,7 @@ from .services.player import create_player
 # db functions get_TDs, get_TOs, get_players, add_player
 
 # set up logger
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("horizon_report")
 
 # TODO: rm
 reports = [{
@@ -56,7 +56,10 @@ def create_report(request):
         # create tournament report
 
     players = db.get_players()
-    context = {"database_players": db.get_players()}
+    tournament_players = [players[0]]
+
+    context = {"database_players": players,
+               "tournament_players": tournament_players}
     return render(request, "create/index.html", context)
 
 
@@ -72,7 +75,7 @@ def view_report(request):
 
     player_list = db.get_players()
     num_players = player_list.count()
-    context = {
+    report = {
         "title": "The Masters",
         "province": "SK",
         "time_format": "blitz",
@@ -82,7 +85,7 @@ def view_report(request):
         "players": player_list,
         "num_players": num_players,
     }
-    return render(request, "show/index.html", context)
+    return render(request, "show/index.html", report)
 
 
 def add_player(request):
