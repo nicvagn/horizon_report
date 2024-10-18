@@ -21,8 +21,10 @@ from django.db import models
 # custom fields
 
 
-class CfcId(models.IntegerField):
+class CfcIdField(models.IntegerField):
     """A CFC ID field
+    Attributes
+    ----------
     validators :
         must be x where 1000000 > x > 99999
     """
@@ -34,26 +36,35 @@ class CfcId(models.IntegerField):
 
 class PairingSystem(models.CharField):
     """A tournament pairing system for a chess tournament
-    attributes
+    Attributes
     ----------
-    PAIRING_SYSTEM : dict[str:str]
+    PAIRING_SYSTEM : 
+        Pairing system for the tournament
     """
     PAIRING_SYSTEMS = {
-        "SW": "swiss",
+        "SW": "Swiss",
         "RR": "round robin",
-        "DR": "double round robin"
+        "DR": "double round robin",
     }
 
     def __init__(self, *args, **kwargs):
+        # Set the max length of field two be 2 chars
         kwargs["max_length"] = 2
-        # assert args[0] in self.PAIRING_SYSTEMS.keys()
+        kwargs["choices"] = PairingSystem.PAIRING_SYSTEMS
+
         super().__init__(*args, **kwargs)
 
 
 class Province(models.CharField):
     """A canadian province field
-    max_length: 2
-    must be in form 'SK'
+
+    Attributes
+    ----------
+    PROVINCES : dict[str : str]
+        province acronym key to province name val
+    {key} : str
+        max_length: 2
+        must be in form 'SK'
     """
     PROVINCES = {
         "ON": "Ontario",
@@ -70,8 +81,7 @@ class Province(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs["max_length"] = 2
-        # assert len(args) == 1
-        # assert args[0] in self.PROVINCES.keys()
+        kwargs["choices"] = Province.PROVINCES
         super().__init__(*args, **kwargs)
 
 
@@ -88,7 +98,7 @@ class Player(models.Model):
         CFC Id of the player
     """
     name = models.CharField(max_length=20)
-    cfc_id = CfcId()
+    cfc_id = CfcIdField()
 
     def __str__(self):
         return f"Player: {self.name} CFC: {self.cfc_id}"
@@ -107,35 +117,31 @@ class Roster(models.Model):
     players = []
 
 
-class TournamentDirector(models.Model):
+class TournamentDirector(Player):
     """A tournament director for a cfc chess tournament.
 
     Attributes
     ----------
     name : models.CharField
         name of TournamentDirector
-    cfc_id : CfcId
+    cfc_id : CfcIdField
         CFC ID of TournamentDirector
     """
-    name = models.CharField(max_length=20)
-    cfc_id = CfcId()
 
     def __str__(self):
         return f"Tournament Director: {self.name}, CFC: {self.cfc_id}"
 
 
-class TournamentOrganizer(models.Model):
+class TournamentOrganizer(Player):
     """A tournament organizer for a cfc chess tournament.
 
     Attributes
     ----------
     name: models.CharField
         name of TournamentOrganizer
-    cfc_id: CfcId
+    cfc_id: CfcIdField
         CFC ID of TournamentOrganizer
     """
-    name = models.CharField(max_length=20)
-    cfc_id = CfcId()
 
     def __str__(self):
         return f"Tournament Organizer: {self.name}, CFC: {self.cfc_id}"
@@ -174,10 +180,15 @@ class Tournament(models.Model):
         The pairing system used in this tournament.
     province : Province
         The canadian province this tournament was held
-    to_cfc : CfcId
+    to_cfc : CfcIdField
         The CFC ID of the TournamentOrganizer
-    td_cfc : CfcId
+    td_cfc : CfcIdField
         The CFC ID of the TournamentDirector
+
+    Methods
+    -------
+    add_player(player)
+        add a player to the tournament
     """
 
     def __init__(self):
@@ -190,8 +201,8 @@ class Tournament(models.Model):
     date = models.DateField()
     pairing_system = PairingSystem()
     province = Province()
-    to_cfc = CfcId()  # TournamentOrganizer CFC id
-    td_cfc = CfcId()  # TournamentDirector CFC id
+    to_cfc = CfcIdField()  # TournamentOrganizer CFC id
+    td_cfc = CfcIdField()  # TournamentDirector CFC id
 
     def add_player(self, player: Player):
         """Choose a player to be in created tournament
