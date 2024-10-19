@@ -38,7 +38,7 @@ def index(request):
     """Main index page"""
     player_list = db.get_players()
     return render(
-        request, "home/index.html", {
+        request, "cfc_report/home/index.html", {
             "reports": reports,
             "players": player_list,
             "players_heading": "Player's in Database",
@@ -56,11 +56,11 @@ def create_report(request):
         # create tournament report
 
     players = db.get_players()
-    tournament_players = ... #TODO request.session.get(
+    tournament_players = []  # TODO request.session.get(
 
     context = {"database_players": players,
                "tournament_players": tournament_players}
-    return render(request, "create/index.html", context)
+    return render(request, "cfc_report/create/index.html", context)
 
 
 def view_report(request):
@@ -85,7 +85,7 @@ def view_report(request):
         "players": player_list,
         "num_players": num_players,
     }
-    return render(request, "show/index.html", report)
+    return render(request, "cfc_report/show/index.html", report)
 
 
 def add_player(request):
@@ -104,6 +104,4 @@ def add_player(request):
         logger.debug("Made Player added to database")
 
     # render the requested page.
-    return render(request, "add_player/index.html", {"method": request.method})
-
-
+    return render(request, "cfc_report/add_player/index.html", {"method": request.method})

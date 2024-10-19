@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block page_title %} Horizon Report {% endblock %}
+{% extends "cfc_report/base.html" %} {% block page_title %} Horizon Report {% endblock %}
 {% block content %}
 <h1 class="title">SK Horizon CC: CFC Report Builder</h1>
 <h3>Available Reports:</h3>
@@ -10,7 +10,7 @@
   {% endfor %}
 </ul>
 
-{% include "players.html" %}
+{% include "cfc_report/players.html" %}
 
 <a href="{% url 'create-report' %}">
     <input id="create_report_btn" type="button" value="create report" />

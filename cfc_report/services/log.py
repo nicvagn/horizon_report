@@ -19,7 +19,7 @@ import logging
 import sys
 
 
-def set_up_logger(logger_name=__name__, debug=False, file_handler=False) -> logging.Logger:
+def set_up_logger(logger_name="anon", debug=False, file_handler=False) -> logging.Logger:
     """set up logger, including:
         console handler,
         file handler
@@ -40,7 +40,7 @@ def set_up_logger(logger_name=__name__, debug=False, file_handler=False) -> logg
 
     # set up logging to a file if wanted
     if file_handler:
-        file_handler = logging.FileHandler(f"{__name__}.log")
+        file_handler = logging.FileHandler(f"{logger_name}.log")
         # always have a verbose log file
         file_handler.setLevel(logging.DEBUG)
         logger.addHandler(file_handler)
