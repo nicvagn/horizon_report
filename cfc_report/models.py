@@ -17,6 +17,8 @@
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.urls import reverse
+from django.utils.text import slugify
 
 # custom fields
 
@@ -30,8 +32,8 @@ class CfcIdField(models.IntegerField):
     """
     validators = [MinValueValidator(100000), MaxValueValidator(999999)]
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 class PairingSystem(models.CharField):
@@ -81,7 +83,7 @@ class Province(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs["max_length"] = 2
-        kwargs["choices"] = Province.PROVINCES
+        kwargs["choices"] = self.PROVINCES
         super().__init__(*args, **kwargs)
 
 
@@ -99,6 +101,30 @@ class Player(models.Model):
     """
     name = models.CharField(max_length=20)
     cfc_id = CfcIdField()
+    slug = models.SlugField(default="", null=False)
+    # make sure slug exists for every player
+
+    def save(self, *args, **kwargs):
+        """create slug url before saving
+        Override of save()
+
+        Arguments
+        ---------
+        *args and **kwargs - passed on to super().save(...)
+        Returns
+        -------
+        None
+        """
+        self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        """get the absolute url of this model
+        Returns
+        -------
+        The absolute url to access this player
+        """
+        return reverse("player", args=[self.slug])
 
     def __str__(self):
         return f"Player: {self.name} CFC: {self.cfc_id}"
@@ -109,12 +135,21 @@ class Roster(models.Model):
 
     Attributes
     ----------
-    players : list(Player)
+    players : ForeignKey
         players in roster
+
+    Methods
+    _______
+
     size : int
         number of players in this roster
     """
-    players = []
+
+    players = models.ForeignKey(Player, on_delete=models.CASCADE)
+
+    def size(self):
+        """Number of Player ie: size of this roster"""
+        raise NotImplementedError
 
 
 class TournamentDirector(Player):
@@ -160,9 +195,12 @@ class Match(models.Model):
         Player if winner, False if draw
     """
 
-    white = Player()
-    black = Player()
-    winner = Player()
+    white = models.ForeignKey(
+        Player, on_delete=models.CASCADE, related_name="white_player")
+    black = models.ForeignKey(
+        Player, on_delete=models.CASCADE, related_name="black_player")
+    winner = models.ForeignKey(
+        Player, default=None, on_delete=models.CASCADE, related_name="winning_player")
 
 
 class Tournament(models.Model):
@@ -214,6 +252,7 @@ class Tournament(models.Model):
         -------
             None
         """
+        raise NotImplementedError
 
     def __str__(self):
         return f"""Tournament name: {self.name}

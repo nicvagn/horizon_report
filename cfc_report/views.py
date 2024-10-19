@@ -56,7 +56,7 @@ def create_report(request):
         # create tournament report
 
     players = db.get_players()
-    tournament_players = [players[0]]
+    tournament_players = ... #TODO request.session.get(
 
     context = {"database_players": players,
                "tournament_players": tournament_players}
@@ -105,3 +105,5 @@ def add_player(request):
 
     # render the requested page.
     return render(request, "add_player/index.html", {"method": request.method})
+
+
