@@ -24,7 +24,14 @@ logger = logging.getLogger(LOGGER_NAME)
 
 
 class SerializedPlayer(TypedDict):
-    """A serialized Player ready to be JSON"""
+    """A serialized Player ready to be JSON
+    Attributes
+    ----------
+    name : str
+        Player's name
+    cfc_id : str
+        Player's cfc_id, CFC id's must be 6 numbers, ie: 222333
+    """
     name: str
     cfc_id: str
 
@@ -34,7 +41,7 @@ class CfcIdField(models.IntegerField):
     Attributes
     ----------
     validators :
-        must be x where 1000000 > x > 99999
+        int in field x must be x where 1000000 > x > 99999
     """
     validators = [MinValueValidator(100000), MaxValueValidator(999999)]
 
@@ -49,7 +56,7 @@ class PairingSystem(models.CharField):
     """A tournament pairing system for a chess tournament
     Attributes
     ----------
-    PAIRING_SYSTEM :
+    PAIRING_SYSTEM : dict{str:str}
         Pairing system for the tournament
     """
     PAIRING_SYSTEMS = {
@@ -72,10 +79,12 @@ class Province(models.CharField):
     Attributes
     ----------
     PROVINCES : dict[str : str]
-        province acronym key to province name val
-    {key} : str
-        max_length: 2
-        must be in form 'SK'
+        province acronym key to province name
+    PROVINCES{key} : str
+        The key to the PROVINCES dict
+        must be:
+            max_length: 2
+            must be in form 'SK'
     """
     PROVINCES = {
         "ON": "Ontario",
@@ -132,6 +141,7 @@ class Player(models.Model):
         Arguments
         ---------
         *args and **kwargs - passed on to super().save(...)
+
         Returns
         -------
         None
@@ -144,6 +154,7 @@ class Player(models.Model):
 
     def get_absolute_url(self):
         """get the absolute url of this model
+
         Returns
         -------
         The absolute url to access this player
@@ -152,6 +163,7 @@ class Player(models.Model):
 
     def serialize(self) -> SerializedPlayer:
         """Make a SerializedPlayer typed dict from this Player
+
         Returns
         -------
         A dict containing all the information to recreate this player.
@@ -171,6 +183,7 @@ class Player(models.Model):
         ----------
         sp : SerializedPlayer
             the SerializedPlayer TypedDict to decode player from
+
         Returns
         -------
         decoded player : Player
@@ -292,10 +305,12 @@ class Tournament(models.Model):
 
     def add_player(self, player: Player):
         """Choose a player to be in created tournament
+
         Arguments
         ---------
         player : Player
             Chosen player
+
         Returns
         -------
             None
