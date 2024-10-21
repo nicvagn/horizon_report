@@ -1,5 +1,4 @@
 """ work with, and produce ctr cfc file """
-# horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -46,7 +45,7 @@ class CTR:
             raise CtrCreationException("missing tournament data.")
 
         # get the pairing abbreviation
-        if tournament.pairing_system is "Swiss":
+        if tournament.pairing_system == "Swiss":
             pairing_abriviation = "S"
         else:
             # Round Robin is default,
@@ -61,8 +60,8 @@ class CTR:
         )
 
         # add all matches to report
-        for round in t.completed_rounds:
-            for match in round.matches:
+        for rnd in t.completed_rounds:
+            for match in rnd.matches:
                 match_report = self.make_match_report(
                     match, match.white_player
                 )

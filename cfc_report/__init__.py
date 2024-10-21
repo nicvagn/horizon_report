@@ -1,5 +1,4 @@
 """ set up logger for package """
-# horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,9 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
+from .constants import DEBUG, FILE_HANDLER, LOGGER_NAME
 from .services.log import set_up_logger
+# settings
 DEBUG = True
 FILE_HANDLER = True
-# name should be cfc_report. This feels python like
-set_up_logger(logger_name="horizon_report",
+LOGGER_NAME = "CFC_REPORT"
+
+set_up_logger(logger_name=LOGGER_NAME,
               debug=DEBUG, file_handler=FILE_HANDLER)

@@ -1,5 +1,4 @@
 """Data models for CFC rated tournament"""
-# horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,13 +13,20 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+import logging
+from typing import TypedDict
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+from .constants import LOGGER_NAME
+logger = logging.getLogger(LOGGER_NAME)
 
-# custom fields
+
+class SerializedPlayer(TypedDict):
+    """A serialized Player ready to be JSON"""
+    name: str
+    cfc_id: str
 
 
 class CfcIdField(models.IntegerField):
@@ -32,6 +38,9 @@ class CfcIdField(models.IntegerField):
     """
     validators = [MinValueValidator(100000), MaxValueValidator(999999)]
 
+    def __str__(self):
+        return str(super())
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -40,7 +49,7 @@ class PairingSystem(models.CharField):
     """A tournament pairing system for a chess tournament
     Attributes
     ----------
-    PAIRING_SYSTEM : 
+    PAIRING_SYSTEM :
         Pairing system for the tournament
     """
     PAIRING_SYSTEMS = {
@@ -98,6 +107,18 @@ class Player(models.Model):
         name of the player
     cfc_id : CfCId
         CFC Id of the player
+    slug : SlugField
+        unique slug for this players url
+
+    Methods
+    -------
+    save(self)
+        save the model in the db with a added slug attribute
+        to make url
+    serialize(self)
+        create a serialized version of this Player
+    decode(cls) : Player
+        classmethod to decode a serialized player into a python object
     """
     name = models.CharField(max_length=20)
     cfc_id = CfcIdField()
@@ -115,7 +136,10 @@ class Player(models.Model):
         -------
         None
         """
+
         self.slug = slugify(self.name)
+        logger.info(
+            "Player: (%s) saved and slug (%s) created for it", self, self.slug)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -126,8 +150,33 @@ class Player(models.Model):
         """
         return reverse("player", args=[self.slug])
 
+    def serialize(self) -> SerializedPlayer:
+        """Make a SerializedPlayer typed dict from this Player
+        Returns
+        -------
+        A dict containing all the information to recreate this player.
+        """
+        sp: SerializedPlayer = {"name":
+                                self.name, "cfc_id": self.cfc_id}
+        return sp
+
     def __str__(self):
         return f"Player: {self.name} CFC: {self.cfc_id}"
+
+    @staticmethod
+    def decode(sp: SerializedPlayer):
+        """Decode a SerializedPlayer into a Player object
+
+        Parameters
+        ----------
+        sp : SerializedPlayer
+            the SerializedPlayer TypedDict to decode player from
+        Returns
+        -------
+        decoded player : Player
+            The decoded Player object
+        """
+        return Player(name=sp["name"], cfc_id=sp["cfc_id"])
 
 
 class Roster(models.Model):
@@ -140,7 +189,6 @@ class Roster(models.Model):
 
     Methods
     _______
-
     size : int
         number of players in this roster
     """
@@ -278,3 +326,6 @@ class Report(models.Model):
 
     """
     tournament = Tournament()
+
+    def __str__(self):
+        return f"tournament: {self.tournament}"

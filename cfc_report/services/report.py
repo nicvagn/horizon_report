@@ -18,7 +18,8 @@
 import logging
 from cfc_report.models import Player, Tournament
 
-logger = logging.getLogger("horizon_report")
+from cfc_report import LOGGER_NAME
+logger = logging.getLogger(LOGGER_NAME)
 
 
 def create(t: Tournament):
@@ -38,3 +39,4 @@ def create(t: Tournament):
 
     logger.debug("report created: %s", report)
     return report
+

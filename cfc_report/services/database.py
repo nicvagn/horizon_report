@@ -20,8 +20,8 @@ from django.db.models import QuerySet
 from cfc_report.models import (Player, TournamentDirector,
                                TournamentOrganizer)
 
-
-logger = logging.getLogger("horizon_report")
+from cfc_report import LOGGER_NAME
+logger = logging.getLogger(LOGGER_NAME)
 
 
 def get_players() -> QuerySet:

@@ -1,5 +1,4 @@
-"views for cfc_report" ""
-# horizon_pair
+"""views for cfc_report"""
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,13 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 from django.shortcuts import render
+from .constants import LOGGER_NAME
 from .models import Player, TournamentDirector, TournamentOrganizer
-from .services import database as db
-from .services.player import create_player
-# db functions get_TDs, get_TOs, get_players, add_player
-
+from .services import database as db, session, player as player_services
 # set up logger
-logger = logging.getLogger("horizon_report")
+# get the logger for cfc_report module. Should be set up.
+logger = logging.getLogger(LOGGER_NAME)
 
 # TODO: rm
 reports = [{
@@ -37,6 +35,12 @@ reports = [{
 def index(request):
     """Main index page"""
     player_list = db.get_players()
+
+    request.session["tournament_players"] = [Player.serialize(Player(name="Joe Blow",
+                                                                     cfc_id="989898")),
+                                             Player.serialize(Player(name="Lo Blow",
+                                                                     cfc_id="184494"))]
+
     return render(
         request, "cfc_report/home/index.html", {
             "reports": reports,
@@ -53,13 +57,13 @@ def create_report(request):
         query_dict = request.POST
         logger.debug("POST request with value: %s", query_dict)
 
-        # create tournament report
+        # TODO: create tournament report
 
     players = db.get_players()
-    tournament_players = []  # TODO request.session.get(
+    tournament_p = session.get_session_players()
 
     context = {"database_players": players,
-               "tournament_players": tournament_players}
+               "tournament_players": tournament_p}
     return render(request, "cfc_report/create/index.html", context)
 
 
@@ -68,10 +72,10 @@ def view_report(request):
 
     logger.debug("view_report entered with request: %s", request)
     # FIXME:
-    TO, _ = TournamentOrganizer.objects.get_or_create(name="Base TO",
-                                                      cfc_id=111111)
-    TD, _ = TournamentDirector.objects.get_or_create(name="Base TD",
-                                                     cfc_id=222222)
+    TO, _ = TournamentOrganizer.objects.get_or_create(
+        name="Base TO", cfc_id=111111)
+    TD, _ = TournamentDirector.objects.get_or_create(
+        name="Base TD", cfc_id=222222)
 
     player_list = db.get_players()
     num_players = player_list.count()
@@ -88,6 +92,33 @@ def view_report(request):
     return render(request, "cfc_report/show/index.html", report)
 
 
+def pick_player(request, player: Player) -> None:
+    """Pick a player to be in a session, and update the html
+
+    Parameters
+    ----------
+    request : django request
+        Dijango request 
+    player : Player
+        The Player to add to the session
+    """
+
+    logger.debug("Player: %s picked", player)
+    session_players = request.session.get_session_players()
+
+    # add player to session players
+    session_players.append(player)
+    request.session.update_session_players(session_players)
+
+    players = db.get_players()
+
+    context = {"database_players": players,
+               "tournament_players": session_players}
+    # TODO: visually update players in tournament using
+    #   { % for player in tournament_players % }
+    return render(request, "cfc_report/create/index.html", context)
+
+
 def add_player(request):
     """view to add player to tournament players database"""
     logger.debug("add_player entered with request %s", request)
@@ -96,8 +127,8 @@ def add_player(request):
         query_dict = request.POST
         logger.debug("POST request with value: %s", query_dict)
 
-        player: Player = create_player(query_dict["player_name"],
-                                       query_dict["player_cfc_id"])
+        player: Player = player_services.create_player(query_dict["player_name"],
+                                                       query_dict["player_cfc_id"])
         logger.debug("Player %s made.", player)
         # add player to db
         db.add_player(player)

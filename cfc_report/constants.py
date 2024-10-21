@@ -1,4 +1,4 @@
-""" urls for cfc_report """
+""" define constants for cfc_report"""
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -13,16 +13,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-from django.contrib import admin
-from django.urls import path
-
-from . import views
-
-urlpatterns = [
-    path('', views.index, name='index'),
-    path("view/", views.view_report, name="view-report"),
-    path("create/", views.create_report, name="create-report"),
-    path("add-player", views.add_player, name="add-player"),
-    path("pick-player", views.pick_player, name="pick-player"),
-]
+DEBUG = True
+FILE_HANDLER = True
+LOGGER_NAME = "CFC_REPORT"

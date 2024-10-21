@@ -1,5 +1,4 @@
 """services relating to setting up logging"""
-# horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -19,7 +18,7 @@ import logging
 import sys
 
 
-def set_up_logger(logger_name="anon", debug=False, file_handler=False) -> logging.Logger:
+def set_up_logger(logger_name=None, debug=False, file_handler=False) -> logging.Logger:
     """set up logger, including:
         console handler,
         file handler
@@ -30,6 +29,8 @@ def set_up_logger(logger_name="anon", debug=False, file_handler=False) -> loggin
     returns:
         created logger
     """
+    if not logger_name:
+        raise RuntimeError("No logger_name given")
     logger = logging.getLogger(logger_name)
 
     formatter = logging.Formatter(
