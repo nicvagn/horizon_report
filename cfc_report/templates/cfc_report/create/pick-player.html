@@ -1,0 +1,49 @@
+{% extends "cfc_report/base.html" %}
+
+{% block page_title %}SK Horizon CC: CFC Report Builder - player selection {% endblock %}
+
+{% block content %}
+
+<span>
+  <h1>Choose players in report:</h1>
+</span>
+<form method="POST" id="players_section">
+  <aside id="tournament_players">
+    <h4>In Tournament:</h4>
+    <table id="players">
+      <tr>
+        <th>Name</th>
+        <th>CFC ID:</th>
+      </tr>
+
+      {% for player in tournament_players %}
+      <tr>
+        <td>{{player.name}}</td>
+        <td>{{player.cfc_id}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </aside>
+
+  <aside id="database_players">
+    <h4>Player Database:</h4>
+    <table id="players">
+      <tr>
+        <th>Name</th>
+        <th>CFC ID:</th>
+      </tr>
+
+      {% for player in database_players %}
+      <tr>
+        <td>{{ player.name }}</td>
+        <td>{{ player.cfc_id }}</td>
+        <td><input id="add_player_to_tournament" type="button" value="add" /></td>
+      </tr>
+      {% endfor %}
+    </table>
+  </aside>
+  </section>
+  <span>
+    <input id="submit_btn" type="submit" value="make report" />
+  </span>
+  {% endblock %}
