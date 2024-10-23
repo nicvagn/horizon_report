@@ -24,59 +24,7 @@
 </span>
 <form action={% url "create-report" %} method="post">
   {% csrf_token %}
-  <span>
-    <p>
-      <label for="tournament_name">Tournament Name: </label>
-      <input
-        id="tournament_name"
-        name="Tournament Name"
-        type="text"
-        value=""
-        placeholder="Tournament Name"
-      />
-    </p>
-
-    <p>
-      <label for="TD_cfc">Tournament Director CFC id: </label>
-      <input
-        id="TD_cfc"
-        name="Tournament_Director_CFC"
-        type="text"
-        value=""
-        placeholder="Tournament Director CFC id"
-      />
-
-      <label for="TO_cfc">Tournament Organizer CFC id: </label>
-      <input
-        id="TO_cfc"
-        name="Tournament_Organizer_CFC"
-        type="text"
-        value=""
-        placeholder="Tournament Organizer CFC id"
-      />
-    </p>
-  </span>
-
-  <span>
-    <label for="tournament_type">Tournament Type:</label>
-    <input id="swiss" type="radio" name="tournament_type" value="swiss" />
-    <label for="swiss">swiss</label>
-    <input
-      id="round_robin"
-      type="radio"
-      name="tournament_type"
-      value="round robin"
-    />
-    <label for="round_robin">robin robin</label>
-    <input
-      id="double_round_robin"
-      type="radio"
-      name="tournament_type"
-      value="double round robin"
-    />
-    <label for="double_round_robin">double robin robin</label>
-  </span>
-  
+  {{ form }}
   <div style="padding: 1em"></div>
 
   <span>

@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
-from types import SimpleNamespace
 from django.shortcuts import render
 from django.http.response import HttpResponse
 from .constants import LOGGER_NAME
@@ -24,85 +23,6 @@ from .services import database as db, session, player as player_services
 # set up logger
 # get the logger for cfc_report module. Should be set up.
 logger = logging.getLogger(LOGGER_NAME)
-
-# TODO: rm
-reports = [{
-    "name": "report1",
-    "url": "report url"
-}, {
-    "name": "report2",
-    "url": "report2 url"
-}]
-
-
-def index(request):
-    """Main index page"""
-    player_list = db.get_players()
-
-    request.session["tournament_players"] = [Player.serialize(Player(name="Joe Blow",
-                                                                     cfc_id="989898")),
-                                             Player.serialize(Player(name="Lo Blow",
-                                                                     cfc_id="184494"))]
-
-    return render(
-        request, "cfc_report/home/index.html", {
-            "reports": reports,
-            "players": player_list,
-            "players_heading": "Player's in Database",
-        })
-
-
-class Report:
-    """A collection of views relating to cfc reports"""
-
-    def create(self, request):
-        """show view to create a report for the cfc"""
-        logger.debug("create_report entered with request: %s", request)
-        # if is the form being submitted
-        if request.method == "POST":
-            query_dict = request.POST
-            logger.debug("POST request with value: %s", query_dict)
-
-            tournament_info = TournamentForm(request.POST)
-
-            if tournament_info.is_valid():
-                return HttpResponse("Good job")
-
-            # TODO: create tournament report
-            return HttpResponse("Bad job")
-
-        form = TournamentForm()
-        players = db.get_players()
-        tournament_p = session.get_session_players()
-
-        context = {"database_players": players,
-                   "tournament_players": tournament_p,
-                   "form": form}
-        return render(request, "cfc_report/create/ctr-info.html", context)
-
-    def view(self, request):
-        """display a CFC report"""
-
-        logger.debug("view_report entered with request: %s", request)
-        # FIXME:
-        TO, _ = TournamentOrganizer.objects.get_or_create(
-            name="Base TO", cfc_id=111111)
-        TD, _ = TournamentDirector.objects.get_or_create(
-            name="Base TD", cfc_id=222222)
-
-        player_list = db.get_players()
-        num_players = player_list.count()
-        report = {
-            "title": "The Masters",
-            "province": "SK",
-            "time_format": "blitz",
-            "TD_cfc": TD.cfc_id,
-            "TO_cfc": TO.cfc_id,
-            "tournament_date": "06/06/87",
-            "players": player_list,
-            "num_players": num_players,
-        }
-        return render(request, "cfc_report/show/index.html", report)
 
 
 def pick_player(request, player: Player) -> None:

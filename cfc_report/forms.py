@@ -16,6 +16,7 @@
 # set up logging
 import logging
 from django import forms
+from django.forms import SelectDateWidget
 from .form_fields import CfcIdField, PairingSystemField, ProvinceField
 from .constants import LOGGER_NAME
 logger = logging.getLogger(LOGGER_NAME)
@@ -44,7 +45,7 @@ class TournamentForm(forms.Form):
 
     name = forms.CharField(max_length=60)
     num_rounds = forms.IntegerField()
-    date = forms.DateField()
+    date = forms.DateField(widget=SelectDateWidget)
     pairing_system = PairingSystemField()
     province = ProvinceField()
     to_cfc = CfcIdField()  # TournamentOrganizer CFC id
@@ -63,13 +64,3 @@ class TournamentForm(forms.Form):
             None
         """
         raise NotImplementedError
-
-    def __str__(self):
-        return f"""Tournament name: {self.name}
-        Number of rounds: {self.num_rounds}
-        date: {self.date}
-        Pairing System: {self.pairing_system}
-        province: {self.province}
-        TournamentOrganizer CFC: {self.to_cfc}
-        TournamentDirector CFC: {self.td_cfc}
-        """

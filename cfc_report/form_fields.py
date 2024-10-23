@@ -1,4 +1,4 @@
-"""form_fields.py: Form field's for CFC rated tournament"""
+"""form_fields.py: Form field's for CFC report builder"""
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -25,16 +25,15 @@ class CfcIdField(forms.IntegerField):
     validators :
         int in field x must be x where 1000000 > x > 99999
     """
-    validators = [MinValueValidator(100000), MaxValueValidator(999999)]
-
-    def __str__(self):
-        return str(super())
 
     def __init__(self, *args, **kwargs):
+        kwargs["label"] = "CFC id"
+        kwargs["validators"] = [MinValueValidator(
+            100000), MaxValueValidator(999999)]
         super().__init__(*args, **kwargs)
 
 
-class PairingSystemField(forms.CharField):
+class PairingSystemField(forms.ChoiceField):
     """A tournament pairing system for a chess tournament
 
     Attributes
@@ -44,19 +43,17 @@ class PairingSystemField(forms.CharField):
     """
     PAIRING_SYSTEMS = {
         "SW": "Swiss",
-        "RR": "round robin",
-        "DR": "double round robin",
+        "RR": "Round Robin",
+        "DR": "Double Round Robin",
     }
 
     def __init__(self, *args, **kwargs):
-        # Set the max length of field two be 2 chars
-        kwargs["max_length"] = 2
-        kwargs["choices"] = PairingSystemField.PAIRING_SYSTEMS
-
+        kwargs["choices"] = self.PAIRING_SYSTEMS
+        kwargs["label"] = "Pairing System"
         super().__init__(*args, **kwargs)
 
 
-class ProvinceField(forms.CharField):
+class ProvinceField(forms.ChoiceField):
     """A canadian province field
 
     Attributes
@@ -83,6 +80,6 @@ class ProvinceField(forms.CharField):
     }
 
     def __init__(self, *args, **kwargs):
-        kwargs["max_length"] = 2
         kwargs["choices"] = self.PROVINCES
+        kwargs["label"] = "Province"
         super().__init__(*args, **kwargs)
