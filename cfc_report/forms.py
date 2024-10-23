@@ -13,84 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# set up logging
 import logging
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django import forms
+from .form_fields import CfcIdField, PairingSystemField, ProvinceField
 from .constants import LOGGER_NAME
 logger = logging.getLogger(LOGGER_NAME)
-
-# defining fields
-
-
-class CfcIdField(forms.IntegerField):
-    """A CFC ID field
-
-    Attributes
-    ----------
-    validators :
-        int in field x must be x where 1000000 > x > 99999
-    """
-    validators = [MinValueValidator(100000), MaxValueValidator(999999)]
-
-    def __str__(self):
-        return str(super())
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-class PairingSystem(forms.CharField):
-    """A tournament pairing system for a chess tournament
-
-    Attributes
-    ----------
-    PAIRING_SYSTEM : dict{str:str}
-        Pairing system for the tournament
-    """
-    PAIRING_SYSTEMS = {
-        "SW": "Swiss",
-        "RR": "round robin",
-        "DR": "double round robin",
-    }
-
-    def __init__(self, *args, **kwargs):
-        # Set the max length of field two be 2 chars
-        kwargs["max_length"] = 2
-        kwargs["choices"] = PairingSystem.PAIRING_SYSTEMS
-
-        super().__init__(*args, **kwargs)
-
-
-class Province(forms.CharField):
-    """A canadian province field
-
-    Attributes
-    ----------
-    PROVINCES : dict[str : str]
-        province acronym key to province name
-    PROVINCES{key} : str
-        The key to the PROVINCES dict
-        must be:
-            max_length: 2
-            must be in form 'SK'
-    """
-    PROVINCES = {
-        "ON": "Ontario",
-        "QC": "Quebec",
-        "NS": "Nova Scotia",
-        "NB": "New Brunswick",
-        "MB": "Manitoba",
-        "BC": "British Columbia",
-        "PE": "Prince Edward Island",
-        "SK": "Saskatchewan",
-        "AB": "Alberta",
-        "NL": "Newfoundland and Labrador",
-    }
-
-    def __init__(self, *args, **kwargs):
-        kwargs["max_length"] = 2
-        kwargs["choices"] = self.PROVINCES
-        super().__init__(*args, **kwargs)
 
 
 class TournamentForm(forms.Form):
@@ -112,14 +40,13 @@ class TournamentForm(forms.Form):
         The CFC ID of the TournamentOrganizer
     td_cfc : CfcIdField
         The CFC ID of the TournamentDirector
-
     """
 
-    name = forms.CharField(max_length=30)
+    name = forms.CharField(max_length=60)
     num_rounds = forms.IntegerField()
     date = forms.DateField()
-    pairing_system = PairingSystem()
-    province = Province()
+    pairing_system = PairingSystemField()
+    province = ProvinceField()
     to_cfc = CfcIdField()  # TournamentOrganizer CFC id
     td_cfc = CfcIdField()  # TournamentDirector CFC id
 
