@@ -16,10 +16,10 @@
 import logging
 from django.shortcuts import render
 from django.http.response import HttpResponse
-from .constants import LOGGER_NAME
-from .models import Player, TournamentDirector, TournamentOrganizer
-from .forms import TournamentForm
-from .services import database as db, session, player as player_services
+from ..constants import LOGGER_NAME
+from ..models import Player, TournamentDirector, TournamentOrganizer
+from ..forms import TournamentForm
+from ..services import database as db, session, player as player_services
 # set up logger
 # get the logger for cfc_report module. Should be set up.
 logger = logging.getLogger(LOGGER_NAME)

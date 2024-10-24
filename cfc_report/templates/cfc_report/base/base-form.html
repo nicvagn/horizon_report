@@ -20,9 +20,9 @@
 
 {% block content %}
 <span>
-  <h1 class="title">SK Horizon CC: CFC Report Builder</h1>
+  <h1 class="title">{{ title }}</h1>
 </span>
-<form action={% url "create-report" %} method="post">
+<form action='{{ action_url_name }}' method="post">
   {% csrf_token %}
   {{ form }}
   <div style="padding: 1em"></div>

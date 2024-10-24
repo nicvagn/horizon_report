@@ -35,19 +35,19 @@ def create(request):
         tournament_info = TournamentForm(request.POST)
 
         if tournament_info.is_valid():
-            return HttpResponse("Good job")
+            return HttpResponse("Good job! Valid form")
 
         # TODO: create tournament report
-        return HttpResponse("Bad job")
+        return HttpResponse("Bad job. Invalid")
 
     form = TournamentForm()
     players = db.get_players()
     tournament_p = session.get_session_players()
 
-    context = {"database_players": players,
-               "tournament_players": tournament_p,
+    context = {"title": "Enter tornament information",
+               "action_url_name": "create-report",
                "form": form}
-    return render(request, "cfc_report/create/ctr-info.html", context)
+    return render(request, "cfc_report/base/base-form.html", context)
 
 
 def view(request):

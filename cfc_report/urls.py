@@ -17,12 +17,12 @@
 from django.contrib import admin
 from django.urls import path
 
-from . import views
+from .views import home, player, report
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', home.index, name='index'),
     # path("player/<slug:slug>", views.view_player, name="view-player"),
-    path("view/", views.Report.view, name="view-report"),
-    path("create/", views.Report.create, name="create-report"),
-    path("add-player", views.add_player, name="add-player"),
+    path("view/", report.view, name="view-report"),
+    path("create/", report.create, name="create-report"),
+    path("add-player", player.add_player, name="add-player"),
 ]
