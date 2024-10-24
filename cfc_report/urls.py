@@ -23,6 +23,7 @@ urlpatterns = [
     path('', home.index, name='index'),
     # path("player/<slug:slug>", views.view_player, name="view-player"),
     path("view/", report.view, name="view-report"),
-    path("create/", report.create, name="create-report"),
+    path("create/", report.create.initial, name="create-report"),
+    path("create/players", report.create.players, name="create-players"),
     path("add-player", player.add_player, name="add-player"),
 ]

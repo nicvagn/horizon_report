@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
+from django.urls import reverse
 from django.shortcuts import render
 from django.http.response import HttpResponse
 from ..constants import LOGGER_NAME
@@ -24,30 +25,38 @@ from ..services import database as db, session
 logger = logging.getLogger(LOGGER_NAME)
 
 
-def create(request):
-    """show view to create a report for the cfc"""
-    logger.debug("create_report entered with request: %s", request)
-    # if is the form being submitted
-    if request.method == "POST":
-        query_dict = request.POST
-        logger.debug("POST request with value: %s", query_dict)
+class create:
+    @classmethod
+    def initial(cls, request):
+        """Get initial tournament info"""
+        logger.debug("create_report entered with request: %s", request)
+        # if is the form being submitted
+        if request.method == "POST":
+            logger.debug("POST request with value: %s", request.POST)
 
-        tournament_info = TournamentForm(request.POST)
+            tournament_info = TournamentForm(request.POST)
+            logger.debug("TournamentForm made: %s", tournament_info)
+            if tournament_info.is_valid():
+                return HttpResponse("Good job! Valid form")
 
-        if tournament_info.is_valid():
-            return HttpResponse("Good job! Valid form")
+            # TODO: create tournament report
+            return HttpResponse("Bad job. Invalid")
 
-        # TODO: create tournament report
-        return HttpResponse("Bad job. Invalid")
+        form = TournamentForm()
 
-    form = TournamentForm()
-    players = db.get_players()
-    tournament_p = session.get_session_players()
+        context = {"title": "Enter tornament information",
+                   "action_url": reverse("create-report"),
+                   "form": form}
+        return render(request, "cfc_report/base/base-form.html", context)
 
-    context = {"title": "Enter tornament information",
-               "action_url_name": "create-report",
-               "form": form}
-    return render(request, "cfc_report/base/base-form.html", context)
+    @classmethod
+    def players(cls, request):
+        """set information about what players in a tournament"""
+
+        players = db.get_players()
+        tournament_p = session.get_session_players()
+        context = {}
+        return render(request, "cfc_report/create/pick-players.html", context)
 
 
 def view(request):
@@ -61,8 +70,8 @@ def view(request):
         "title": "The Masters",
         "province": "SK",
         "time_format": "blitz",
-        "TD_cfc": TD.cfc_id,
-        "TO_cfc": TO.cfc_id,
+        "TD_cfc": "111111",  # FIXME
+        "TO_cfc": "222222",
         "tournament_date": "06/06/87",
         "players": player_list,
         "num_players": num_players,

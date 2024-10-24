@@ -43,13 +43,15 @@ class TournamentForm(forms.Form):
         The CFC ID of the TournamentDirector
     """
 
-    name = forms.CharField(max_length=60)
-    num_rounds = forms.IntegerField()
+    name = forms.CharField(label="Tournament Name", max_length=60)
+    num_rounds = forms.IntegerField(label="Number of Rounds")
     date = forms.DateField(widget=SelectDateWidget)
-    pairing_system = PairingSystemField()
+    pairing_system = PairingSystemField(label="Pairing system used")
     province = ProvinceField()
-    to_cfc = CfcIdField()  # TournamentOrganizer CFC id
-    td_cfc = CfcIdField()  # TournamentDirector CFC id
+    # TournamentOrganizer CFC id
+    to_cfc = CfcIdField(label="Tournament Organizer CFC id")
+    # TournamentDirector CFC id
+    td_cfc = CfcIdField(label="Tournament Director CFC id")
 
     def add_player(self, player: "Player"):
         """Choose a player to be in created tournament

@@ -27,7 +27,6 @@ class CfcIdField(forms.IntegerField):
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs["label"] = "CFC id"
         kwargs["validators"] = [MinValueValidator(
             100000), MaxValueValidator(999999)]
         super().__init__(*args, **kwargs)
@@ -49,7 +48,6 @@ class PairingSystemField(forms.ChoiceField):
 
     def __init__(self, *args, **kwargs):
         kwargs["choices"] = self.PAIRING_SYSTEMS
-        kwargs["label"] = "Pairing System"
         super().__init__(*args, **kwargs)
 
 
@@ -81,5 +79,4 @@ class ProvinceField(forms.ChoiceField):
 
     def __init__(self, *args, **kwargs):
         kwargs["choices"] = self.PROVINCES
-        kwargs["label"] = "Province"
         super().__init__(*args, **kwargs)
