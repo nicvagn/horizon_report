@@ -15,14 +15,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # set up logging
 import logging
+
 from django import forms
-from django.forms import SelectDateWidget
-from .form_fields import CfcIdField, PairingSystemField, ProvinceField
+from django.forms import ModelForm, SelectDateWidget
+
 from .constants import LOGGER_NAME
+from .form_fields import CfcIdField, PairingSystemField, ProvinceField
+
 logger = logging.getLogger(LOGGER_NAME)
 
 
-class TournamentForm(forms.Form):
+class TournamentInfoForm(forms.Form):
     """for getting info on a CFC rated tournament
 
     Attributes
@@ -66,3 +69,12 @@ class TournamentForm(forms.Form):
             None
         """
         raise NotImplementedError
+
+
+class TournamentPlayerForm(form.Form):
+    """Choose players in a tournament
+
+    Attributes
+    ----------
+    """
+    players = ...

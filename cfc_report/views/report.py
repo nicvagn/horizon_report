@@ -14,48 +14,75 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
-from django.urls import reverse
-from django.shortcuts import render
+
 from django.http.response import HttpResponse
+from django.shortcuts import render
+from django.urls import reverse
+
 from ..constants import LOGGER_NAME
-from ..forms import TournamentForm
-from ..services import database as db, session
+from ..forms import TournamentInfoForm, TournamentPlayerForm
+from ..services import database as db
+from ..services import session
+
 # set up logger
 # get the logger for cfc_report module. Should be set up.
 logger = logging.getLogger(LOGGER_NAME)
 
 
-class create:
+class Create:
+    """Contains view's to create tournament report
+
+    Methods
+    -------
+    initial(cls, request) : show form to get the initial
+    tournament information 
+
+    """
+
     @classmethod
     def initial(cls, request):
-        """Get initial tournament info"""
+        """Get initial tournament info
+        Arguments
+        ---------
+        request : HttpRequest from the view
+        """
         logger.debug("create_report entered with request: %s", request)
         # if is the form being submitted
         if request.method == "POST":
             logger.debug("POST request with value: %s", request.POST)
 
-            tournament_info = TournamentForm(request.POST)
-            logger.debug("TournamentForm made: %s", tournament_info)
+            tournament_info = TournamentInfoForm(request.POST)
+
+            request.session["TournamentInfoForm"] = tournament_info
+            logger.debug("TournamentInfoForm made from POST: %s",
+                         tournament_info)
             if tournament_info.is_valid():
                 return HttpResponse("Good job! Valid form")
 
             # TODO: create tournament report
             return HttpResponse("Bad job. Invalid")
 
-        form = TournamentForm()
+        form = TournamentInfoForm()
 
-        context = {"title": "Enter tornament information",
-                   "action_url": reverse("create-report"),
-                   "form": form}
+        context = {
+            "title": "Enter tournament information",
+            "action_url": reverse("create-report-info"),
+            "form": form
+        }
         return render(request, "cfc_report/base/base-form.html", context)
 
     @classmethod
     def players(cls, request):
         """set information about what players in a tournament"""
 
-        players = db.get_players()
+        db_players = db.get_players()
         tournament_p = session.get_session_players()
-        context = {}
+        form = TournamentPlayerForm()
+        context = {
+            "title": "choose tournament players",
+            "action_url": reverse("create-report-players"),
+            "form": form
+        }
         return render(request, "cfc_report/create/pick-players.html", context)
 
 
