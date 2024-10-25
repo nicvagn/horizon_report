@@ -14,12 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
-from django.shortcuts import render
+
 from django.http.response import HttpResponse
+from django.shortcuts import render
+
 from ..constants import LOGGER_NAME
 from ..models import Player, TournamentDirector, TournamentOrganizer
-from ..forms import TournamentForm
-from ..services import database as db, session, player as player_services
+from ..services import database as db
+from ..services import player as player_services
+from ..services import session
+
 # set up logger
 # get the logger for cfc_report module. Should be set up.
 logger = logging.getLogger(LOGGER_NAME)
@@ -29,10 +33,10 @@ def index(request):
     """Main index page"""
     player_list = db.get_players()
 
-    request.session["tournament_players"] = [Player.serialize(Player(name="Joe Blow",
-                                                                     cfc_id="989898")),
-                                             Player.serialize(Player(name="Lo Blow",
-                                                                     cfc_id="184494"))]
+    request.session["tournament_players"] = [
+        Player.serialize(Player(name="Joe Blow", cfc_id="989898")),
+        Player.serialize(Player(name="Lo Blow", cfc_id="184494"))
+    ]
 
     return render(
         request, "cfc_report/home/index.html", {

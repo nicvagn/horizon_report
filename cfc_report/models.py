@@ -332,12 +332,12 @@ class Report(models.Model):
     """A CFC Report for a tournament
 
     Attributes
-    __________
+    ----------
     tournament : Tournament
         The Tournament this report is for
 
     Methods
-    _______
+    -------
 
     """
     tournament = Tournament()
