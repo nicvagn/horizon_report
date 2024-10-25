@@ -71,7 +71,7 @@ class TournamentInfoForm(forms.Form):
         raise NotImplementedError
 
 
-class TournamentPlayerForm(form.Form):
+class TournamentPlayerForm(forms.Form):
     """Choose players in a tournament
 
     Attributes
