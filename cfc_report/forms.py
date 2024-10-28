@@ -70,7 +70,9 @@ class TournamentInfoForm(forms.Form):
         """
         raise NotImplementedError
 
-     def serialize(self)
+     def serialize(self):
+         raise NotImplimentedError
+
 class TournamentPlayerForm(forms.Form):
     """Choose players in a tournament
 
