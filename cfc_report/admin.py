@@ -15,5 +15,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.contrib import admin
-
+from .models import (Player, Roster, TournamentDirector, TournamentOrganizer,
+                     Match, )
 # Register your models here.
+
+admin.site.register(Player)
+admin.site.register(Roster)
+admin.site.register(TournamentDirector)
+admin.site.register(TournamentOrganizer)
+admin.site.register(Match)

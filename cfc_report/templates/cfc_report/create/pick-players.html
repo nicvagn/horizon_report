@@ -1,4 +1,4 @@
- % extends "cfc_report/base.html" %}
+{% extends "cfc_report/base.html" %}
 
 {% block page_title %}SK Horizon CC: CFC Report Builder - player selection {% endblock %}
 
@@ -10,7 +10,7 @@
 <form method="POST" id="players_section">
   <aside id="tournament_players">
     <h4>In Tournament:</h4>
-    <table id="players">
+    <table class="players-table">
       <tr>
         <th>Name</th>
         <th>CFC ID:</th>
@@ -27,13 +27,13 @@
 
   <aside id="database_players">
     <h4>Player Database:</h4>
-    <table id="players">
+    <table class="players-table">
       <tr>
         <th>Name</th>
         <th>CFC ID:</th>
       </tr>
 
-      {% for player in database_players %}
+      {% for player in players %}
       <tr>
         <td>{{ player.name }}</td>
         <td>{{ player.cfc_id }}</td>
@@ -42,8 +42,8 @@
       {% endfor %}
     </table>
   </aside>
-</form>
   <span>
     <input id="submit_btn" type="submit" value="make report" />
   </span>
+</form>
 {% endblock %}

@@ -1,4 +1,4 @@
-"""views for cfc_report"""
+"""views for cfc_report players"""
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify

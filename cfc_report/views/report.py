@@ -15,8 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 
-from django.http.response import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from ..constants import LOGGER_NAME
@@ -49,24 +48,22 @@ class Create:
         logger.debug("create_report entered with request: %s", request)
         # if is the form being submitted
         if request.method == "POST":
-            logger.debug("POST request with value: %s", request.POST)
+            tournament_info = request.POST
+            logger.debug("POST request with value: %s", tournament_info)
 
-            tournament_info = TournamentInfoForm(request.POST)
-
-            request.session["TournamentInfoForm"] = tournament_info
+            request.session["TournamentInfo"] = tournament_info
             logger.debug("TournamentInfoForm made from POST: %s",
                          tournament_info)
-            if tournament_info.is_valid():
-                return HttpResponse("Good job! Valid form")
 
-            # TODO: create tournament report
-            return HttpResponse("Bad job. Invalid")
+            # redirect to view to choose players
+            return redirect("create-report-players")
 
         form = TournamentInfoForm()
 
         context = {
             "title": "Enter tournament information",
             "action_url": reverse("create-report-info"),
+            "submit_btn_txt": "Pick Players",
             "form": form
         }
         return render(request, "cfc_report/base/base-form.html", context)
@@ -76,11 +73,13 @@ class Create:
         """set information about what players in a tournament"""
 
         db_players = db.get_players()
-        tournament_p = session.get_session_players()
+        tournament_players = session.get_session_players()
         form = TournamentPlayerForm()
         context = {
             "title": "choose tournament players",
             "action_url": reverse("create-report-players"),
+            "players": db_players,
+            "tournament_players": tournament_players,
             "form": form
         }
         return render(request, "cfc_report/create/pick-players.html", context)

@@ -5,8 +5,8 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
     # clear db
-    find . -path "*/migrations/*.pyc"  -delete
-    find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+    find . -path "cfc_report/migrations/*.pyc"  -delete
+    find . -path "cfc_report/migrations/*.py" -not -name "__init__.py" -delete
     
     rm "db.sqlite3"
     echo "Django db and migrations cleared"

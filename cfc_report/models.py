@@ -13,15 +13,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import json
 import logging
-from typing import TypedDict
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
-from .constants import LOGGER_NAME
-logger = logging.getLogger(LOGGER_NAME)
 
+from .constants import LOGGER_NAME
+
+logger = logging.getLogger(LOGGER_NAME)
 
 
 class CfcIdField(models.IntegerField):
@@ -34,7 +36,7 @@ class CfcIdField(models.IntegerField):
     validators = [MinValueValidator(100000), MaxValueValidator(999999)]
 
     def __str__(self):
-        return str(super())
+        return "CFC ID: " + str(super())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -149,35 +151,38 @@ class Player(models.Model):
         """
         return reverse("player", args=[self.slug])
 
-    def serialize(self) -> SerializedPlayer:
-        """Make a SerializedPlayer typed dict from this Player
+    def jsonify(self) -> "JSON":
+        """Make a JSON Player string from this Player
 
         Returns
         -------
-        A dict containing all the information to recreate this player.
+        A JSON str containing all the information to
+        recreate this player.
         """
-        sp: SerializedPlayer = {"name":
-                                self.name, "cfc_id": self.cfc_id}
-        return sp
+        jp = json.dumps({"name": self.name, "cfc_id": self.cfc_id})
+        logger.debug("JSON Player made: %s", jp)
+        return jp
 
     def __str__(self):
         return f"Player: {self.name} CFC: {self.cfc_id}"
 
     @staticmethod
-    def decode(sp: SerializedPlayer):
-        """Decode a SerializedPlayer into a Player object
+    def decode(json_player: "JSON"):
+        """Decode a jsonified into a Player object
 
         Parameters
         ----------
-        sp : SerializedPlayer
-            the SerializedPlayer TypedDict to decode player from
+        sp : "JSON"
+            the JSON string to decode player from
 
         Returns
         -------
         decoded player : Player
             The decoded Player object
         """
-        return Player(name=sp["name"], cfc_id=sp["cfc_id"])
+        jp = json.loads(json_player)
+        logger.debug("decoded %s from %s json", jp, json_player)
+        return Player(name=jp["name"], cfc_id=jp["cfc_id"])
 
 
 class Roster(models.Model):
@@ -241,7 +246,7 @@ class Match(models.Model):
     black : Player
         the black player in the match
     winner:
-        Player if winner, False if draw
+        Player if winner, None if draw
     """
 
     white = models.ForeignKey(
@@ -277,11 +282,6 @@ class Tournament(models.Model):
     add_player(player)
         add a player to the tournament
     """
-
-    def __init__(self):
-        super().__init__()
-        # start tournament with no players
-        self.players = []
 
     name = models.CharField(max_length=30)
     num_rounds = models.IntegerField()

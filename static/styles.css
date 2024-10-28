@@ -13,3 +13,8 @@
   margin: 0.2em 3em;
   width: 5em;
 }
+
+.players-table {
+  color: red;
+  border: 4px;
+}
