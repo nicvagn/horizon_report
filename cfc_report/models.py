@@ -23,18 +23,6 @@ from .constants import LOGGER_NAME
 logger = logging.getLogger(LOGGER_NAME)
 
 
-class SerializedPlayer(TypedDict):
-    """A serialized Player ready to be JSON
-    Attributes
-    ----------
-    name : str
-        Player's name
-    cfc_id : str
-        Player's cfc_id, CFC id's must be 6 numbers, ie: 222333
-    """
-    name: str
-    cfc_id: str
-
 
 class CfcIdField(models.IntegerField):
     """A CFC ID field
