@@ -16,7 +16,7 @@
 import logging
 
 from django.http.response import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from ..constants import LOGGER_NAME
 from ..models import Player, TournamentDirector, TournamentOrganizer
@@ -29,7 +29,7 @@ from ..services import session
 logger = logging.getLogger(LOGGER_NAME)
 
 
-def pick_player(request, player: Player) -> None:
+def pick_player(request, cfc_id=None) -> None:
     """Pick a player to be in a session, and update the html
 
     Parameters
@@ -40,22 +40,23 @@ def pick_player(request, player: Player) -> None:
         The Player to add to the session
     """
 
-    logger.debug("Player: %s picked", player)
+    logger.debug("Playerw with cfc_id %s picked", cfc_id)
     session_players = request.session.get_session_players()
 
     # add player to session players
-    session_players.append(player)
+    session_players.append(cfc_id)
     request.session.update_session_players(session_players)
 
     players = db.get_players()
 
     context = {
-        "database_players": players,
+        "players": players,
         "tournament_players": session_players
     }
     # TODO: visually update players in tournament using
     #   { % for player in tournament_players % }
-    return render(request, "cfc_report/create/index.html", context)
+    # return (request, "cfc_report/create/index.html", context)
+    return redirect("create-report-players")
 
 
 def add_player(request):

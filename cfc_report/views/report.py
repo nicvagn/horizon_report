@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 
+from django.forms import CheckboxInput
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
@@ -74,13 +75,12 @@ class Create:
 
         db_players = db.get_players()
         tournament_players = session.get_session_players()
-        form = TournamentPlayerForm()
         context = {
             "title": "choose tournament players",
             "action_url": reverse("create-report-players"),
             "players": db_players,
             "tournament_players": tournament_players,
-            "form": form
+            "select_widget": CheckboxInput,
         }
         return render(request, "cfc_report/create/pick-players.html", context)
 
