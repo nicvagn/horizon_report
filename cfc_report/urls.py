@@ -21,12 +21,13 @@ from .views import home, player, report
 
 urlpatterns = [
     path('', home.index, name='index'),
-    # path("player/<slug:slug>", views.view_player, name="view-player"),
     path("view/", report.view, name="view-report"),
     path("create/", report.Create.initial, name="create-report-info"),
     path("create/players", report.Create.players,
          name="create-report-players"),
     path("create/select/<str:cfc_id>/",
          player.pick_player, name="create-pick-player"),
+    path("create/finalize", report.Create.finalize,
+         name="create-report-finalize"),
     path("add-player", player.add_player, name="add-player"),
 ]

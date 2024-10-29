@@ -35,7 +35,7 @@ class Create:
     Methods
     -------
     initial(cls, request) : show form to get the initial
-    tournament information 
+    tournament information
 
     """
 
@@ -51,8 +51,8 @@ class Create:
         if request.method == "POST":
             tournament_info = request.POST
             logger.debug("POST request with value: %s", tournament_info)
-
-            request.session["TournamentInfo"] = tournament_info
+            # save tournament info to session
+            session.set_tournament_info(tournament_info)
             logger.debug("TournamentInfoForm made from POST: %s",
                          tournament_info)
 
@@ -80,9 +80,30 @@ class Create:
             "action_url": reverse("create-report-players"),
             "players": db_players,
             "tournament_players": tournament_players,
-            "select_widget": CheckboxInput,
         }
         return render(request, "cfc_report/create/pick-players.html", context)
+
+    @classmethod
+    def finalize(cls, request):
+        """finalize report"""
+        # get the tournament info set in Create.initial()
+        tournament_info = session.get_tournament_info()
+
+        # get information on tournament players from the session
+
+        players: list["Player"] = session.get_players()
+
+        context = {
+            "name": tournament_info["name"],
+            "province": tournament_info["province"],
+            "time_format": "blitz",
+            "num_players": len(players),
+            "players": players,
+            "td_cfc": tournament_info["td_cfc"],
+            "to_cfc": tournament_info["to_cfc"],
+        }
+        logger.debug("context: %s", context)
+        return render(request, "cfc_report/show/index.html", context)
 
 
 def view(request):
@@ -93,12 +114,12 @@ def view(request):
     player_list = db.get_players()
     num_players = player_list.count()
     report = {
-        "title": "The Masters",
+        "name": "The Masters",
         "province": "SK",
         "time_format": "blitz",
-        "TD_cfc": "111111",  # FIXME
-        "TO_cfc": "222222",
-        "tournament_date": "06/06/87",
+        "td_cfc": "111111",  # FIXME
+        "to_cfc": "222222",
+        "date": "06/06/87",
         "players": player_list,
         "num_players": num_players,
     }

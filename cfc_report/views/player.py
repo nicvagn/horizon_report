@@ -29,19 +29,21 @@ logger = logging.getLogger(LOGGER_NAME)
 
 
 def pick_player(request, cfc_id=None) -> None:
-    """Pick a player to be in a session, and update the html
+    """Pick a player if it is not in the session, add it. 
+    If it is in the session, remove it. Update the page
 
     Parameters
     ----------
     request : django request
         Dijango request
     player : Player
-        The Player to add to the session
+        The Player to add/removed to the session
     """
 
-    logger.debug("Playerw with cfc_id %s picked", cfc_id)
+    logger.debug("Player with cfc_id %s picked", cfc_id)
     if cfc_id:
         session_services.add_player_by_id(cfc_id)
+
     players = db_services.get_players()
 
     context = {
@@ -51,7 +53,7 @@ def pick_player(request, cfc_id=None) -> None:
     # TODO: visually update players in tournament using
     #   { % for player in tournament_players % }
     # return (request, "cfc_report/create/index.html", context)
-    return redirect("create-pick-player", cfc_id)
+    return redirect("create-report-players")
 
 
 def add_player(request):

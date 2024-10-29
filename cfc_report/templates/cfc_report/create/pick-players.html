@@ -19,6 +19,9 @@
       <tr>
         <td>{{player.name}}</td>
         <td>{{player.cfc_id}}</td>
+        <td>
+          <a href="{% url 'create-pick-player' player.cfc_id %}">Remove</a>
+        </td>
       </tr>
       {% endfor %}
     </table>
@@ -36,13 +39,17 @@
       <tr>
         <td>{{ player.name }}</td>
         <td>{{ player.cfc_id }}</td>
-        <td><a href="{% url 'create-pick-player' player.cfc_id %}">Select</a></td>
+        <td>
+          <a href="{% url 'create-pick-player' player.cfc_id %}">Select</a>
+        </td>
       </tr>
       {% endfor %}
     </table>
   </aside>
   <span>
-    <input id="submit_btn" type="submit" value="make report" />
+    <a href="{% url 'create-report-finalize' %}">
+      <input id="submit_btn" type="button" value="make report" />
+    </a>
   </span>
 </form>
 {% endblock %}

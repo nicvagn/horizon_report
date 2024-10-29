@@ -57,7 +57,7 @@ def get_players() -> list[Player]:
 
 
 def get_player_ids() -> list[str]:
-    """get the cfc id's of players in current session 
+    """get the cfc id's of players in current session
 
     Uses
     ----
@@ -112,3 +112,57 @@ def add_player_by_id(cfc_id: "CfcId") -> None:
         session["players_by_cfc"].append(cfc_id)
     else:
         session["players_by_cfc"] = [cfc_id]
+
+
+def get_tournament_info() -> "TournamentInfo":
+    """get the TournamentInfo from this session
+
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+
+    Returns
+    -------
+    "TournamentInfo"
+        or {"name": self.name,
+            "num_rounds": self.num_rounds,
+            "date": str(self.date),
+            "pairing_system": str(self.pairing_system),
+            "province": str(self.province),
+            # TournamentOrganizer CFC id
+            "to_cfc": str(self.to_cfc),
+            # TournamentDirector CFC id
+            "td_cfc": str(self.td_cfc),
+        }
+        from tournament info form
+    """
+    logger.debug(session.keys())
+    return session.get("TournamentInfo")
+
+
+def set_tournament_info(info: "TournamentInfo") -> None:
+    """set the tournament info for this session
+
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+
+    Parameters
+    ----------
+    info : "TournamentInfo"
+        or {"name": self.name,
+            "num_rounds": self.num_rounds,
+            "date": str(self.date),
+            "pairing_system": str(self.pairing_system),
+            "province": str(self.province),
+            # TournamentOrganizer CFC id
+            "to_cfc": str(self.to_cfc),
+            # TournamentDirector CFC id
+            "td_cfc": str(self.td_cfc),
+        }
+        from tournament info from form
+    """
+    logger.info("session key TournamentInfo set to %s", info)
+    session["TournamentInfo"] = info

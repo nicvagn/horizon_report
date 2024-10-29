@@ -94,9 +94,6 @@ class TournamentPlayerForm(forms.Form):
     ----------
     """
 
-    name = forms.CharField(label="Tournament Name",
-                           initial="test data", max_length=60)
-
     def add_player(self, player: "Player"):
         """Choose a player to be in created tournament
 
