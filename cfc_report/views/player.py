@@ -32,6 +32,11 @@ def pick_player(request, cfc_id=None) -> None:
     """Pick a player if it is not in the session, add it. 
     If it is in the session, remove it. Update the page
 
+    Side-effects
+    ------------
+    changes the CfcId's in session.
+    Players in session are represented by id
+
     Parameters
     ----------
     request : django request
@@ -42,7 +47,12 @@ def pick_player(request, cfc_id=None) -> None:
 
     logger.debug("Player with cfc_id %s picked", cfc_id)
     if cfc_id:
-        session_services.add_player_by_id(cfc_id)
+        # if cfc id in session, remove it
+        if cfc_id in session_services.get_player_ids():
+            session_services.remove_player_by_id(cfc_id)
+        else:
+            # if not in session add to it
+            session_services.add_player_by_id(cfc_id)
 
     players = db_services.get_players()
 

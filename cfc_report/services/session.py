@@ -47,6 +47,8 @@ def get_players() -> list[Player]:
 
     if session_players:
         for cfc_id in session_players:
+            logger.debug("session_players: %s", session_players)
+
             players.append(get_player_by_cfc(cfc_id))
 
         logger.debug("Players in session: %s", players)
@@ -72,6 +74,10 @@ def get_player_ids() -> list[str]:
     """
 
     session_players = session.get("players_by_cfc")
+
+    # should return an empty list if None
+    if session_players is None:
+        session_players = []
 
     logger.debug("session players id's gotten: %s", session_players)
     return session_players
@@ -112,6 +118,28 @@ def add_player_by_id(cfc_id: "CfcId") -> None:
         session["players_by_cfc"].append(cfc_id)
     else:
         session["players_by_cfc"] = [cfc_id]
+
+
+def remove_player_by_id(cfc_id: "CfcId") -> None:
+    """remove a player from session by id
+
+    Side-effects
+    ------------
+    removes player with cfc id given from session
+
+    Parameters
+    ----------
+    cfc_id : CfcId
+        some player's cfc id to remove from the session list
+    """
+    session_players = session.get("players_by_cfc")
+
+    logger.debug("players in session: %s", session_players)
+
+    session_players.remove(cfc_id)
+
+    logger.debug("removed %s, session_players now: %s",
+                 cfc_id, session_players)
 
 
 def get_tournament_info() -> "TournamentInfo":
