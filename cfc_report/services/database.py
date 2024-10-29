@@ -16,11 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+
 from django.db.models import QuerySet
-from cfc_report.models import (Player, TournamentDirector,
-                               TournamentOrganizer)
 
 from cfc_report import LOGGER_NAME
+from cfc_report.models import Player, TournamentDirector, TournamentOrganizer
+
 logger = logging.getLogger(LOGGER_NAME)
 
 
@@ -32,6 +33,23 @@ def get_players() -> QuerySet:
     all_players = Player.objects.all()
     logger.debug("get_players got these players from db: %s", all_players)
     return all_players
+
+
+def get_player_by_cfc(cfc_id: "Cfc_id") -> Player:
+    """Get a player by their cfc_id
+
+    Returns
+    -------
+    Player
+        The found player
+
+    Raises
+    ------
+    DoesNotExist exception if player not found
+    """
+    p = Player.objects.get(cfc_id=cfc_id)
+    logger.debug("Player %s got from cfc_id %s", p, cfc_id)
+    return p
 
 
 def add_player(p: Player) -> None:

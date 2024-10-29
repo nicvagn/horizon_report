@@ -14,23 +14,26 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
+
 from django.contrib.sessions.backends.db import SessionStore
 
 from ..constants import LOGGER_NAME
 from ..models import Player
+from .database import get_player_by_cfc
+
 logger = logging.getLogger(LOGGER_NAME)
 
 # get the current session
 session = SessionStore()
 
 
-def get_session_players() -> list[Player]:
+def get_players() -> list[Player]:
     """get the players in current session
 
-    Parameters
-    ----------
+    Uses
+    ----
     session : A Django session
-        the sassion to get players from
+        the session got from the session store
 
     Returns
     -------
@@ -38,21 +41,43 @@ def get_session_players() -> list[Player]:
         A list of the players in session
     """
 
-    serialized_players = session.get("players")
-    logger.debug("serialized_players got from session: %s", serialized_players)
-    session_p: list[Player] = []
+    session_players = session.get("players_by_cfc")
+    logger.debug("players got from session: %s", session_players)
+    players: list[Player] = []
 
-    if serialized_players:
-        for p in serialized_players:
-            session_p.append(Player.decode(p))
+    if session_players:
+        for cfc_id in session_players:
+            players.append(get_player_by_cfc(cfc_id))
 
-        logger.debug("Players in session: %s", session_p)
+        logger.debug("Players in session: %s", players)
     else:
-        serialized_players = []
-    return session_p
+        logger.warning("No players gotten from session")
+
+    return players
 
 
-def update_session_players(players: list[Player]) -> None:
+def get_player_ids() -> list[str]:
+    """get the cfc id's of players in current session 
+
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+
+    Returns
+    -------
+    list(str)
+        A list of the cfc id's in session.
+        A cfc id is a 6 character numeric str
+    """
+
+    session_players = session.get("players_by_cfc")
+
+    logger.debug("session players id's gotten: %s", session_players)
+    return session_players
+
+
+def update_players(players: list[Player]) -> None:
     """update players in current session
 
     Parameters
@@ -62,8 +87,28 @@ def update_session_players(players: list[Player]) -> None:
     """
 
     logger.debug("updating session Players to be: %s", players)
-    serialized_players = []
+    session_players_cfc_id = []
     for p in players:
-        serialized_players.append(p.serialize())
+        session_players_cfc_id.append(p.cfc_id)
 
-    session["players"] = serialized_players
+    session["players_by_cfc"] = session_players_cfc_id
+
+
+def add_player_by_id(cfc_id: "CfcId") -> None:
+    """add a player to the current session
+
+    Side-effects
+    ------------
+    creates session["players_by_cfc"] if it does not exist.
+    If it does adds cfc_id
+
+    Parameters
+    ----------
+    cfc_id : CfcId
+        some player's cfc id to add to list
+    """
+
+    if "players_by_cfc" in session:
+        session["players_by_cfc"].append(cfc_id)
+    else:
+        session["players_by_cfc"] = [cfc_id]

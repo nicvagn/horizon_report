@@ -74,7 +74,7 @@ class Create:
         """set information about what players in a tournament"""
 
         db_players = db.get_players()
-        tournament_players = session.get_session_players()
+        tournament_players = session.get_players()
         context = {
             "title": "choose tournament players",
             "action_url": reverse("create-report-players"),

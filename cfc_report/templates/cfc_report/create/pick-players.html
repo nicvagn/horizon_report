@@ -36,7 +36,7 @@
       <tr>
         <td>{{ player.name }}</td>
         <td>{{ player.cfc_id }}</td>
-        <td><a href="{% url 'pick-player' player.cfc_id %}">Select</a></td>
+        <td><a href="{% url 'create-pick-player' player.cfc_id %}">Select</a></td>
       </tr>
       {% endfor %}
     </table>
