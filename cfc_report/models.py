@@ -22,80 +22,13 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 from .constants import LOGGER_NAME
+from .model_fields import CfcIdField, PairingSystem, Province
 
 logger = logging.getLogger(LOGGER_NAME)
 
-
-class CfcIdField(models.IntegerField):
-    """A CFC ID field
-    Attributes
-    ----------
-    validators :
-        int in field x must be x where 1000000 > x > 99999
-    """
-    validators = [MinValueValidator(100000), MaxValueValidator(999999)]
-
-    def __str__(self):
-        return "CFC ID: " + str(super())
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-class PairingSystem(models.CharField):
-    """A tournament pairing system for a chess tournament
-    Attributes
-    ----------
-    PAIRING_SYSTEM : dict{str:str}
-        Pairing system for the tournament
-    """
-    PAIRING_SYSTEMS = {
-        "SW": "Swiss",
-        "RR": "round robin",
-        "DR": "double round robin",
-    }
-
-    def __init__(self, *args, **kwargs):
-        # Set the max length of field two be 2 chars
-        kwargs["max_length"] = 2
-        kwargs["choices"] = PairingSystem.PAIRING_SYSTEMS
-
-        super().__init__(*args, **kwargs)
-
-
-class Province(models.CharField):
-    """A canadian province field
-
-    Attributes
-    ----------
-    PROVINCES : dict[str : str]
-        province acronym key to province name
-    PROVINCES{key} : str
-        The key to the PROVINCES dict
-        must be:
-            max_length: 2
-            must be in form 'SK'
-    """
-    PROVINCES = {
-        "ON": "Ontario",
-        "QC": "Quebec",
-        "NS": "Nova Scotia",
-        "NB": "New Brunswick",
-        "MB": "Manitoba",
-        "BC": "British Columbia",
-        "PE": "Prince Edward Island",
-        "SK": "Saskatchewan",
-        "AB": "Alberta",
-        "NL": "Newfoundland and Labrador",
-    }
-
-    def __init__(self, *args, **kwargs):
-        kwargs["max_length"] = 2
-        kwargs["choices"] = self.PROVINCES
-        super().__init__(*args, **kwargs)
-
-
 # models relating to a CFC Rated chess tournament.
+
+
 class PersonWithCfdId(models.Model):
     """A Person with a CFC id
 

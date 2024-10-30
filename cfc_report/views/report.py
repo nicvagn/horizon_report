@@ -88,6 +88,7 @@ class Create:
         """Enter information about rounds"""
 
         rnd = type('', (), {})()  # create an object for testing
+        rnd.number = 1
         rnd.matches = [get_object_or_404(Match, pk=1), get_object_or_404(
             Match, pk=2), get_object_or_404(Match, pk=3)]
 
