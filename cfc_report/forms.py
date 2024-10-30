@@ -84,52 +84,8 @@ class TournamentInfoForm(forms.Form):
             "json created: \n %s", j)
         return j
 
-# TODO rm
 
-
-class TournamentPlayerForm(forms.Form):
-    """Choose players in a tournament
-
-    Attributes
-    ----------
+class RoundForm(forms.Form):
+    """for getting information on a round in a chess tournament
+    TODO
     """
-
-    def add_player(self, player: "Player"):
-        """Choose a player to be in created tournament
-
-        Arguments
-        ---------
-        player : Player
-            Chosen player
-
-        Returns
-        -------
-            None
-        """
-        raise NotImplementedError
-
-    def jsonify(self) -> str:
-        """Create string JSON representation of form
-
-        Returns
-        -------
-        The JSON string with all the form information in it
-        """
-        try:
-            j = json.dumps({"name": self.name,
-                            "num_rounds": self.num_rounds,
-                            "date": str(self.date),
-                            "pairing_system": str(self.pairing_system),
-                            "province": str(self.province),
-                            # TournamentOrganizer CFC id
-                            "to_cfc": str(self.to_cfc),
-                            # TournamentDirector CFC id
-                            "td_cfc": str(self.td_cfc),
-                            })
-        except AttributeError as err:
-            logger.warning("Failure to jasonify %s", self)
-            raise err
-
-        logger.debug(
-            "json created: \n %s", j)
-        return j

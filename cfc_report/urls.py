@@ -25,6 +25,8 @@ urlpatterns = [
     path("create/", report.Create.initial, name="create-report-info"),
     path("create/players", report.Create.players,
          name="create-report-players"),
+    path("create/rounds", report.Create.rounds,
+         name="create-report-rounds"),
     path("create/select/<str:cfc_id>/",
          player.pick_player, name="create-pick-player"),
     path("create/finalize", report.Create.finalize,

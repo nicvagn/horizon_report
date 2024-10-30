@@ -1,0 +1,16 @@
+{% extends "cfc_report/base.html" %}
+
+{% block page_title %}Enter Tournament Round's{% endblock %}
+
+{% block content %}
+<span>
+  <h1>Build Tournament Rounds</h1>
+</span>
+
+
+<span>
+  <a href="{% url 'create-report-round' %}">
+    <input id="submit_btn" type="button" value="make report" />
+  </a>
+</span>
+{% endblock %}

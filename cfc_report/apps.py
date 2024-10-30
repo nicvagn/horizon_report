@@ -1,4 +1,4 @@
-# horizon_pair
+# cfc_report
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify

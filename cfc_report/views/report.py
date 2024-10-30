@@ -20,7 +20,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from ..constants import LOGGER_NAME
-from ..forms import TournamentInfoForm, TournamentPlayerForm
+from ..forms import TournamentInfoForm
 from ..services import database as db
 from ..services import session
 
@@ -82,6 +82,14 @@ class Create:
             "tournament_players": tournament_players,
         }
         return render(request, "cfc_report/create/pick-players.html", context)
+
+    @classmethod
+    def rounds(cls, request):
+        """Enter information about rounds"""
+        players: list["Player"] = session.get_players()
+
+        context = {}
+        return render(request, "cfc_report/create/rounds.html", context)
 
     @classmethod
     def finalize(cls, request):
