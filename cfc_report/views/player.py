@@ -54,20 +54,16 @@ def pick_player(request, cfc_id=None) -> None:
             # if not in session add to it
             session_services.add_player_by_id(cfc_id)
 
-    players = db_services.get_players()
-
-    context = {
-        "players": players,
-        "tournament_players": session_services.get_players()
-    }
-    # TODO: visually update players in tournament using
-    #   { % for player in tournament_players % }
-    # return (request, "cfc_report/create/index.html", context)
     return redirect("create-report-players")
 
 
 def add_player(request):
-    """view to add player to tournament players database"""
+    """view to add player to tournament players database
+
+    Side-effects
+    ------------
+    modify's the datebase via services.db.add_player
+    """
     logger.debug("add_player entered with request %s", request)
     # if is the form being submitted
     if request.method == "POST":

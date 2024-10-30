@@ -79,3 +79,34 @@ def get_TOs() -> QuerySet:
     tos = TournamentOrganizer.objects.all()
     logger.debug("get_TOs got: %s", tos)
     return tos
+
+
+def populate_database() -> None:
+    """Populate the db with dumby data"""
+    # players
+    cfc_id = 111111
+    players = []
+    for n in ["charles Fool", "Jake Bell", "Albert Fish", "Jonny Boy", "Dad Dadderson"]:
+        players.append(Player(name=n, cfc_id=str(cfc_id)))
+        cfc_id += 1
+
+    for p in players:
+        p.save()
+
+    # TournamentDirector
+    td = []
+    for n in ["Big Mommy", "Small Low"]:
+        td.append(TournamentDirector(name=n, cfc_id=str(cfc_id)))
+        cfc_id += 1
+
+    for p in td:
+        p.save()
+
+    # TournamentOrganizer
+    tos = []
+    for n in ["Big Mommy", "Small Low"]:
+        tos.append(TournamentOrganizer(name=n, cfc_id=str(cfc_id)))
+        cfc_id += 1
+
+    for p in tos:
+        p.save()

@@ -96,18 +96,17 @@ class Province(models.CharField):
 
 
 # models relating to a CFC Rated chess tournament.
-
-class Player(models.Model):
-    """A chess player with a CFC id
+class PersonWithCfdId(models.Model):
+    """A Person with a CFC id
 
     Attributes
     ----------
     name : models.CharField
-        name of the player
+        name of the person
     cfc_id : CfCId
-        CFC Id of the player
+        CFC Id of the person
     slug : SlugField
-        unique slug for this players url
+        unique slug for this person url
 
     Methods
     -------
@@ -122,7 +121,7 @@ class Player(models.Model):
     name = models.CharField(max_length=20)
     cfc_id = CfcIdField()
     slug = models.SlugField(default="", null=False)
-    # make sure slug exists for every player
+    # make sure slug exists for every person
 
     def save(self, *args, **kwargs):
         """create slug url before saving
@@ -139,7 +138,7 @@ class Player(models.Model):
 
         self.slug = slugify(self.name)
         logger.info(
-            "Player: (%s) saved and slug (%s) created for it", self, self.slug)
+            "PersonWithCfdId: (%s) saved and slug (%s) created for it", self, self.slug)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -147,12 +146,12 @@ class Player(models.Model):
 
         Returns
         -------
-        The absolute url to access this player
+        The absolute url to access this person
         """
         return reverse("player", args=[self.slug])
 
     def jsonify(self) -> "JSON":
-        """Make a JSON Player string from this Player
+        """Make a JSON Persor string from this Person
 
         Returns
         -------
@@ -160,8 +159,32 @@ class Player(models.Model):
         recreate this player.
         """
         jp = json.dumps({"name": self.name, "cfc_id": self.cfc_id})
-        logger.debug("JSON Player made: %s", jp)
+        logger.debug("JSON Person made: %s", jp)
         return jp
+
+
+class Player(PersonWithCfdId):
+    """A chess player with a CFC id
+
+    Attributes
+    ----------
+    name : models.CharField
+        name of the player
+    cfc_id : CfCId
+        CFC Id of the player
+    slug : SlugField
+        unique slug for this players url
+
+    Methods
+    -------
+    save(self)
+        save the model in the db with a added slug attribute
+        to make url
+    jsonify(self)
+        create a serialized JSON version of this Player
+    decode(cls) : Player
+        classmethod to decode a serialized player into a python object
+    """
 
     def __str__(self):
         return f"Player: {self.name} CFC: {self.cfc_id}"
@@ -185,6 +208,81 @@ class Player(models.Model):
         return Player(name=jp["name"], cfc_id=jp["cfc_id"])
 
 
+class TournamentDirector(PersonWithCfdId):
+    """A tournament director for a cfc chess tournament.
+
+    Attributes
+    ----------
+    name : models.CharField
+        name of TournamentDirector
+    cfc_id : CfcIdField
+        CFC ID of TournamentDirector
+
+    Methods
+    -------
+    decode(json_td: "JSON")
+    """
+
+    def __str__(self):
+        return f"Tournament Director: {self.name}, CFC: {self.cfc_id}"
+
+    @staticmethod
+    def decode(json_td: "JSON"):
+        """Decode a jsonified into a Player object
+
+        Parameters
+        ----------
+        json_td : "JSON"
+            the JSON string to decode TournamentDirector from
+
+        Returns
+        -------
+        decoded TournamentDirector : TournamentDirector
+            The decoded Player object
+        """
+        jp = json.loads(json_td)
+        logger.debug("decoded %s from %s json", jp, json_td)
+        return TournamentDirector(name=jp["name"], cfc_id=jp["cfc_id"])
+
+
+class TournamentOrganizer(PersonWithCfdId):
+    """A tournament organizer for a cfc chess tournament.
+
+    Attributes
+    ----------
+    name: models.CharField
+        name of TournamentOrganizer
+    cfc_id: CfcIdField
+        CFC ID of TournamentOrganizer
+
+    Methods
+    -------
+    decode(json_to)
+        turn JSON TournamentOrganizer to TournamentOrganizer  
+    """
+
+    def __str__(self):
+        return f"Tournament Organizer: {self.name}, CFC: {self.cfc_id}"
+
+    @staticmethod
+    def decode(json_to: "JSON"):
+        """Decode a jsonified into a TournamentOrganizer object
+
+        Parameters
+        ----------
+        sp : "JSON"
+            the JSON string to decode TournamentOrganizer from
+
+        Returns
+        -------
+        decoded to : TournamentOrganizer
+            The decoded Player object
+        """
+        jp = json.loads(json_to)
+        logger.debug("decoded %s from %s json", jp, json_to)
+        return TournamentDirector(name=jp["name"], cfc_id=jp["cfc_id"])
+
+
 class Roster(models.Model):
     """A roster of players in a cfc rated tournament
 
@@ -204,36 +302,6 @@ class Roster(models.Model):
     def size(self):
         """Number of Player ie: size of this roster"""
         raise NotImplementedError
-
-
-class TournamentDirector(Player):
-    """A tournament director for a cfc chess tournament.
-
-    Attributes
-    ----------
-    name : models.CharField
-        name of TournamentDirector
-    cfc_id : CfcIdField
-        CFC ID of TournamentDirector
-    """
-
-    def __str__(self):
-        return f"Tournament Director: {self.name}, CFC: {self.cfc_id}"
-
-
-class TournamentOrganizer(Player):
-    """A tournament organizer for a cfc chess tournament.
-
-    Attributes
-    ----------
-    name: models.CharField
-        name of TournamentOrganizer
-    cfc_id: CfcIdField
-        CFC ID of TournamentOrganizer
-    """
-
-    def __str__(self):
-        return f"Tournament Organizer: {self.name}, CFC: {self.cfc_id}"
 
 
 class Match(models.Model):
