@@ -20,7 +20,8 @@ import logging
 from django.db.models import QuerySet
 
 from cfc_report import LOGGER_NAME
-from cfc_report.models import Player, TournamentDirector, TournamentOrganizer
+from cfc_report.models import (Match, Player, TournamentDirector,
+                               TournamentOrganizer)
 
 logger = logging.getLogger(LOGGER_NAME)
 
@@ -83,10 +84,13 @@ def get_TOs() -> QuerySet:
 
 def populate_database() -> None:
     """Populate the db with dumby data"""
+
     # players
     cfc_id = 111111
     players = []
-    for n in ["charles Fool", "Jake Bell", "Albert Fish", "Jonny Boy", "Dad Dadderson"]:
+    for n in ["charles Fool", "Jake Bell", "Albert Fish", "Jonny Boy",
+              "Dad Dadderson", "11111111", "222222222", "33333333",
+              "44444444444", "55555555555", "6666666"]:
         players.append(Player(name=n, cfc_id=str(cfc_id)))
         cfc_id += 1
 
@@ -110,3 +114,14 @@ def populate_database() -> None:
 
     for p in tos:
         p.save()
+
+    # Matches
+    # create some filler data
+    matches = []
+    for n in range(int(len(players) / 2)):
+        matches.append(
+            Match(white=players[n], black=players[n+1], winner=players[n])
+        )
+
+    for m in matches:
+        m.save()

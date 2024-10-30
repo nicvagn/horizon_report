@@ -12,3 +12,10 @@ then
     echo "Django db and migrations cleared"
 fi
 
+# make the tables
+python manage.py migrate
+# run python to populate test data
+echo "from cfc_report.services import database as db; db.populate_database();" | python manage.py shell 
+
+
+

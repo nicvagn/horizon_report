@@ -15,12 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 
-from django.forms import CheckboxInput
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from ..constants import LOGGER_NAME
 from ..forms import TournamentInfoForm
+from ..models import Match
 from ..services import database as db
 from ..services import session
 
@@ -86,9 +86,12 @@ class Create:
     @classmethod
     def rounds(cls, request):
         """Enter information about rounds"""
-        players: list["Player"] = session.get_players()
 
-        context = {}
+        rnd = type('', (), {})()  # create an object for testing
+        rnd.matches = [get_object_or_404(Match, pk=1), get_object_or_404(
+            Match, pk=2), get_object_or_404(Match, pk=3)]
+
+        context = {"rounds": [rnd]}
         return render(request, "cfc_report/create/rounds.html", context)
 
     @classmethod

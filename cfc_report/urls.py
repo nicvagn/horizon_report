@@ -32,4 +32,6 @@ urlpatterns = [
     path("create/finalize", report.Create.finalize,
          name="create-report-finalize"),
     path("add-player", player.add_player, name="add-player"),
+
+    path("create/build-round", report.Create.rounds, name="create-build-round"),
 ]
