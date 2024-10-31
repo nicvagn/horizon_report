@@ -165,8 +165,13 @@ def get_tournament_info() -> "TournamentInfo":
         }
         from tournament info form
     """
-    logger.debug(session.keys())
-    return session.get("TournamentInfo")
+    logger.debug("session keys: %s", session.keys())
+
+    get = session.get("TournamentInfo")
+
+    logger.debug("session get: %s", get)
+
+    return get
 
 
 def set_tournament_info(info: "TournamentInfo") -> None:
@@ -192,5 +197,5 @@ def set_tournament_info(info: "TournamentInfo") -> None:
         }
         from tournament info from form
     """
-    logger.info("session key TournamentInfo set to %s", info)
+    logger.debug("session key TournamentInfo set to %s", info)
     session["TournamentInfo"] = info
