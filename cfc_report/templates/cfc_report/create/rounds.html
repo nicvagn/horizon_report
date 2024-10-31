@@ -1,4 +1,4 @@
-{% extends "cfc_report/base.html" %}
+{% extends "cfc_report/base/base.html" %}
 
 {% block page_title %}Enter Tournament Round's{% endblock %}
 
@@ -7,6 +7,15 @@
   <h1>Build Tournament Rounds</h1>
 </span>
 
+<section id="round-builder">
+  <h3>Building round: {{ Building_round }} </h3>
+
+</section>
+
+<span>
+  <h2>Created Rounds:</h2>
+</span>
+<hr>
 {% for round in rounds %}
 <div class="tournament-round">
   <h3>Round: {{ round.number }}</h3>

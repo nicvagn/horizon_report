@@ -2,7 +2,6 @@
 
 cd $(dirname -- "$( readlink -f -- "$0"; )";);
 
-
-./activate 
+source ./activate 
 
 python manage.py runserver

@@ -1,3 +1,4 @@
+"""cfc_report.apps.py"""
 # cfc_report
 # Copyright (C) 2024  Nicolas Vaagen
 #

@@ -78,5 +78,5 @@ def add_player(request):
         logger.debug("Made Player added to database")
 
     # render the requested page.
-    return render(request, "cfc_report/add_player/index.html",
+    return render(request, "cfc_report/create/player.html",
                   {"method": request.method})
