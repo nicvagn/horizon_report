@@ -85,7 +85,9 @@ class TournamentInfoForm(forms.Form):
         return j
 
 
-class RoundForm(forms.Form):
+class RoundsForm(forms.Form):
     """for getting information on a round in a chess tournament
     TODO
     """
+
+    # TODO: make so you can enter match info and create matches for the round

@@ -5,17 +5,20 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
     # clear db
-    find . -path "cfc_report/migrations/*.pyc"  -delete
-    find . -path "cfc_report/migrations/*.py" -not -name "__init__.py" -delete
+    #cfc_report/migrations/0001_initial.py
+    find cfc_report/migrations -type f -name '*.pyc' -delete
+    find cfc_report/migrations -type f -name "*.py" -not -name "__init__.py" -delete
     
     rm "db.sqlite3"
     echo "Django db and migrations cleared"
+    
+    python manage.py makemigrations
+    # make the tables
+    python manage.py migrate
+    # run python to populate test data
+    echo "from cfc_report.services import database as db; db.populate_database();" | python manage.py shell 
+
+    echo "database repopulated with dumbby data"
+
 fi
-
-# make the tables
-python manage.py migrate
-# run python to populate test data
-echo "from cfc_report.services import database as db; db.populate_database();" | python manage.py shell 
-
-
 

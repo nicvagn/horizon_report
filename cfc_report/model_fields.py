@@ -33,7 +33,7 @@ class CfcIdField(models.IntegerField):
         super().__init__(*args, **kwargs)
 
 
-class PairingSystem(models.CharField):
+class PairingSystemField(models.CharField):
     """A tournament pairing system for a chess tournament
     Attributes
     ----------
@@ -49,12 +49,12 @@ class PairingSystem(models.CharField):
     def __init__(self, *args, **kwargs):
         # Set the max length of field two be 2 chars
         kwargs["max_length"] = 2
-        kwargs["choices"] = PairingSystem.PAIRING_SYSTEMS
+        kwargs["choices"] = PairingSystemField.PAIRING_SYSTEMS
 
         super().__init__(*args, **kwargs)
 
 
-class Province(models.CharField):
+class ProvinceField(models.CharField):
     """A canadian province field
 
     Attributes

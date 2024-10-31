@@ -19,8 +19,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from ..constants import LOGGER_NAME
-from ..forms import TournamentInfoForm
-from ..models import Match
+from ..forms import RoundsForm, TournamentInfoForm
 from ..services import database as db
 from ..services import session
 
@@ -46,7 +45,7 @@ class Create:
         ---------
         request : HttpRequest from the view
         """
-        logger.debug("create_report entered with request: %s", request)
+        logger.debug("Report.initial entered with request: %s", request)
         # if is the form being submitted
         if request.method == "POST":
             tournament_info = request.POST
@@ -85,15 +84,33 @@ class Create:
 
     @classmethod
     def rounds(cls, request):
-        """Enter information about rounds"""
+        """Enter information about rounds
+        Arguments
+        ---------
+        request : HttpRequest from the view
+        """
+        logger.debug("create_report entered with request: %s", request)
+        # if is the form being submitted
+        if request.method == "POST":
+            round_info = request.POST
+            logger.debug("POST request with value: %s", round_info)
+            # save tournament info to session
+            session.set_tournament_info(round_info)
+            logger.debug("Rounds info made from POST: %s",
+                         round_info)
 
-        rnd = type('', (), {})()  # create an object for testing
-        rnd.number = 1
-        rnd.matches = [get_object_or_404(Match, pk=1), get_object_or_404(
-            Match, pk=2), get_object_or_404(Match, pk=3)]
+            # redirect to view to finalize the report
+            return redirect("create-report-finalize")
 
-        context = {"rounds": [rnd]}
-        return render(request, "cfc_report/create/rounds.html", context)
+        form = RoundsForm()
+
+        context = {
+            "title": "Enter round information",
+            "action_url": reverse("create-report-rounds"),
+            "submit_btn_txt": "Finalize",
+            "form": form
+        }
+        return render(request, "cfc_report/base/base-form.html", context)
 
     @classmethod
     def finalize(cls, request):

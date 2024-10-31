@@ -22,14 +22,14 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 from .constants import LOGGER_NAME
-from .model_fields import CfcIdField, PairingSystem, Province
+from .model_fields import CfcIdField, PairingSystemField, ProvinceField
 
 logger = logging.getLogger(LOGGER_NAME)
 
 # models relating to a CFC Rated chess tournament.
 
 
-class PersonWithCfdId(models.Model):
+class PersonWithCfcId(models.Model):
     """A Person with a CFC id
 
     Attributes
@@ -53,7 +53,7 @@ class PersonWithCfdId(models.Model):
     """
     name = models.CharField(max_length=20)
     cfc_id = CfcIdField()
-    slug = models.SlugField(default="", null=False)
+    slug = models.SlugField(default="", unique=True, null=False)
     # make sure slug exists for every person
 
     def save(self, *args, **kwargs):
@@ -96,7 +96,7 @@ class PersonWithCfdId(models.Model):
         return jp
 
 
-class Player(PersonWithCfdId):
+class Player(PersonWithCfcId):
     """A chess player with a CFC id
 
     Attributes
@@ -141,7 +141,7 @@ class Player(PersonWithCfdId):
         return Player(name=jp["name"], cfc_id=jp["cfc_id"])
 
 
-class TournamentDirector(PersonWithCfdId):
+class TournamentDirector(PersonWithCfcId):
     """A tournament director for a cfc chess tournament.
 
     Attributes
@@ -178,7 +178,7 @@ class TournamentDirector(PersonWithCfdId):
         return TournamentDirector(name=jp["name"], cfc_id=jp["cfc_id"])
 
 
-class TournamentOrganizer(PersonWithCfdId):
+class TournamentOrganizer(PersonWithCfcId):
     """A tournament organizer for a cfc chess tournament.
 
     Attributes
@@ -191,7 +191,7 @@ class TournamentOrganizer(PersonWithCfdId):
     Methods
     -------
     decode(json_to)
-        turn JSON TournamentOrganizer to TournamentOrganizer  
+        turn JSON TournamentOrganizer to TournamentOrganizer
     """
 
     def __str__(self):
@@ -258,6 +258,22 @@ class Match(models.Model):
         Player, default=None, on_delete=models.CASCADE, related_name="winning_player")
 
 
+class Round(models.Model):
+    """A Round in a cfc rated tournament
+
+    Attributes
+    ----------
+    round_num : IntegerField
+        the round of it's tournament this is
+    matches : ForeignKey(Match)
+        the matches in this round
+    """
+    round_num = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(999)])
+    matches = models.ForeignKey(
+        Match, on_delete=models.CASCADE, related_name="matches_in_round")
+
+
 class Tournament(models.Model):
     """A cfc rated chess tournament
 
@@ -286,9 +302,10 @@ class Tournament(models.Model):
 
     name = models.CharField(max_length=30)
     num_rounds = models.IntegerField()
+    rounds = ...
     date = models.DateField()
-    pairing_system = PairingSystem()
-    province = Province()
+    pairing_system = PairingSystemField()
+    province = ProvinceField()
     to_cfc = CfcIdField()  # TournamentOrganizer CFC id
     td_cfc = CfcIdField()  # TournamentDirector CFC id
 

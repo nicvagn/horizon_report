@@ -108,7 +108,7 @@ def populate_database() -> None:
 
     # TournamentOrganizer
     tos = []
-    for n in ["Big Mommy", "Small Low"]:
+    for n in ["Tonka Dump", "Great Leap"]:
         tos.append(TournamentOrganizer(name=n, cfc_id=str(cfc_id)))
         cfc_id += 1
 
