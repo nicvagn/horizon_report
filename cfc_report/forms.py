@@ -22,6 +22,7 @@ from django.forms import SelectDateWidget
 
 from .constants import LOGGER_NAME
 from .form_fields import CfcIdField, PairingSystemField, ProvinceField
+from .models import Match
 
 logger = logging.getLogger(LOGGER_NAME)
 
@@ -85,9 +86,20 @@ class TournamentInfoForm(forms.Form):
         return j
 
 
-class RoundsForm(forms.Form):
+class RoundForm(forms.Form):
     """for getting information on a round in a chess tournament
     TODO
     """
 
+    Games = Model Field ???
+
     # TODO: make so you can enter match info and create matches for the round
+
+
+class GameForm(forms.ModelForm):
+    """A form for entering the data for a single Match
+    TODO
+   """
+
+    class Meta:
+        model = Match

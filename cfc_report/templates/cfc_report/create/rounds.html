@@ -1,5 +1,10 @@
-{% extends "cfc_report/base/base.html" %}
+<!-- {% extends "cfc_report/base/base.html" %} -->
 
+{% block nav_bar %}
+  <a href="/" class="padded">
+    <input id="home_btn" type="button" value="Exit" />
+  </a>
+{% endblock %}
 {% block page_title %}Enter Tournament Round's{% endblock %}
 
 {% block content %}
@@ -10,12 +15,19 @@
 <section id="round-builder">
   <h3>Building round: {{ Building_round }} </h3>
 
+  <h4>Enter matches:</h4>
+  {{ match_form }}
+
+  <h4>Entered Games:</h4>
+  {% for match in entered_match %}
+    {{ match }}
+  {% endfor %}
 </section>
 
+<hr>
 <span>
   <h2>Created Rounds:</h2>
 </span>
-<hr>
 {% for round in rounds %}
 <div class="tournament-round">
   <h3>Round: {{ round.number }}</h3>
@@ -39,7 +51,7 @@
 {% endfor %}
 
 <span>
-  <a href="{% url 'create-build-round' %}">
+  <a href="{% url 'create-report-finalize' %}">
     <input id="submit_btn" type="button" value="make report" />
   </a>
 </span>

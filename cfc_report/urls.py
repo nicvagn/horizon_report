@@ -28,11 +28,13 @@ urlpatterns = [
     path("create/rounds", report.Create.rounds,
          name="create-report-rounds"),
     path("create/select/<str:cfc_id>/",
-         player.pick_player, name="create-pick-player"),
+         report.Create.pick_player, name="create-pick-player"),
     path("create/finalize", report.Create.finalize,
          name="create-report-finalize"),
     path("add-player", player.add_player, name="add-player"),
 
-    path("create/rounds", report.Create.rounds,
-         name="create-report-rounds"),
+]
+
+htmx_urlpatterns = [
+    ...
 ]

@@ -17,6 +17,7 @@ import logging
 
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.views.decorators.vary import vary_on_headers
 
 from ..constants import LOGGER_NAME
 from ..forms import RoundsForm, TournamentInfoForm
@@ -69,8 +70,21 @@ class Create:
         return render(request, "cfc_report/base/base-form.html", context)
 
     @classmethod
+    @vary_on_headers("HX-Request")
     def players(cls, request):
         """set information about what players in a tournament"""
+
+        # check if the request is an htmx request
+        if request.htmx:
+            logger.debug("htmx request with value: %s", request)
+
+        if request.method == "POST":
+            player_info = request.POST
+            logger.debug("POST request with value: %s", player_info)
+            # save tournament info to session
+            logger.debug("TournamentInfoForm made from POST: %s",
+                         player_info)
+            return render(request, "cfc_report/create/rounds.html")
 
         db_players = db.get_players()
         tournament_players = session.get_players()
@@ -96,8 +110,6 @@ class Create:
             logger.debug("POST request with value: %s", round_info)
             # save tournament info to session
             session.set_tournament_info(round_info)
-            logger.debug("Rounds info made from POST: %s",
-                         round_info)
 
             # redirect to view to finalize the report
             return redirect("create-report-finalize")
@@ -110,7 +122,7 @@ class Create:
             "submit_btn_txt": "Finalize",
             "form": form
         }
-        return render(request, "cfc_report/base/base-form.html", context)
+        return render(request, "cfc_report/create/rounds.html", context)
 
     @classmethod
     def finalize(cls, request):
@@ -133,6 +145,37 @@ class Create:
         }
         logger.debug("context: %s", context)
         return render(request, "cfc_report/show/index.html", context)
+
+    @classmethod
+    def pick_player(cls, request, cfc_id: "CfcId" = None):
+        """Pick a player if it is not in the session, add it. 
+        If it is in the session, remove it.
+
+        Side-effects
+        ------------
+        changes the CfcId's in session.
+        Players in session are represented by id
+
+        Parameters
+        ----------
+        request : django request
+            Dijango request
+        cfc_id : "CfcId"
+            The Player to add/removed to the session
+        """
+
+        logger.debug("Player with cfc_id %s picked", cfc_id)
+        assert cfc_id
+
+        if cfc_id:
+            # if cfc id in session, remove it
+            if cfc_id in session.get_player_ids():
+                session.remove_player_by_id(cfc_id)
+            else:
+                # if not in session add to it
+                session.add_player_by_id(cfc_id)
+        return redirect("create-report-players")
+        return render(request, "cfc_report/create/pick-players.html", context)
 
 
 def view(request):

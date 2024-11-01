@@ -24,19 +24,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="{% static 'pico.min.css' %}">
   <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <!-- HTMX -->
+  <script src="{% static 'htmx.min.js' %}" defer></script>
   <link rel="shortcut icon" type="image/png" href="{% static 'images/pawn-60.png' %}">
   <title>{% block page_title %}base.html title{% endblock %}</title>
 </head>
 
 <body>
+
+  {% block nav_bar %}
   <a href="/" class="padded">
     <input id="home_btn" type="button" value="home" />
   </a>
+  {% endblock %}
   <div id="content" class="padded">
     {% block content %}{% endblock %}
   </div>
 
-  <script src="{% static 'htmx.min.js' %}"></script>
 </body>
 
 </html>
