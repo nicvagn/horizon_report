@@ -24,8 +24,9 @@ then
     python manage.py migrate
     # run python to populate test data
     echo "from cfc_report.services import database as db; db.populate_database();" | \
-        python manage.py shell && python manage.py makemigrations  \
-        && python manage.py migrate
+        python manage.py shell 
+    python manage.py makemigrations
+    python manage.py migrate
     echo "database repopulated with dumbby data and migrated."
 
 fi
