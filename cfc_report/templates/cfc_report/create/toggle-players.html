@@ -11,11 +11,10 @@
 {% block page_title %}Enter Tournament Player's{% endblock %}
 
 {% block content %}
-
 <span>
   <h1>Choose players in report:</h1>
 </span>
-<form method="POST" id="players_section">
+<form id="players_section">
   {% csrf_token %}
   <aside id="tournament_players">
     <h4>In Tournament:</h4>
@@ -30,7 +29,8 @@
         <td>{{player.cfc_id}}</td>
         <td>
           <a 
-            data-hx-target="#content"
+            data-hx-target="#players_section"
+            data-hx-swap="outerHTML"
             data-hx-post="{% url 'create-toggle-player' player.cfc_id %}"
           >Remove</a>
         </td>
@@ -53,7 +53,8 @@
         <td>{{ player.cfc_id }}</td>
         <td>
           <a 
-            data-hx-target="#content"
+            data-hx-target="#players_section"
+            data-hx-swap="outerHTML"
             data-hx-post="{% url 'create-toggle-player' player.cfc_id %}"
           >Select</a>
         </td>

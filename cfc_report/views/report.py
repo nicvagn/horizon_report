@@ -88,7 +88,7 @@ class Create:
             "action_url": reverse("create-report-players"),
             "players": db_players,
             "tournament_players": tournament_players,
-            "include_nav_bar": True,
+            "include_nav_bar": False,
         }
         return render(request, "cfc_report/create/toggle-players.html", context)
 
@@ -145,13 +145,12 @@ class Create:
 
     @classmethod
     def toggle_player_session(cls, request, cfc_id: "CfcId" = None):
-        """Pick a player if it is not in the session, add it. 
+        """Pick a player if it is not in the session, add it.
         If it is in the session, remove it.
 
         Side-effects
         ------------
         changes the CfcId's in session.
-        Players in session are represented by id
 
         Parameters
         ----------
@@ -182,7 +181,8 @@ class Create:
             "tournament_players": tournament_players,
             "include_nav_bar": False
         }
-        return render(request, "cfc_report/create/toggle-players.html", context)
+
+        return render(request, "cfc_report/create/player-form.html", context)
 
 
 def view(request):
