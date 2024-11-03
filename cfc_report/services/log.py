@@ -61,9 +61,12 @@ def set_up_logger(logger_name=None, debug=False, file_handler=False) -> logging.
     # set up except hook for logging
     sys.excepthook = log_except_hook
 
+    return logger
 
 #  === exception logging ===
 # log unhandled exceptions to the log
+
+
 def log_except_hook(exc_type, exc_value, traceback):
     """catch all the thrown exceptions and log them with level ERROR"""
     logging.error("Uncaught exception",

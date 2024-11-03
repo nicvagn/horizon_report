@@ -13,17 +13,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import logging
+from .. import logger
 
 from django.shortcuts import render
 
 from ..constants import LOGGER_NAME
 from ..models import Player
 from ..services import database as db
-
-# set up logger
-# get the logger for cfc_report module. Should be set up.
-logger = logging.getLogger(LOGGER_NAME)
 
 
 def index(request):

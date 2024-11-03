@@ -1,10 +1,12 @@
 {% extends "cfc_report/base/base.html" %}
 
+{% if include_nav_bar == True %}
 {% block nav_bar %}
   <a href="/" class="padded">
     <input id="home_btn" type="button" value="Exit" />
   </a>
 {% endblock %}
+{% endif %}
 
 {% block page_title %}Enter Tournament Player's{% endblock %}
 
@@ -28,8 +30,8 @@
         <td>{{player.cfc_id}}</td>
         <td>
           <a 
-            data-hx-target="#tournamet-players"
-            data-hx-post="{% url 'create-pick-player' player.cfc_id %}"
+            data-hx-target="#content"
+            data-hx-post="{% url 'create-toggle-player' player.cfc_id %}"
           >Remove</a>
         </td>
       </tr>
@@ -52,7 +54,7 @@
         <td>
           <a 
             data-hx-target="#content"
-            data-hx-post="{% url 'create-pick-player' player.cfc_id %}"
+            data-hx-post="{% url 'create-toggle-player' player.cfc_id %}"
           >Select</a>
         </td>
       </tr>

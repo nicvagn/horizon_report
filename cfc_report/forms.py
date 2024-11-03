@@ -15,16 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # set up logging
 import json
-import logging
 
 from django import forms
 from django.forms import SelectDateWidget
 
+from . import logger
 from .constants import LOGGER_NAME
 from .form_fields import CfcIdField, PairingSystemField, ProvinceField
 from .models import Match
-
-logger = logging.getLogger(LOGGER_NAME)
 
 
 class TournamentInfoForm(forms.Form):
@@ -91,15 +89,14 @@ class RoundForm(forms.Form):
     TODO
     """
 
-    Games = Model Field ???
-
     # TODO: make so you can enter match info and create matches for the round
 
 
-class GameForm(forms.ModelForm):
+class MatchForm(forms.ModelForm):
     """A form for entering the data for a single Match
     TODO
-   """
+    """
 
     class Meta:
         model = Match
+        exclude = []

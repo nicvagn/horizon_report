@@ -21,5 +21,5 @@ DEBUG = True
 FILE_HANDLER = True
 LOGGER_NAME = "CFC_REPORT"
 
-set_up_logger(logger_name=LOGGER_NAME,
+logger = set_up_logger(logger_name=LOGGER_NAME,
               debug=DEBUG, file_handler=FILE_HANDLER)

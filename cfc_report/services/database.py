@@ -15,15 +15,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-
 from django.db.models import QuerySet
 
-from cfc_report import LOGGER_NAME
+from cfc_report import logger
 from cfc_report.models import (Match, Player, TournamentDirector,
                                TournamentOrganizer)
-
-logger = logging.getLogger(LOGGER_NAME)
 
 
 def get_players() -> QuerySet:

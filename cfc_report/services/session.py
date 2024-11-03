@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import logging
+from cfc_report import logger
 
 from django.contrib.sessions.backends.db import SessionStore
 
@@ -21,7 +21,6 @@ from ..constants import LOGGER_NAME
 from ..models import Player
 from .database import get_player_by_cfc
 
-logger = logging.getLogger(LOGGER_NAME)
 
 # get the current session
 session = SessionStore()

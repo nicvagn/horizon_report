@@ -13,20 +13,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import logging
-
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.vary import vary_on_headers
 
-from ..constants import LOGGER_NAME
-from ..forms import RoundsForm, TournamentInfoForm
+from .. import logger
+from ..forms import MatchForm, RoundForm, TournamentInfoForm
 from ..services import database as db
 from ..services import session
-
-# set up logger
-# get the logger for cfc_report module. Should be set up.
-logger = logging.getLogger(LOGGER_NAME)
 
 
 class Create:
@@ -93,8 +88,9 @@ class Create:
             "action_url": reverse("create-report-players"),
             "players": db_players,
             "tournament_players": tournament_players,
+            "include_nav_bar": True,
         }
-        return render(request, "cfc_report/create/pick-players.html", context)
+        return render(request, "cfc_report/create/toggle-players.html", context)
 
     @classmethod
     def rounds(cls, request):
@@ -114,7 +110,8 @@ class Create:
             # redirect to view to finalize the report
             return redirect("create-report-finalize")
 
-        form = RoundsForm()
+        # form = RoundsForm() TESTING game forum
+        form = MatchForm()
 
         context = {
             "title": "Enter round information",
@@ -147,7 +144,7 @@ class Create:
         return render(request, "cfc_report/show/index.html", context)
 
     @classmethod
-    def pick_player(cls, request, cfc_id: "CfcId" = None):
+    def toggle_player_session(cls, request, cfc_id: "CfcId" = None):
         """Pick a player if it is not in the session, add it. 
         If it is in the session, remove it.
 
@@ -164,18 +161,28 @@ class Create:
             The Player to add/removed to the session
         """
 
-        logger.debug("Player with cfc_id %s picked", cfc_id)
+        logger.debug(
+            "toggle_player_session entered with request: %s and  player CfcId: %s",
+            request,
+            cfc_id)
         assert cfc_id
 
-        if cfc_id:
-            # if cfc id in session, remove it
-            if cfc_id in session.get_player_ids():
-                session.remove_player_by_id(cfc_id)
-            else:
-                # if not in session add to it
-                session.add_player_by_id(cfc_id)
-        return redirect("create-report-players")
-        return render(request, "cfc_report/create/pick-players.html", context)
+        # if cfc id in session, remove it
+        if cfc_id in session.get_player_ids():
+            session.remove_player_by_id(cfc_id)
+        else:
+            # if not in session add to it
+            session.add_player_by_id(cfc_id)
+
+        db_players = db.get_players()
+        tournament_players = session.get_players()
+
+        context = {
+            "players": db_players,
+            "tournament_players": tournament_players,
+            "include_nav_bar": False
+        }
+        return render(request, "cfc_report/create/toggle-players.html", context)
 
 
 def view(request):

@@ -15,11 +15,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+from cfc_report import logger
 from cfc_report.models import Player, Tournament
-
-from cfc_report import LOGGER_NAME
-logger = logging.getLogger(LOGGER_NAME)
 
 
 def create(t: Tournament):
@@ -39,4 +36,3 @@ def create(t: Tournament):
 
     logger.debug("report created: %s", report)
     return report
-

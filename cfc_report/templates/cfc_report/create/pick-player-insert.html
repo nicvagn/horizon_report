@@ -1,0 +1,18 @@
+<table id="tournament-players" class="players-table">
+    <tr>
+    <th>Name</th>
+    <th>CFC ID:</th>
+    </tr>
+    {% for player in tournament_players %}
+    <tr>
+    <td>{{player.name}}</td>
+    <td>{{player.cfc_id}}</td>
+    <td>
+	<a 
+	data-hx-target="#tournamet-players"
+	data-hx-post="{% url 'create-pick-player' player.cfc_id %}"
+	>Remove</a>
+    </td>
+    </tr>
+    {% endfor %}
+</table>
