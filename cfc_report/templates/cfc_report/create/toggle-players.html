@@ -31,7 +31,7 @@
           <a 
             data-hx-target="#players_section"
             data-hx-swap="outerHTML"
-            data-hx-post="{% url 'create-toggle-player' player.cfc_id %}"
+            data-hx-post="select/{{ player.cfc_id }}"
           >Remove</a>
         </td>
       </tr>
@@ -55,8 +55,9 @@
           <a 
             data-hx-target="#players_section"
             data-hx-swap="outerHTML"
-            data-hx-post="{% url 'create-toggle-player' player.cfc_id %}"
+            data-hx-post="select/{{ player.cfc_id }}"
           >Select</a>
+
         </td>
       </tr>
       {% endfor %}
@@ -64,7 +65,7 @@
   </aside>
   <span>
     <a href="{% url 'create-report-rounds' %}">
-      <input id="submit_btn" type="button" value="Continue" />
+      <input id="submit_btn" type="submit" value="Continue" />
     </a>
   </span>
 </form>

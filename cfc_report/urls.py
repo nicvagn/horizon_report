@@ -27,14 +27,16 @@ urlpatterns = [
          name="create-report-players"),
     path("create/rounds", report.Create.rounds,
          name="create-report-rounds"),
-    path("create/select/<str:cfc_id>/",
-         report.Create.toggle_player_session, name="create-toggle-player"),
     path("create/finalize", report.Create.finalize,
          name="create-report-finalize"),
     path("add-player", player.add_player, name="add-player"),
 
 ]
 
+# htmx url patterns, cleaner this way?
 htmx_urlpatterns = [
-    ...
+    path("create/select/<str:cfc_id>",
+         report.Create.toggle_player_session, name="create-toggle-player"),
 ]
+
+urlpatterns = urlpatterns + htmx_urlpatterns

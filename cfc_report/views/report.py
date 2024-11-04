@@ -65,21 +65,8 @@ class Create:
         return render(request, "cfc_report/base/base-form.html", context)
 
     @classmethod
-    @vary_on_headers("HX-Request")
     def players(cls, request):
         """set information about what players in a tournament"""
-
-        # check if the request is an htmx request
-        if request.htmx:
-            logger.debug("htmx request with value: %s", request)
-
-        if request.method == "POST":
-            player_info = request.POST
-            logger.debug("POST request with value: %s", player_info)
-            # save tournament info to session
-            logger.debug("TournamentInfoForm made from POST: %s",
-                         player_info)
-            return render(request, "cfc_report/create/rounds.html")
 
         db_players = db.get_players()
         tournament_players = session.get_players()
@@ -90,7 +77,20 @@ class Create:
             "tournament_players": tournament_players,
             "include_nav_bar": False,
         }
+
+        # if the request is a POST it is the form submission not initial get
+        # So pass on to create games
+        if request.method == "POST":
+            player_info = request.POST
+            logger.debug("POST request with value: %s", player_info)
+            logger.debug("TournamentInfoForm made from POST: %s",
+                         player_info)
+            return render(request, "cfc_report/create/rounds.html", player_info)
+        # TODO run and test test
+        logger.debug("db_players: %s \n tournament_players: %s \n context: %s",
+                     db_players, tournament_players, context)
         return render(request, "cfc_report/create/toggle-players.html", context)
+
 
     @classmethod
     def rounds(cls, request):
@@ -112,7 +112,7 @@ class Create:
 
         # form = RoundsForm() TESTING game forum
         form = MatchForm()
-
+        
         context = {
             "title": "Enter round information",
             "action_url": reverse("create-report-rounds"),
@@ -146,7 +146,8 @@ class Create:
     @classmethod
     def toggle_player_session(cls, request, cfc_id: "CfcId" = None):
         """Pick a player if it is not in the session, add it.
-        If it is in the session, remove it.
+        If it is in the session, remove it. This uses htmx under the hood
+        to replace on the DOM
 
         Side-effects
         ------------
@@ -155,7 +156,7 @@ class Create:
         Parameters
         ----------
         request : django request
-            Dijango request
+            Django request
         cfc_id : "CfcId"
             The Player to add/removed to the session
         """

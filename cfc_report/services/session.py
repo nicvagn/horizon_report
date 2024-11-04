@@ -36,19 +36,55 @@ def get_players() -> list[Player]:
 
     Returns
     -------
-    list(Player)
+    players: list[player] 
         A list of the players in session
     """
 
     session_players = session.get("players_by_cfc")
     logger.debug("players got from session: %s", session_players)
-    players: list[Player] = []
+    players: [Player] = []
 
     if session_players:
         for cfc_id in session_players:
             logger.debug("session_players: %s", session_players)
 
-            players.append(get_player_by_cfc(cfc_id))
+            p = get_player_by_cfc(cfc_id)
+
+            players.append(p)
+            
+
+        logger.debug("Players in session: %s", players)
+    else:
+        logger.warning("No players gotten from session")
+
+    return players
+
+def get_players_by_id() -> "dict{CfcId:Player}":
+    """get the players in current session
+
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+
+    Returns
+    -------
+    players: "dict{CfcId:Player}" 
+        A dict of the players in session by there id
+    """
+
+    session_players = session.get("players_by_cfc")
+    logger.debug("players got from session: %s", session_players)
+    players: "dict{CfcId:Player}" = {}
+
+    if session_players:
+        for cfc_id in session_players:
+            logger.debug("session_players: %s", session_players)
+
+            p = get_player_by_cfc(cfc_id)
+
+            players[cfc_id] = p
+            
 
         logger.debug("Players in session: %s", players)
     else:
