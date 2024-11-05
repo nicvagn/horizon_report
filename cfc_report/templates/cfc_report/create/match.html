@@ -16,25 +16,30 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-{% block nav_bar %}
-  <a href="/" class="padded">
-    <input id="home_btn" type="button" value="Exit" />
-  </a>
+{% block page_title %}
+Add Player
 {% endblock %}
 
-{% block page_title %}SK Horizon CC: CFC Report Builder {% endblock %} 
-
 {% block content %}
-<span>
-  <h1 class="title">{{ title }}</h1>
-</span>
-<form action='{{ action_url }}' method="post">
+<h1 class="title">Add Player to Database</h1>
+
+<form action={% url "add-player" %} method="post">
   {% csrf_token %}
-  {{ form }}
-  <div style="padding: 1em"></div>
+  <p>
+    <label for="name">Name: </label>
+    <input id="name" name="player_name" type="text" value="" placeholder="Player Name" />
+  </p>
+
+  <p>
+    <label for="cfc_id">CFC ID: </label>
+    <input id="cfc_id" name="player_cfc_id" type="text" value="" placeholder="Player CFC ID" />
+  </p>
 
   <span>
-    <input id="submit_btn" type="submit" value="{{ submit_btn_txt }}" />
+    <input id="add_player_btn" type="submit" value="add" />
+    <a href="/">
+      <input id="cancel_btn" type="button" value="cancel" />
+    </a>
   </span>
 </form>
 {% endblock %}

@@ -86,40 +86,37 @@ class Create:
             logger.debug("TournamentInfoForm made from POST: %s",
                          player_info)
             return render(request, "cfc_report/create/rounds.html", player_info)
-        # TODO run and test test
         logger.debug("db_players: %s \n tournament_players: %s \n context: %s",
                      db_players, tournament_players, context)
         return render(request, "cfc_report/create/toggle-players.html", context)
 
-
     @classmethod
-    def rounds(cls, request):
-        """Enter information about rounds
+    def match(cls, request):
+        """Enter information about a chess match 
         Arguments
         ---------
-        request : HttpRequest from the view
+        request : HttpRequest
         """
-        logger.debug("create_report entered with request: %s", request)
+        logger.debug("Create.match entered with request: %s", request)
         # if is the form being submitted
         if request.method == "POST":
-            round_info = request.POST
-            logger.debug("POST request with value: %s", round_info)
+            match_info = request.POST
+            logger.debug("POST request with value: %s", match_info)
             # save tournament info to session
-            session.set_tournament_info(round_info)
+            session.set_tournament_info(match_info)
 
             # redirect to view to finalize the report
             return redirect("create-report-finalize")
 
-        # form = RoundsForm() TESTING game forum
         form = MatchForm()
-        
+
         context = {
-            "title": "Enter round information",
-            "action_url": reverse("create-report-rounds"),
-            "submit_btn_txt": "Finalize",
+            "title": "Enter match information",
+            "action_url": reverse("create-report-match"),
+            "submit_btn_txt": "Add Match",
             "form": form
         }
-        return render(request, "cfc_report/create/rounds.html", context)
+        return render(request, "cfc_report/base/base-form.html", context)
 
     @classmethod
     def finalize(cls, request):

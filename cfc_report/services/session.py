@@ -13,14 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from cfc_report import logger
-
 from django.contrib.sessions.backends.db import SessionStore
 
-from ..constants import LOGGER_NAME
+from cfc_report import logger
+
 from ..models import Player
 from .database import get_player_by_cfc
-
 
 # get the current session
 session = SessionStore()
@@ -36,28 +34,29 @@ def get_players() -> list[Player]:
 
     Returns
     -------
-    players: list[player] 
+    players : list(Player)
         A list of the players in session
     """
 
-    session_players = session.get("players_by_cfc")
-    logger.debug("players got from session: %s", session_players)
-    players: [Player] = []
+    session_ids = session.get("players_by_cfc")
+    logger.debug("cfc id's got from session: %s", session_ids)
+    players: list[Player] = []
 
-    if session_players:
-        for cfc_id in session_players:
-            logger.debug("session_players: %s", session_players)
+    # go through the session player id's and fetch players from db
+    if session_ids:
+        for cfc_id in session_ids:
 
             p = get_player_by_cfc(cfc_id)
-
             players.append(p)
-            
+
+            logger.debug("session_id: %s got %s", cfc_id, p)
 
         logger.debug("Players in session: %s", players)
     else:
         logger.warning("No players gotten from session")
 
     return players
+
 
 def get_players_by_id() -> "dict{CfcId:Player}":
     """get the players in current session
@@ -69,7 +68,7 @@ def get_players_by_id() -> "dict{CfcId:Player}":
 
     Returns
     -------
-    players: "dict{CfcId:Player}" 
+    players: "dict{CfcId:Player}"
         A dict of the players in session by there id
     """
 
@@ -84,7 +83,6 @@ def get_players_by_id() -> "dict{CfcId:Player}":
             p = get_player_by_cfc(cfc_id)
 
             players[cfc_id] = p
-            
 
         logger.debug("Players in session: %s", players)
     else:
@@ -169,7 +167,7 @@ def remove_player_by_id(cfc_id: "CfcId") -> None:
     """
     session_players = session.get("players_by_cfc")
 
-    logger.debug("players in session: %s", session_players)
+    logger.debug("players in session by cfc i: %s", session_players)
 
     session_players.remove(cfc_id)
 

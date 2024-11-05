@@ -21,7 +21,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
-from .constants import LOGGER_NAME
 from .model_fields import CfcIdField, PairingSystemField, ProvinceField
 
 

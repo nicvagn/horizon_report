@@ -17,13 +17,14 @@
 import json
 
 from django import forms
-from django.forms import SelectDateWidget, ChoiceField
+from django.forms import ChoiceField, SelectDateWidget
 
 from . import logger
 from .constants import LOGGER_NAME
 from .form_fields import CfcIdField, PairingSystemField, ProvinceField
 from .models import Match
 from .services import session
+
 
 class TournamentInfoForm(forms.Form):
     """for getting info on a CFC rated tournament
@@ -89,10 +90,6 @@ class RoundForm(forms.Form):
     TODO
     """
 
-
-
-   
-
     # TODO: make so you can enter match info and create matches for the round
 
 
@@ -100,9 +97,10 @@ class MatchForm(forms.Form):
     """A form for entering the data for a single Match
     TODO
     """
+    session_player_ids: list[str] = session.get_player_ids()
 
-    session_players = session.get_players()
-
-    white = ChoiceField(choices=session_players)
-    black = ChoiceField(choices=session_players)
-    winner = ChoiceField(choices=session_players)
+    logger.debug("Session player cfc id's gotten in match form:\n %s",
+                 session_player_ids)
+    white = ChoiceField(choices=session_player_ids)
+    black = ChoiceField(choices=session_player_ids)
+    winner = ChoiceField(choices=session_player_ids)
