@@ -91,7 +91,7 @@ class Create:
         return render(request, "cfc_report/create/toggle-players.html", context)
 
     @classmethod
-    def match(cls, request):
+    def chess_match(cls, request):
         """Enter information about a chess match 
         Arguments
         ---------
@@ -107,16 +107,7 @@ class Create:
 
             # redirect to view to finalize the report
             return redirect("create-report-finalize")
-
-        form = MatchForm()
-
-        context = {
-            "title": "Enter match information",
-            "action_url": reverse("create-report-match"),
-            "submit_btn_txt": "Add Match",
-            "form": form
-        }
-        return render(request, "cfc_report/base/base-form.html", context)
+        # TODO: replicate chosing players for report, but make it for a game
 
     @classmethod
     def finalize(cls, request):

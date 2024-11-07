@@ -105,7 +105,7 @@ def get_player_ids() -> list[str]:
         A list of the cfc id's in session.
         A cfc id is a 6 character numeric str
     """
-
+    
     session_players = session.get("players_by_cfc")
 
     # should return an empty list if None

@@ -97,10 +97,6 @@ class MatchForm(forms.Form):
     """A form for entering the data for a single Match
     TODO
     """
-    session_player_ids: list[str] = session.get_player_ids()
-
-    logger.debug("Session player cfc id's gotten in match form:\n %s",
-                 session_player_ids)
-    white = ChoiceField(choices=session_player_ids)
-    black = ChoiceField(choices=session_player_ids)
-    winner = ChoiceField(choices=session_player_ids)
+    white = CfcIdField()  
+    black = CfcIdField()
+    winner = CfcIdField()
