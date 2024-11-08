@@ -108,6 +108,9 @@ class Create:
             # redirect to view to finalize the report
             return redirect("create-report-finalize")
         # TODO: replicate chosing players for report, but make it for a game
+        
+        context ={}
+        return render(request, "cfc_report/create/match.html", context)
 
     @classmethod
     def finalize(cls, request):
