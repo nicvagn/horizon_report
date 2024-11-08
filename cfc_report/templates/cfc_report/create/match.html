@@ -17,26 +17,34 @@
 -->
 
 {% block page_title %}
-Add Player
+Add Match
 {% endblock %}
 
 {% block content %}
-<h1 class="title">Add Player to Database</h1>
+<h1 class="title">Add Match to tournament</h1>
 
-<form action={% url "add-player" %} method="post">
+<form action={% url "create-report-match" %} method="post">
   {% csrf_token %}
   <p>
-    <label for="name">Name: </label>
-    <input id="name" name="player_name" type="text" value="" placeholder="Player Name" />
+    <label for="white">White: </label>
+    <input id="name" name="white" type="text" value="" placeholder="White Player" />
   </p>
 
   <p>
-    <label for="cfc_id">CFC ID: </label>
-    <input id="cfc_id" name="player_cfc_id" type="text" value="" placeholder="Player CFC ID" />
+    <label for="black">Black: </label>
+    <input id="black" name="black" type="text" value="" placeholder="Black Player" />
+  </p>
+
+  <p>
+    <span>
+      <input type="radio" name="result" id="white_won" value="white_won">
+      <input type="radio" name="result" id="black_won" value="black_won">
+      <input type="radio" name="result" id="none_won" value="none_won">
+    </span>
   </p>
 
   <span>
-    <input id="add_player_btn" type="submit" value="add" />
+    <input id="add_match_btn" type="submit" value="add" />
     <a href="/">
       <input id="cancel_btn" type="button" value="cancel" />
     </a>

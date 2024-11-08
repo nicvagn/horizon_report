@@ -105,9 +105,11 @@ class Create:
             # save tournament info to session
             session.set_tournament_info(match_info)
 
-            # redirect to view to finalize the report
-            return redirect("create-report-finalize")
+            # Continue letting user add more games
         # TODO: replicate chosing players for report, but make it for a game
+        
+        context ={}
+        return render(request, "cfc_report/create/match.html", context)
 
     @classmethod
     def finalize(cls, request):
