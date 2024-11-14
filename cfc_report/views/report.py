@@ -85,7 +85,7 @@ class Create:
             logger.debug("POST request with value: %s", player_info)
             logger.debug("TournamentInfoForm made from POST: %s",
                          player_info)
-            return render(request, "cfc_report/create/rounds.html", player_info)
+            return render(request, "cfc_report/create/round.html", player_info)
         logger.debug("db_players: %s \n tournament_players: %s \n context: %s",
                      db_players, tournament_players, context)
         return render(request, "cfc_report/create/toggle-players.html", context)
@@ -98,18 +98,47 @@ class Create:
         request : HttpRequest
         """
         logger.debug("Create.match entered with request: %s", request)
+        # it is used in both legs. the session players are the players
+        # in this tournament
+        context = {"tournament_players":  session.get_players(),
+                   "round_number": session.get_tournament_round()}
         # if is the form being submitted
         if request.method == "POST":
             match_info = request.POST
             logger.debug("POST request with value: %s", match_info)
-            # save tournament info to session
-            session.set_tournament_info(match_info)
+
+            black_id = match_info["black"]
+            white_id = match_info["white"]
+            result = match_info["result"]
+
+            logger.debug(
+                "chess_match entered: black_id %s, white_id: %s, result: %s",
+                black_id, white_id, result)
 
             # Continue letting user add more games
-        # TODO: replicate chosing players for report, but make it for a game
-        
-        context ={}
+            return render(request, "cfc_report/create/match.html", context)
+        # TODO: replicate choosing players for report, but make it for a game
+
         return render(request, "cfc_report/create/match.html", context)
+
+    @classmethod
+    def round(cls, request):
+        """Enter info for a round in a chess tournament
+        Arguments
+        ---------
+        request : HttpRequest
+        """
+        logger.debug("Create.round entered with request: %s", request)
+        # if is the form being submitted
+        if request.method == "POST":
+            round_info = request.POST
+            logger.debug("POST request with value: %s", round_info)
+            # TODO
+            # Continue letting user add more games
+            return render(request, "cfc_report/create/round.html", {})
+
+        context = {}
+        return render(request, "cfc_report/create/round.html", context)
 
     @classmethod
     def finalize(cls, request):

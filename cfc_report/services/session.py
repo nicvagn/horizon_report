@@ -13,9 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.contrib.sessions.backends.db import SessionStore
-
 from cfc_report import logger
+from django.contrib.sessions.backends.db import SessionStore
 
 from ..models import Player
 from .database import get_player_by_cfc
@@ -105,7 +104,7 @@ def get_player_ids() -> list[str]:
         A list of the cfc id's in session.
         A cfc id is a 6 character numeric str
     """
-    
+
     session_players = session.get("players_by_cfc")
 
     # should return an empty list if None
@@ -205,6 +204,45 @@ def get_tournament_info() -> "TournamentInfo":
     logger.debug("session get: %s", get)
 
     return get
+
+
+def get_tournament_round() -> int:
+    """get the tournament round we are building from this session
+
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+
+    Returns
+    -------
+    int 
+        the tournament round number stored in the session
+    """
+    logger.debug("session keys: %s", session.keys())
+
+    get = session.get("TournamentRound")
+
+    logger.debug("get_tournament_round: session get: %s", get)
+
+    # HACK: need to set "TournamentRound"
+    if get is None:
+        return 1
+    # else
+    return int(get)
+
+
+def set_tournament_round(rnd: int) -> None:
+    """set the tournament round we are building from this session
+
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+    """
+    logger.debug("session keys: %s", session.keys())
+
+    session["TournamentRound"] = rnd
 
 
 def set_tournament_info(info: "TournamentInfo") -> None:

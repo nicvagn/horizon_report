@@ -15,14 +15,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import json
 
-from . import logger
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
+from . import logger
 from .model_fields import CfcIdField, PairingSystemField, ProvinceField
-
 
 # models relating to a CFC Rated chess tournament.
 

@@ -20,7 +20,6 @@ from django import forms
 from django.forms import ChoiceField, SelectDateWidget
 
 from . import logger
-from .constants import LOGGER_NAME
 from .form_fields import CfcIdField, PairingSystemField, ProvinceField
 from .models import Match
 from .services import session
@@ -97,6 +96,6 @@ class MatchForm(forms.Form):
     """A form for entering the data for a single Match
     TODO
     """
-    white = CfcIdField()  
+    white = CfcIdField()
     black = CfcIdField()
     winner = CfcIdField()

@@ -17,36 +17,65 @@
 -->
 
 {% block page_title %}
-Add Match
+Add Match to Round
+{% endblock %}
+
+{% block nav_bar %}
 {% endblock %}
 
 {% block content %}
-<h1 class="title">Add Match to tournament</h1>
+<h1 class="title">Add Match to Round</h1>
 
 <form action={% url "create-report-match" %} method="post">
   {% csrf_token %}
   <p>
     <label for="white">White: </label>
-    <input id="name" name="white" type="text" value="" placeholder="White Player" />
+
+    <select
+      id="name"
+      name="white"
+      type="text"
+      value=""
+      placeholder="White Player"
+      required>
+      {% for p in tournament_players %}
+      <option value={{ p.cfc_id }}> {{p.name}}({{p.cfc_id}}) </option>
+      {% endfor %}
+    </select>
   </p>
 
   <p>
     <label for="black">Black: </label>
-    <input id="black" name="black" type="text" value="" placeholder="Black Player" />
+
+    <select
+      id="name"
+      name="black"
+      type="text"
+      value=""
+      placeholder="Black Player"
+      required>
+      {% for p in tournament_players %}
+      <option value={{ p.cfc_id }}> {{p.name}}({{p.cfc_id}}) </option>
+      {% endfor %}
+    </select>
   </p>
 
   <p>
+    <p>Result:</p>
     <span>
-      <input type="radio" name="result" id="white_won" value="white_won">
-      <input type="radio" name="result" id="black_won" value="black_won">
-      <input type="radio" name="result" id="none_won" value="none_won">
+      <input type="radio" name="result" id="white_won" value="white_won" required>
+      <label for="white_won">White won</label>
+      <input type="radio" name="result" id="black_won" value="black_won" required>
+      <label for="black_won">Black won</label>
+      <input type="radio" name="result" id="none_won" value="none_won" required>
+      <label for="none_won">Draw</label>
     </span>
   </p>
 
   <span>
-    <input id="add_match_btn" type="submit" value="add" />
-    <a href="/">
-      <input id="cancel_btn" type="button" value="cancel" />
+    <input id="add_match_btn" type="submit" value="add game" />
+    <a href="{% url 'create-report-round' %}">
+      <input type="button" value="done adding games to round" />
     </a>
   </span>
 </form>

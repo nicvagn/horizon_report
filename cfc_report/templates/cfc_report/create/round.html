@@ -2,18 +2,26 @@
 
 {% block page_title %}Enter Tournament Round's{% endblock %}
 
+{% block nav_bar %}
+  <a href="/" class="padded">
+    <input id="home_btn" type="button" value="Exit" />
+  </a>
+{% endblock %}
+
 {% block content %}
 <span>
-  <h1>Build Tournament Rounds</h1>
+  <h1>Build Tournament Round</h1>
 </span>
 
 <section id="round-builder">
   <h3>Building round: {{ Building_round }} </h3>
 
-  <h4>Enter matches:</h4>
-  {{ match_form }}
+  <a href="{% url 'create-report-match' %}">
+    <h4>Enter matches</h4>
+  </a>
+  
 
-  <h4>Entered Games:</h4>
+  <h4>Entered Matches:</h4>
   {% for match in entered_match %}
     {{ match }}
   {% endfor %}
@@ -46,8 +54,11 @@
 {% endfor %}
 
 <span>
+  <a href="{% url 'create-report-round' %}">
+    <input id="submit_btn" type="button" value="make round" />
+  </a>
   <a href="{% url 'create-report-finalize' %}">
-    <input id="submit_btn" type="button" value="make report" />
+    <input id="submit_btn" type="button" value="done rounds" />
   </a>
 </span>
 {% endblock %}
