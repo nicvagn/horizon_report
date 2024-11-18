@@ -32,6 +32,8 @@ class Create:
     initial(cls, request) : show form to get the initial
     tournament information
 
+    TODO
+
     """
 
     @classmethod
@@ -50,7 +52,6 @@ class Create:
             session.set_tournament_info(tournament_info)
             logger.debug("TournamentInfoForm made from POST: %s",
                          tournament_info)
-
             # redirect to view to choose players
             return redirect("create-report-players")
 
@@ -88,11 +89,13 @@ class Create:
             return render(request, "cfc_report/create/round.html", player_info)
         logger.debug("db_players: %s \n tournament_players: %s \n context: %s",
                      db_players, tournament_players, context)
-        return render(request, "cfc_report/create/toggle-players.html", context)
+        return render(
+            request, "cfc_report/create/toggle-players.html", context
+                      )
 
     @classmethod
     def chess_match(cls, request):
-        """Enter information about a chess match 
+        """Enter information about a chess match
         Arguments
         ---------
         request : HttpRequest
@@ -101,7 +104,8 @@ class Create:
         # it is used in both legs. the session players are the players
         # in this tournament
         context = {"tournament_players":  session.get_players(),
-                   "round_number": session.get_tournament_round()}
+                   "round_number": session.get_tournament_round(),
+                   "built_matches": "hello world"}
         # if is the form being submitted
         if request.method == "POST":
             match_info = request.POST
@@ -111,12 +115,13 @@ class Create:
             white_id = match_info["white"]
             result = match_info["result"]
 
+            # Make match 
+
             logger.debug(
                 "chess_match entered: black_id %s, white_id: %s, result: %s",
                 black_id, white_id, result)
 
             # Continue letting user add more games
-            return render(request, "cfc_report/create/match.html", context)
         # TODO: replicate choosing players for report, but make it for a game
 
         return render(request, "cfc_report/create/match.html", context)
@@ -137,12 +142,17 @@ class Create:
             # Continue letting user add more games
             return render(request, "cfc_report/create/round.html", {})
 
-        context = {}
+        context = {"entered_matches": "hello world"}
         return render(request, "cfc_report/create/round.html", context)
 
     @classmethod
-    def finalize(cls, request):
-        """finalize report"""
+    def tournament(cls, request):
+        """Build a tournament"""
+        pass
+
+    @classmethod
+    def preview(cls, request):
+        """Preveiw the tournament report"""
         # get the tournament info set in Create.initial()
         tournament_info = session.get_tournament_info()
 
@@ -181,7 +191,8 @@ class Create:
         """
 
         logger.debug(
-            "toggle_player_session entered with request: %s and  player CfcId: %s",
+            "toggle_player_session entered with request: \
+            %s and  player CfcId: %s",
             request,
             cfc_id)
         assert cfc_id
@@ -203,6 +214,11 @@ class Create:
         }
 
         return render(request, "cfc_report/create/player-form.html", context)
+
+    @classmethod
+    def finalize(cls, request):
+        """TODO"""
+        raise NotImplimentedError()
 
 
 def view(request):

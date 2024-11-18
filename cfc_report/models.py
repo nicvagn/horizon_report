@@ -299,7 +299,7 @@ class Tournament(models.Model):
 
     name = models.CharField(max_length=30)
     num_rounds = models.IntegerField()
-    rounds = ...
+    rounds = models.ForeignKey(Round, on_delete=models.CASCADE, related_name="rounds_in_tournament")
     date = models.DateField()
     pairing_system = PairingSystemField()
     province = ProvinceField()
@@ -311,7 +311,7 @@ class Tournament(models.Model):
 
         Arguments
         ---------
-        player : Player
+        playern : Player
             Chosen player
 
         Returns
