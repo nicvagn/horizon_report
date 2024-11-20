@@ -101,7 +101,7 @@ class Create:
         request : HttpRequest
         """
 
-        # The form for creating maches is in match.html
+        # The form for creating matches is in match.html
         logger.debug("Create.match entered with request: %s", request)
         # if is the form being submitted
         if request.method == "POST":
@@ -144,7 +144,7 @@ class Create:
             # Continue letting user add more games
             return render(request, "cfc_report/create/round.html", {})
 
-        context = {"entered_matches": "hello world"}
+        context = {"entered_matches": session.get_matches()}
         return render(request, "cfc_report/create/round.html", context)
 
     @staticmethod
@@ -217,11 +217,10 @@ class Create:
 
         return render(request, "cfc_report/create/player-form.html", context)
 
-    @classmethod
     @staticmethod
     def finalize(request):
         """TODO"""
-        raise NotImplimentedError()
+        raise RuntimeError("Not done")
 
 
 def view(request):

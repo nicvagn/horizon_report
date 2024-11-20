@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
+
+from cfc_report import logger
 
 from ..models import Match, Player
 from .database import get_player_by_cfc
@@ -23,20 +24,21 @@ from .database import get_player_by_cfc
 session = SessionStore()
 
 
-def create_match(white_id: "CfcId", black_id: "CfcId", winner_id: "CfcId or None"):
-    """Create a chess match, does not save it to the db"""
-    breakpoint()
+def create_match(
+        white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
+    """Create a chess match in this session"""
     white_player = get_player_by_cfc(white_id)
     black_player = get_player_by_cfc(black_id)
 
-    if winner_id is not None:
-        winning_player = get_player_by_cfc("winner_id")
-    else:
-        winning_player = None
-
-    m = Match(white=white_player, black=black_player, winner=winning_player)
-
+    m = Match(white=white_player, black=black_player, result=result)
     logger.debug("db.create_match created: %s", m)
+
+    if session.has_key("matches"):
+        # update it
+        session["matches"].append(m)
+    else:
+        # create it
+        session["matches"] = m
     return m
 
 

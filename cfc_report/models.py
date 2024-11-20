@@ -247,11 +247,18 @@ class Match(models.Model):
         KEY: {b == black victory, w == white victory, d == no victory)
     """
 
+    RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"), ("d", "0.5 - 0.5")]
+
     white = models.ForeignKey(
         Player, on_delete=models.CASCADE, related_name="white_player")
     black = models.ForeignKey(
         Player, on_delete=models.CASCADE, related_name="black_player")
-    result = models.CharField(max_length=1)
+    result = models.CharField(max_length=1, choices=RESULT_CHOICES)
+
+    def __str__(self):
+        return (f"white: {self.white},"
+                f"black: {self.black},"
+                f"result: {self.result}")
 
 
 class Round(models.Model):
