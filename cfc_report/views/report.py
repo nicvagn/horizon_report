@@ -29,15 +29,15 @@ class Create:
 
     Methods
     -------
-    initial(cls, request) : show form to get the initial
+    initial(request) : show form to get the initial
     tournament information
 
     TODO
 
     """
 
-    @classmethod
-    def initial(cls, request):
+    @staticmethod
+    def initial(request):
         """Get initial tournament info
         Arguments
         ---------
@@ -65,8 +65,8 @@ class Create:
         }
         return render(request, "cfc_report/base/base-form.html", context)
 
-    @classmethod
-    def players(cls, request):
+    @staticmethod
+    def players(request):
         """set information about what players in a tournament"""
 
         db_players = db.get_players()
@@ -91,21 +91,18 @@ class Create:
                      db_players, tournament_players, context)
         return render(
             request, "cfc_report/create/toggle-players.html", context
-                      )
+        )
 
-    @classmethod
-    def chess_match(cls, request):
+    @staticmethod
+    def chess_match(request):
         """Enter information about a chess match
         Arguments
         ---------
         request : HttpRequest
         """
+
+        # The form for creating maches is in match.html
         logger.debug("Create.match entered with request: %s", request)
-        # it is used in both legs. the session players are the players
-        # in this tournament
-        context = {"tournament_players":  session.get_players(),
-                   "round_number": session.get_tournament_round(),
-                   "built_matches": "hello world"}
         # if is the form being submitted
         if request.method == "POST":
             match_info = request.POST
@@ -115,19 +112,24 @@ class Create:
             white_id = match_info["white"]
             result = match_info["result"]
 
-            # Make match 
-
+            # Make match
             logger.debug(
                 "chess_match entered: black_id %s, white_id: %s, result: %s",
                 black_id, white_id, result)
 
+            session.create_match(white_id, black_id, result)
+
             # Continue letting user add more games
+        context = {"tournament_players":  session.get_players(),
+                   "round_number": session.get_tournament_round(),
+                   "built_matches": session.get_matches()}
+
         # TODO: replicate choosing players for report, but make it for a game
 
         return render(request, "cfc_report/create/match.html", context)
 
-    @classmethod
-    def round(cls, request):
+    @staticmethod
+    def round(request):
         """Enter info for a round in a chess tournament
         Arguments
         ---------
@@ -145,14 +147,14 @@ class Create:
         context = {"entered_matches": "hello world"}
         return render(request, "cfc_report/create/round.html", context)
 
-    @classmethod
-    def tournament(cls, request):
+    @staticmethod
+    def tournament(request):
         """Build a tournament"""
         pass
 
-    @classmethod
-    def preview(cls, request):
-        """Preveiw the tournament report"""
+    @staticmethod
+    def preview(request):
+        """Preview the tournament report"""
         # get the tournament info set in Create.initial()
         tournament_info = session.get_tournament_info()
 
@@ -172,8 +174,8 @@ class Create:
         logger.debug("context: %s", context)
         return render(request, "cfc_report/show/index.html", context)
 
-    @classmethod
-    def toggle_player_session(cls, request, cfc_id: "CfcId" = None):
+    @staticmethod
+    def toggle_player_session(request, cfc_id: "CfcId" = None):
         """Pick a player if it is not in the session, add it.
         If it is in the session, remove it. This uses htmx under the hood
         to replace on the DOM
@@ -216,7 +218,8 @@ class Create:
         return render(request, "cfc_report/create/player-form.html", context)
 
     @classmethod
-    def finalize(cls, request):
+    @staticmethod
+    def finalize(request):
         """TODO"""
         raise NotImplimentedError()
 

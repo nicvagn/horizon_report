@@ -16,11 +16,28 @@
 from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
 
-from ..models import Player
+from ..models import Match, Player
 from .database import get_player_by_cfc
 
 # get the current session
 session = SessionStore()
+
+
+def create_match(white_id: "CfcId", black_id: "CfcId", winner_id: "CfcId or None"):
+    """Create a chess match, does not save it to the db"""
+    breakpoint()
+    white_player = get_player_by_cfc(white_id)
+    black_player = get_player_by_cfc(black_id)
+
+    if winner_id is not None:
+        winning_player = get_player_by_cfc("winner_id")
+    else:
+        winning_player = None
+
+    m = Match(white=white_player, black=black_player, winner=winning_player)
+
+    logger.debug("db.create_match created: %s", m)
+    return m
 
 
 def get_players() -> list[Player]:
@@ -174,6 +191,22 @@ def remove_player_by_id(cfc_id: "CfcId") -> None:
                  cfc_id, session_players)
 
 
+def get_matches() -> list("Match"):
+    """Get the matches in the session
+    Uses
+    ----
+    session : A Django session
+        the active session
+
+    Returns
+    -------
+    A list of the matches
+    """
+    session_matches = session.get("matches")
+
+    logger.info("matches got from session: %s", session_matches)
+
+
 def get_tournament_info() -> "TournamentInfo":
     """get the TournamentInfo from this session
 
@@ -216,7 +249,7 @@ def get_tournament_round() -> int:
 
     Returns
     -------
-    int 
+    int
         the tournament round number stored in the session
     """
     logger.debug("session keys: %s", session.keys())

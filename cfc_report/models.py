@@ -243,16 +243,15 @@ class Match(models.Model):
         the White player in the match
     black : Player
         the black player in the match
-    winner:
-        Player if winner, None if draw
+    result : CharField
+        KEY: {b == black victory, w == white victory, d == no victory)
     """
 
     white = models.ForeignKey(
         Player, on_delete=models.CASCADE, related_name="white_player")
     black = models.ForeignKey(
         Player, on_delete=models.CASCADE, related_name="black_player")
-    winner = models.ForeignKey(
-        Player, default=None, on_delete=models.CASCADE, related_name="winning_player")
+    result = models.CharField(max_length=1)
 
 
 class Round(models.Model):
@@ -299,7 +298,8 @@ class Tournament(models.Model):
 
     name = models.CharField(max_length=30)
     num_rounds = models.IntegerField()
-    rounds = models.ForeignKey(Round, on_delete=models.CASCADE, related_name="rounds_in_tournament")
+    rounds = models.ForeignKey(
+        Round, on_delete=models.CASCADE, related_name="rounds_in_tournament")
     date = models.DateField()
     pairing_system = PairingSystemField()
     province = ProvinceField()

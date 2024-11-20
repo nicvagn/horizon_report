@@ -22,7 +22,7 @@
   
 
   <h4>Entered Matches:</h4>
-  {% for match in entered_match %}
+  {% for match in entered_matches %}
     {{ match }}
   {% endfor %}
 </section>
@@ -31,6 +31,7 @@
 <span>
   <h2>Created Rounds:</h2>
 </span>
+<hr>
 {% for round in rounds %}
 <div class="tournament-round">
   <h3>Round: {{ round.number }}</h3>

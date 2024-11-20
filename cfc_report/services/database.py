@@ -15,11 +15,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.db.models import QuerySet
-
 from cfc_report import logger
 from cfc_report.models import (Match, Player, TournamentDirector,
                                TournamentOrganizer)
+from django.db.models import QuerySet
 
 
 def get_players() -> QuerySet:
@@ -56,6 +55,20 @@ def add_player(p: Player) -> None:
     """
     logger.debug("player %s added to db", p)
     p.save()
+
+
+def add_player_by_cfc(cfc_id: "CfcId", name: str) -> None:
+    """Add a player to the database using name and cfcid
+    parameters:
+        cfc_id : "CfcId"
+            the cfc id of the player
+        name : str
+            the players name.
+    """
+
+    p = Player(name, cfc_id)
+
+    add_player(p)
 
 
 def get_TDs() -> QuerySet:
