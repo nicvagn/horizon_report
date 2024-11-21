@@ -17,15 +17,24 @@
   <h3>Building round: {{ Building_round }} </h3>
 
   <a href="{% url 'create-report-match' %}">
-    <h4>Enter matches</h4>
+    <button>Enter matches</button>
   </a>
   
 
   <h4>Entered Matches:</h4>
-  {% for match in entered_matches %}
-    {{ match }}
-    <hr>
-  {% endfor %}
+    <table id="round-matches" class="players-table">
+      <tr>
+        <th>Round Matches</th>
+      </tr>
+      {% for match in entered_matches %}
+      <tr>
+        <td>{{match}}</td>
+        <td>
+          <a href="{% url 'round-edit-match' match %}">Edit</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
 </section>
 
 <hr>

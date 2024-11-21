@@ -22,25 +22,6 @@ from .database import get_player_by_cfc
 # get the current session
 session = SessionStore()
 
-
-def create_match(
-        white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
-    """Create a chess match in this session"""
-    white_player = get_player_by_cfc(white_id)
-    black_player = get_player_by_cfc(black_id)
-
-    m = Match(white=white_player, black=black_player, result=result)
-    logger.debug("db.create_match created: %s", m)
-
-    if session.has_key("matches"):
-        # update it
-        session["matches"].append(m)
-    else:
-        # create it
-        session["matches"] = [m]
-    return m
-
-
 def get_players() -> list[Player]:
     """get the players in current session
 
@@ -209,6 +190,23 @@ def get_matches() -> list("Match"):
 
     return session_matches
 
+def create_match(
+        white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
+    """Create a chess match in this session"""
+    white_player = get_player_by_cfc(white_id)
+    black_player = get_player_by_cfc(black_id)
+
+    m = Match(white=white_player, black=black_player, result=result)
+    logger.debug("db.create_match created: %s", m)
+
+    if session.has_key("matches"):
+        # update it
+        session["matches"].append(m)
+    else:
+        # create it
+        session["matches"] = [m]
+    return m
+
 
 def get_tournament_info() -> "TournamentInfo":
     """get the TournamentInfo from this session
@@ -263,6 +261,7 @@ def get_tournament_round() -> int:
 
     # HACK: need to set "TournamentRound"
     if get is None:
+        logger.error("--------- HACKY AF ------------")
         return 1
     # else
     return int(get)

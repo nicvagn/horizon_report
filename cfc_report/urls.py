@@ -17,19 +17,20 @@
 from django.contrib import admin
 from django.urls import path
 
-from .views import home, player, report
+from .views import home, player
+from .views.report import create, view
 
 urlpatterns = [
     path('', home.index, name='index'),
-    path("view/", report.view, name="view-report"),
-    path("create/", report.Create.initial, name="create-report-info"),
-    path("create/players", report.Create.players,
+    path("view/", view.view_report, name="view-report"),
+    path("create/", create.initial, name="create-report-info"),
+    path("create/players", create.players,
          name="create-report-players"),
-    path("create/match", report.Create.chess_match,
+    path("create/match", create.chess_match,
          name="create-report-match"),
-    path("create/round", report.Create.round,
+    path("create/round", create.round,
          name="create-report-round"),
-    path("create/finalize", report.Create.finalize,
+    path("create/finalize", create.finalize,
          name="create-report-finalize"),
     path("add-player", player.add_player, name="add-player"),
 
@@ -38,7 +39,9 @@ urlpatterns = [
 # htmx url patterns, cleaner this way?
 htmx_urlpatterns = [
     path("create/select/<str:cfc_id>",
-         report.Create.toggle_player_session, name="create-toggle-player"),
+         create.toggle_player_session, name="create-toggle-player"),
+    path("create/remove-match/<str:chess_match>",
+         create.edit_match_round, name="round-edit-match")
 ]
 
 urlpatterns = urlpatterns + htmx_urlpatterns
