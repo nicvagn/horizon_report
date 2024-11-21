@@ -256,9 +256,10 @@ class Match(models.Model):
     result = models.CharField(max_length=1, choices=RESULT_CHOICES)
 
     def __str__(self):
-        return (f"white: {self.white},"
-                f"black: {self.black},"
-                f"result: {self.result}")
+        return (f"MATCH-["
+                f"white: ({self.white}), "
+                f"black: ({self.black}), "
+                f"result: ({self.result})]")
 
 
 class Round(models.Model):

@@ -13,9 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.contrib.sessions.backends.db import SessionStore
-
 from cfc_report import logger
+from django.contrib.sessions.backends.db import SessionStore
 
 from ..models import Match, Player
 from .database import get_player_by_cfc
@@ -38,7 +37,7 @@ def create_match(
         session["matches"].append(m)
     else:
         # create it
-        session["matches"] = m
+        session["matches"] = [m]
     return m
 
 
@@ -207,6 +206,8 @@ def get_matches() -> list("Match"):
     session_matches = session.get("matches")
 
     logger.info("matches got from session: %s", session_matches)
+
+    return session_matches
 
 
 def get_tournament_info() -> "TournamentInfo":

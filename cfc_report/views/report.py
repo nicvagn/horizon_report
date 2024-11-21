@@ -99,6 +99,7 @@ class Create:
         Arguments
         ---------
         request : HttpRequest
+            if POST a request containing a chess match 
         """
 
         # The form for creating matches is in match.html
@@ -122,7 +123,7 @@ class Create:
             # Continue letting user add more games
         context = {"tournament_players":  session.get_players(),
                    "round_number": session.get_tournament_round(),
-                   "built_matches": session.get_matches()}
+                   "entered_matches": session.get_matches()}
 
         # TODO: replicate choosing players for report, but make it for a game
 
