@@ -1,0 +1,14 @@
+<!-- match list for showing matches with htmx -->
+<table id="round-matches" class="players-table">
+  <tr>
+  <th>Round Matches</th>
+  </tr>
+  {% for match in entered_matches %}
+    <tr>
+    <td>{{match}}</td>
+    <td>
+        <a href="{% url 'remove-match-round' match_number %}">Remove</a>
+    </td>
+    </tr>
+    {% endfor %}
+</table>

@@ -199,16 +199,6 @@ def toggle_player_session(request, cfc_id: "CfcId" = None):
 
     return render(request, "cfc_report/create/player-form.html", context)
 
-def edit_match_round(request, chess_match=None):
-    """edit a match in the round
-    TODO"""
-    breakpoint()
-    matches = session.get_matches()
-
-    logger.debug("matches gotten from session: %s", matches)
-    
-
-
 def finalize(request):
     """TODO"""
     raise RuntimeError("Not done")

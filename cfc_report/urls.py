@@ -19,6 +19,8 @@ from django.urls import path
 
 from .views import home, player
 from .views.report import create, view
+from .services import session
+
 
 urlpatterns = [
     path('', home.index, name='index'),
@@ -41,7 +43,7 @@ htmx_urlpatterns = [
     path("create/select/<str:cfc_id>",
          create.toggle_player_session, name="create-toggle-player"),
     path("create/remove-match/<str:chess_match>",
-         create.edit_match_round, name="round-edit-match")
+         session.remove_match_from_round, name="remove-match-round")
 ]
 
 urlpatterns = urlpatterns + htmx_urlpatterns

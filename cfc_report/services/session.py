@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
+import json
 
 from ..models import Match, Player
 from .database import get_player_by_cfc
@@ -192,21 +193,46 @@ def get_matches() -> list("Match"):
 
 def create_match(
         white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
-    """Create a chess match in this session"""
+    """Create a chess match in this session
+    Uses
+    ----
+    session - the django session got from the session store
+
+    side-effects
+    ------------
+    modifies the session "matches"
+
+    Returns
+    -------
+    the created match 
+    """
     white_player = get_player_by_cfc(white_id)
     black_player = get_player_by_cfc(black_id)
 
-    m = Match(white=white_player, black=black_player, result=result)
-    logger.debug("db.create_match created: %s", m)
+    chess_match = Match(white=white_player, black=black_player, result=result)
 
     if session.has_key("matches"):
         # update it
-        session["matches"].append(m)
+        session["matches"].append(chess_match)
     else:
         # create it
-        session["matches"] = [m]
-    return m
+        session["matches"] = [chess_match]
+    return chess_match
+    
+def remove_match_from_round(match_number: int):
+    """Remove a chess match from this session
+    Uses
+    ----
+    session - the django session got from the session store
 
+    side-effects
+    ------------
+    modifies the session "matches"
+    """
+    logger.debug("removing match %s", chess_match)
+    breakpoint()
+    # TODO
+    logger.debug("removed match %s, session matches now %s", chess_match, session["matches"])
 
 def get_tournament_info() -> "TournamentInfo":
     """get the TournamentInfo from this session

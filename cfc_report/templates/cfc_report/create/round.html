@@ -22,19 +22,7 @@
   
 
   <h4>Entered Matches:</h4>
-    <table id="round-matches" class="players-table">
-      <tr>
-        <th>Round Matches</th>
-      </tr>
-      {% for match in entered_matches %}
-      <tr>
-        <td>{{match}}</td>
-        <td>
-          <a href="{% url 'round-edit-match' match %}">Edit</a>
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
+  {% include "cfc_report/create/partials/match-list.html" %}  
 </section>
 
 <hr>
