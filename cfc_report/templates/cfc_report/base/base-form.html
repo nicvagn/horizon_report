@@ -28,13 +28,15 @@
 <span>
   <h1 class="title">{{ title }}</h1>
 </span>
-<form action='{{ action_url }}' method="post">
-  {% csrf_token %}
-  {{ form }}
-  <div style="padding: 1em"></div>
 
-  <span>
-    <input id="submit_btn" type="submit" value="{{ submit_btn_txt }}" />
-  </span>
-</form>
+<div style="padding: 1em">
+    <form action='{{ action_url }}' method="post">
+    {% csrf_token %}
+    {{ form }}
+
+	<span>
+	    <input id="submit_btn" type="submit" value="{{ submit_btn_txt }}" />
+	</span>
+    </form>
+</div>
 {% endblock %}
