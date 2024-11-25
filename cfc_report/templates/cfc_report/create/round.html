@@ -19,10 +19,10 @@
   <a href="{% url 'create-report-match' %}">
     <button>Enter matches</button>
   </a>
-  
+
 
   <h4>Entered Matches:</h4>
-  {% include "cfc_report/create/partials/match-list.html" %}  
+  {% include "cfc_report/create/partials/match-list.html" %}
 </section>
 
 <hr>
@@ -30,25 +30,34 @@
   <h2>Created Rounds:</h2>
 </span>
 <hr>
+
 {% for round in rounds %}
 <div class="tournament-round">
   <h3>Round: {{ round.number }}</h3>
 
   <h4>Matches:</h4>
-  <table>
-    <tr>
-      <th>White</th>
-      <th>Black</th>
-      <th>Result</th>
-    </tr>
-    {% for match in round.matches %}
-    <tr>
-      <td>{{ match.white }}</td>
-      <td>{{ match.black }}</td>
-      <td>{{ match.winner }}</td>
-    </tr>
-    {% endfor %}
-  </table>
+  <div id="round-matches">
+    <table>
+      <tr>
+        <th>White</th>
+        <th>Black</th>
+        <th>Result</th>
+      </tr>
+      {% for match in round.matches %}
+      <tr>
+        <td>{{ match.white }}</td>
+        <td>{{ match.black }}</td>
+        <td>{{ match.winner }}</td>
+      </tr>
+        <a
+         data-hx-target="#round-matches"
+         data-hx-swap="outerHTML"
+         data-hx-post="{{ match.get_absolute_url }}"
+        >Select</a>
+
+      {% endfor %}
+    </table>
+  </div>
 </div>
 {% endfor %}
 

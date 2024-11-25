@@ -1,4 +1,5 @@
 """services relating to sessions in cfc_report app"""
+
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -22,6 +23,7 @@ from .database import get_player_by_cfc
 
 # get the current session
 session = SessionStore()
+
 
 def get_players() -> list[Player]:
     """get the players in current session
@@ -170,8 +172,7 @@ def remove_player_by_id(cfc_id: "CfcId") -> None:
 
     session_players.remove(cfc_id)
 
-    logger.debug("removed %s, session_players now: %s",
-                 cfc_id, session_players)
+    logger.debug("removed %s, session_players now %s", cfc_id, session_players)
 
 
 def get_matches() -> list("Match"):
@@ -191,6 +192,7 @@ def get_matches() -> list("Match"):
 
     return session_matches
 
+
 def create_match(
         white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
     """Create a chess match in this session
@@ -204,7 +206,7 @@ def create_match(
 
     Returns
     -------
-    the created match 
+    the created match
     """
     white_player = get_player_by_cfc(white_id)
     black_player = get_player_by_cfc(black_id)
@@ -218,21 +220,7 @@ def create_match(
         # create it
         session["matches"] = [chess_match]
     return chess_match
-    
-def remove_match_from_round(match_number: int):
-    """Remove a chess match from this session
-    Uses
-    ----
-    session - the django session got from the session store
 
-    side-effects
-    ------------
-    modifies the session "matches"
-    """
-    logger.debug("removing match %s", chess_match)
-    breakpoint()
-    # TODO
-    logger.debug("removed match %s, session matches now %s", chess_match, session["matches"])
 
 def get_tournament_info() -> "TournamentInfo":
     """get the TournamentInfo from this session

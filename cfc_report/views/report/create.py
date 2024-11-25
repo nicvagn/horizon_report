@@ -37,8 +37,7 @@ def initial(request):
         logger.debug("POST request with value: %s", tournament_info)
         # save tournament info to session
         session.set_tournament_info(tournament_info)
-        logger.debug("TournamentInfoForm made from POST: %s",
-                        tournament_info)
+        logger.debug("TournamentInfoForm made from POST: %s", tournament_info)
         # redirect to view to choose players
         return redirect("create-report-players")
 
@@ -48,9 +47,10 @@ def initial(request):
         "title": "Enter tournament information",
         "action_url": reverse("create-report-info"),
         "submit_btn_txt": "Pick Players",
-        "form": form
+        "form": form,
     }
     return render(request, "cfc_report/base/base-form.html", context)
+
 
 def players(request):
     """set information about what players in a tournament"""
@@ -70,21 +70,23 @@ def players(request):
     if request.method == "POST":
         player_info = request.POST
         logger.debug("POST request with value: %s", player_info)
-        logger.debug("TournamentInfoForm made from POST: %s",
-                        player_info)
+        logger.debug("TournamentInfoForm made from POST: %s", player_info)
         return render(request, "cfc_report/create/round.html", player_info)
-    logger.debug("db_players: %s \n tournament_players: %s \n context: %s",
-                    db_players, tournament_players, context)
-    return render(
-        request, "cfc_report/create/toggle-players.html", context
+    logger.debug(
+        "db_players: %s \n tournament_players: %s \n context: %s",
+        db_players,
+        tournament_players,
+        context,
     )
+    return render(request, "cfc_report/create/toggle-players.html", context)
+
 
 def chess_match(request):
     """Enter information about a chess match
     Arguments
     ---------
     request : HttpRequest
-        if POST a request containing a chess match 
+        if POST a request containing a chess match
     """
 
     # The form for creating matches is in match.html
@@ -101,20 +103,28 @@ def chess_match(request):
         # Make match
         logger.debug(
             "chess_match entered: black_id %s, white_id: %s, result: %s",
-            black_id, white_id, result)
+            black_id,
+            white_id,
+            result,
+        )
 
-        session.create_match(white_id, black_id, result)
+        # create tea chess match model, and save it to the db
+        chess_match = session.create_match(white_id, black_id, result)
+        chess_match.save()
 
         # Continue letting user add more games
-    context = {"tournament_players":  session.get_players(),
-                "round_number": session.get_tournament_round(),
-                "entered_matches": session.get_matches()}
+    context = {
+        "tournament_players": session.get_players(),
+        "round_number": session.get_tournament_round(),
+        "entered_matches": session.get_matches(),
+    }
 
     # TODO: replicate choosing players for report, but make it for a game
 
     return render(request, "cfc_report/create/match.html", context)
 
-def round(request):
+
+def round(request) -> HttpResponse:
     """Enter info for a round in a chess tournament
     Arguments
     ---------
@@ -132,9 +142,11 @@ def round(request):
     context = {"entered_matches": session.get_matches()}
     return render(request, "cfc_report/create/round.html", context)
 
+
 def tournament(request):
     """Build a tournament"""
     pass
+
 
 def preview(request):
     """Preview the tournament report"""
@@ -157,7 +169,8 @@ def preview(request):
     logger.debug("context: %s", context)
     return render(request, "cfc_report/show/index.html", context)
 
-def toggle_player_session(request, cfc_id: "CfcId" = None):
+
+def toggle_player_session(request, cfc_id:"CfcId = None):
     """Pick a player if it is not in the session, add it.
     If it is in the session, remove it. This uses htmx under the hood
     to replace on the DOM
@@ -178,7 +191,8 @@ def toggle_player_session(request, cfc_id: "CfcId" = None):
         "toggle_player_session entered with request: \
         %s and  player CfcId: %s",
         request,
-        cfc_id)
+        cfc_id,
+    )
     assert cfc_id
 
     # if cfc id in session, remove it
@@ -194,12 +208,12 @@ def toggle_player_session(request, cfc_id: "CfcId" = None):
     context = {
         "players": db_players,
         "tournament_players": tournament_players,
-        "include_nav_bar": False
+        "include_nav_bar": False,
     }
 
     return render(request, "cfc_report/create/player-form.html", context)
 
+
 def finalize(request):
     """TODO"""
     raise RuntimeError("Not done")
-
