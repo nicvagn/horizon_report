@@ -7,7 +7,7 @@
     <tr>
     <td>{{match}}</td>
     <td>
-        <a href="{% url 'remove-match-round' match_number %}">Remove</a>
+        <a href="{% url 'select-match-round' pk=match.pk %}">Remove</a>
     </td>
     </tr>
     {% endfor %}

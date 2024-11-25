@@ -42,8 +42,8 @@ urlpatterns = [
 htmx_urlpatterns = [
     path("create/select/<str:cfc_id>",
          create.toggle_player_session, name="create-toggle-player"),
-    path("create/remove-match/<str:chess_match>",
-         session.remove_match_from_round, name="remove-match-round")
+    path("create/select-match/<int:pk>",
+         session.remove_match_from_round, name="select-match-round")
 ]
 
 urlpatterns = urlpatterns + htmx_urlpatterns

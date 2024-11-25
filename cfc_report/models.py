@@ -1,4 +1,5 @@
 """Data models for CFC rated tournament"""
+
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import json
+import uuid as uuid_lib
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -48,6 +50,7 @@ class PersonWithCfcId(models.Model):
     decode(cls) : Player
         classmethod to decode a serialized player into a python object
     """
+
     name = models.CharField(max_length=20)
     cfc_id = CfcIdField()
     slug = models.SlugField(default="", unique=True, null=False)
@@ -68,7 +71,8 @@ class PersonWithCfcId(models.Model):
 
         self.slug = slugify(self.name)
         logger.info(
-            "PersonWithCfdId: (%s) saved and slug (%s) created for it", self, self.slug)
+            "PersonWithCfdId: (%s) saved and slug (%s) created for it",
+            self, self.slug)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -245,21 +249,32 @@ class Match(models.Model):
         the black player in the match
     result : CharField
         KEY: {b == black victory, w == white victory, d == no victory)
+    uuid : uuid.uuid4
+        Unique identifyer for match
     """
 
-    RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"), ("d", "0.5 - 0.5")]
+    RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"),
+                      ("d", "0.5 - 0.5"), ("_", "_")]
 
     white = models.ForeignKey(
-        Player, on_delete=models.CASCADE, related_name="white_player")
+        Player, on_delete=models.CASCADE, related_name="white_player"
+    )
     black = models.ForeignKey(
-        Player, on_delete=models.CASCADE, related_name="black_player")
-    result = models.CharField(max_length=1, choices=RESULT_CHOICES)
+        Player, on_delete=models.CASCADE, related_name="black_player"
+    )
+    result = models.CharField(max_length=1, choices=RESULT_CHOICES,
+                              default=RESULT_CHOICES[3])
+
+    def get_absolute_url(self):
+        return reverse('select-match-round', kwargs={"pk": self.pk})
 
     def __str__(self):
-        return (f"MATCH-["
-                f"white: ({self.white}), "
-                f"black: ({self.black}), "
-                f"result: ({self.result})]")
+        return (
+            f"MATCH-[ "
+            f"white: ({self.white}), "
+            f"black: ({self.black}), "
+            f"result: ({self.result}) ]"
+        )
 
 
 class Round(models.Model):
@@ -272,10 +287,13 @@ class Round(models.Model):
     matches : ForeignKey(Match)
         the matches in this round
     """
+
     round_num = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(999)])
+        validators=[MinValueValidator(1), MaxValueValidator(999)]
+    )
     matches = models.ForeignKey(
-        Match, on_delete=models.CASCADE, related_name="matches_in_round")
+        Match, on_delete=models.CASCADE, related_name="matches_in_round"
+    )
 
 
 class Tournament(models.Model):
@@ -307,7 +325,9 @@ class Tournament(models.Model):
     name = models.CharField(max_length=30)
     num_rounds = models.IntegerField()
     rounds = models.ForeignKey(
-        Round, on_delete=models.CASCADE, related_name="rounds_in_tournament")
+        Round, on_delete=models.CASCADE, related_name="rounds_in_tournament",
+        default=False
+    )
     date = models.DateField()
     pairing_system = PairingSystemField()
     province = ProvinceField()
@@ -351,6 +371,7 @@ class Report(models.Model):
     -------
 
     """
+
     tournament = Tournament()
 
     def __str__(self):
