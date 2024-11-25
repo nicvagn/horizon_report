@@ -222,6 +222,31 @@ def create_match(
     return chess_match
 
 
+def remove_match_by_pk(pk: "PrimaryKey"):
+    """remove a match from this session by it's primarry key
+
+    Parameters
+    ----------
+    pk : the primary key of the match
+
+    Uses
+    ----
+    session : Django session
+        the current session got from session store
+
+    Side Effects
+    ------------
+    removes the match from this session
+    """
+    found_match = None
+
+    for m in session["matches"]:
+        breakpoint()
+        if m.pk == pk:
+            found_match = m
+            breakpoint()
+
+
 def get_tournament_info() -> "TournamentInfo":
     """get the TournamentInfo from this session
 
@@ -284,6 +309,11 @@ def get_tournament_round() -> int:
 def set_tournament_round(rnd: int) -> None:
     """set the tournament round we are building from this session
 
+    Parameters
+    ----------
+    rnd : int
+        the round number to set the round we are building to
+
     Uses
     ----
     session : A Django session
@@ -296,11 +326,6 @@ def set_tournament_round(rnd: int) -> None:
 
 def set_tournament_info(info: "TournamentInfo") -> None:
     """set the tournament info for this session
-
-    Uses
-    ----
-    session : A Django session
-        the session got from the session store
 
     Parameters
     ----------
@@ -316,6 +341,12 @@ def set_tournament_info(info: "TournamentInfo") -> None:
             "td_cfc": str(self.td_cfc),
         }
         from tournament info from form
+
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+
     """
     logger.debug("session key TournamentInfo set to %s", info)
     session["TournamentInfo"] = info

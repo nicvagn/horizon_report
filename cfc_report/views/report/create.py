@@ -214,6 +214,40 @@ def toggle_player_session(request, cfc_id: "CfcId" = None):
     return render(request, "cfc_report/create/player-form.html", context)
 
 
+def remove_match_session(request, pk=None) -> None:
+    """toggle a match from the db into the session and visa versa
+
+    Side-effects
+    ------------
+    changes match pk's in session.
+
+    Parameters
+    ----------
+    TODO
+    """
+
+    logger.debug(
+        "toggle_match_session entered with request: \
+        %s and  match pk: %s",
+        request,
+        pk,
+    )
+    assert pk
+
+    db_matches = db.get_matches()
+    tournament_matches = session.get_matches()
+
+    session.remove_match_by_pk(pk)
+    context = {
+        "db_matches": db_matches,
+        "matches_players": tournament_matches,
+        "include_nav_bar": False,
+    }
+
+    return render(request,
+                  "cfc_report/create/partials/match-list.html", context)
+
+
 def finalize(request):
     """TODO"""
     raise RuntimeError("Not done")
