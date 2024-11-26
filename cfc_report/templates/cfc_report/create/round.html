@@ -44,17 +44,19 @@
         <th>Result</th>
       </tr>
       {% for match in round.matches %}
+
+      <div id="{{match.pk}}">
       <tr>
         <td>{{ match.white }}</td>
         <td>{{ match.black }}</td>
         <td>{{ match.winner }}</td>
       </tr>
         <a
-         data-hx-target="#round-matches"
+         data-hx-target="#{{match.pk}}"
          data-hx-swap="outerHTML"
          data-hx-post="{{ match.get_absolute_url }}"
         >Select</a>
-
+       </div>
       {% endfor %}
     </table>
   </div>

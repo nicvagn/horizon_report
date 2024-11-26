@@ -238,13 +238,25 @@ def remove_match_by_pk(pk: "PrimaryKey"):
     ------------
     removes the match from this session
     """
-    found_match = None
-
-    for m in session["matches"]:
-        breakpoint()
+    old_matches = get_matches()
+    logger.debug("removing match with pk: %s\n all matches: %s",
+                 pk, old_matches)
+    match_found = False
+    new_matches = []
+    # check all the matches in order
+    for m in old_matches:
         if m.pk == pk:
-            found_match = m
-            breakpoint()
+            logger.debug("found match for removal")
+            match_found = True
+        else:
+            new_matches.append(m)
+
+    if match_found is False:
+        raise RuntimeError("Could not find match %s in session matches %s",
+                           m,
+                           get_matches())
+    logger.debug("match with pk %s removed. matches now %s", pk, new_matches)
+    session["matches"] = new_matches
 
 
 def get_tournament_info() -> "TournamentInfo":
