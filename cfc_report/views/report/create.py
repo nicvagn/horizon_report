@@ -170,7 +170,7 @@ def preview(request):
     return render(request, "cfc_report/show/index.html", context)
 
 
-def toggle_player_session(request, cfc_id:"CfcId = None):
+def toggle_player_session(request, cfc_id:"CfcId" = None):
     """Pick a player if it is not in the session, add it.
     If it is in the session, remove it. This uses htmx under the hood
     to replace on the DOM
@@ -212,6 +212,41 @@ def toggle_player_session(request, cfc_id:"CfcId = None):
     }
 
     return render(request, "cfc_report/create/player-form.html", context)
+
+
+
+def remove_match_session(request, pk=None) -> None:
+    """toggle a match from the db into the session and visa versa
+
+    Side-effects
+    ------------
+    changes match pk's in session.
+
+    Parameters
+    ----------
+    TODO
+    """
+
+    logger.debug(
+        "toggle_match_session entered with request: \
+        %s and  match pk: %s",
+        request,
+        pk,
+    )
+    assert pk
+
+    db_matches = db.get_matches()
+    tournament_matches = session.get_matches()
+
+    session.remove_match_by_pk(pk)
+    context = {
+        "db_matches": db_matches,
+        "matches_players": tournament_matches,
+        "include_nav_bar": False,
+    }
+
+    return render(request,
+                  "cfc_report/create/partials/match-list.html", context)
 
 
 def finalize(request):
