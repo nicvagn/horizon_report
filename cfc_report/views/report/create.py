@@ -13,15 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from cfc_report import logger, models
+from cfc_report.forms import MatchForm, RoundForm, TournamentInfoForm
+from cfc_report.services import database as db
+from cfc_report.services import session
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.vary import vary_on_headers
-
-from cfc_report import logger
-from cfc_report.forms import MatchForm, RoundForm, TournamentInfoForm
-from cfc_report.services import database as db
-from cfc_report.services import session
 
 
 def initial(request):
@@ -141,6 +140,24 @@ def round(request) -> HttpResponse:
 
     context = {"entered_matches": session.get_matches()}
     return render(request, "cfc_report/create/round.html", context)
+
+
+def finalize_round(request) -> HttpResponse:
+    """finalize a round in a chess tournament
+
+    Arguments
+    ---------
+    request : HttpRequest
+    """
+    logger.debug("Create.make_round entered with request: %s", request)
+    round_num = session.get_tournament_round()
+    matches = session.get_matches()
+    t_round = models.Round(round_num=round_num, matches=matches)
+
+    logger.debug("round %s made, value: %s", round_num, t_round)
+
+    breakpoint()
+    # TODO make preview round functionality
 
 
 def tournament(request):

@@ -337,6 +337,21 @@ def set_tournament_round(rnd: int) -> None:
     session["TournamentRound"] = rnd
 
 
+def get_tournament_round() -> int:
+    """get the tournament round we are building from this session
+
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+    Returns
+    -------
+    int : the round number
+    """
+    logger.debug("session 'TournamentRound': %s", session["TournamentRound"])
+    return session["TournamentRound"]
+
+
 def set_tournament_info(info: "TournamentInfo") -> None:
     """set the tournament info for this session
 
@@ -363,3 +378,6 @@ def set_tournament_info(info: "TournamentInfo") -> None:
     """
     logger.debug("session key TournamentInfo set to %s", info)
     session["TournamentInfo"] = info
+
+    # start building at round 1
+    session["TournamentRound"] = 1

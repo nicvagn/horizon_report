@@ -32,8 +32,8 @@ urlpatterns = [
          name="create-report-match"),
     path("create/round", create.round,
          name="create-report-round"),
-    path("create/finalize", create.finalize,
-         name="create-report-finalize"),
+    path("create/finalize", create.finalize_round,
+         name="create-round-finalize"),
     path("add-player", player.add_player, name="add-player"),
 
 ]
