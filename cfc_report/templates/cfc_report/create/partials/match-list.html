@@ -4,12 +4,11 @@
   <th>Round Matches</th>
   </tr>
   {% for match in entered_matches %}
-
     <tr>
-    <td>{{match}}</td>
-    <td>
-        <button hx-get="{% url 'select-match-round' pk=match.pk %}" hx-target="#round-matches">Remove</button>
-    </td>
+	<td>{{match}}</td>
+	<td>
+	    <button hx-get="{% url 'select-match-round' pk=match.pk %}" hx-target="closest tr" >Remove</button>
+	</td>
     </tr>
     {% endfor %}
 </table>

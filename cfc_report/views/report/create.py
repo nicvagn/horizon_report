@@ -154,7 +154,6 @@ def preview(request):
     tournament_info = session.get_tournament_info()
 
     # get information on tournament players from the session
-
     players: list["Player"] = session.get_players()
 
     context = {
@@ -214,7 +213,7 @@ def toggle_player_session(request, cfc_id=None):
     return render(request, "cfc_report/create/player-form.html", context)
 
 
-def remove_match_session(request, pk=None) -> None:
+def remove_match_session(request, pk=None) -> HttpResponse:
     """toggle a match from the db into the session and visa versa
 
     Side-effects
@@ -223,28 +222,23 @@ def remove_match_session(request, pk=None) -> None:
 
     Parameters
     ----------
-    TODO
+    request : HttpRequest
+        request sent to tell us to del match
+    pk=None
+        The primary key of the match to delete
     """
-
+    assert pk
     logger.debug(
         "toggle_match_session entered with request: \
         %s and  match pk: %s",
         request,
         pk,
     )
-    assert pk
     # remove the match from the session by primary key
     session.remove_match_by_pk(pk)
-    db_matches = db.get_matches()
-    tournament_matches = session.get_matches()
-    context = {
-        "db_matches": db_matches,
-        "matches_players": tournament_matches,
-        "include_nav_bar": False,
-    }
 
-    return render(request,
-                  "cfc_report/create/partials/match-list.html", context)
+    # return an empty http response, because why not
+    return HttpResponse("")
 
 
 def finalize(request):

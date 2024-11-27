@@ -219,6 +219,7 @@ def create_match(
     else:
         # create it
         session["matches"] = [chess_match]
+
     return chess_match
 
 
@@ -243,7 +244,7 @@ def remove_match_by_pk(pk: "PrimaryKey"):
                  pk, old_matches)
     match_found = False
     new_matches = []
-    # check all the matches in order
+    # check all the matches in order appending them if match.pk != pk
     for m in old_matches:
         if m.pk == pk:
             logger.debug("found match for removal")

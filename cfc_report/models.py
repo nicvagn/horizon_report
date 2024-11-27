@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import json
-import uuid as uuid_lib
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -249,8 +248,6 @@ class Match(models.Model):
         the black player in the match
     result : CharField
         KEY: {b == black victory, w == white victory, d == no victory)
-    uuid : uuid.uuid4
-        Unique identifyer for match
     """
 
     RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"),
