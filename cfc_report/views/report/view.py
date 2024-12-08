@@ -13,10 +13,26 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-def view_report(request):
+
+from cfc_report import logger
+from django.http import HttpResponse
+from django.shortcuts import render
+
+def round(request) -> HttpResponse:
+    """view a round in a CFC tournament"""
+
+    logger.debug("view.round entered with request: %s", request)
+
+    round_data = {"round_number": "69"}
+
+    return render(request, "cfc_report/show/round.html", round_data)
+
+
+
+def report(request) -> HttpResponse:
     """display a CFC report"""
 
-    logger.debug("view_report entered with request: %s", request)
+    logger.debug("view.report entered with request: %s", request)
 
     player_list = db.get_players()
     num_players = player_list.count()

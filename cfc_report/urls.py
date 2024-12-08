@@ -24,7 +24,8 @@ from .services import session
 
 urlpatterns = [
     path('', home.index, name='index'),
-    path("view/", view.view_report, name="view-report"),
+
+    # create
     path("create/", create.initial, name="create-report-info"),
     path("create/players", create.players,
          name="create-report-players"),
@@ -36,6 +37,9 @@ urlpatterns = [
          name="create-round-finalize"),
     path("add-player", player.add_player, name="add-player"),
 
+    # view
+    path("view/", view.report, name="view-report"),
+    path("view/round", view.round, name="view-report-round"),
 ]
 
 # htmx url patterns, cleaner this way?
