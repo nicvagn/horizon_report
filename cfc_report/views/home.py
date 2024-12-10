@@ -26,10 +26,6 @@ def index(request):
     """Main index page"""
     player_list = db.get_players()
 
-    request.session["players"] = [
-        Player.jsonify(Player(name="Joe Blow", cfc_id="989898")),
-        Player.jsonify(Player(name="Lo Blow", cfc_id="184494"))
-    ]
 
     return render(
         request, "cfc_report/home/index.html", {
