@@ -33,13 +33,14 @@ urlpatterns = [
          name="create-report-match"),
     path("create/round", create.round,
          name="create-report-round"),
-    path("create/finalize", create.finalize_round,
+    path("create/finalize/round", create.finalize_round,
          name="create-round-finalize"),
+    path("create/finalize/report", create.finalize_report,
+         name="create-report-finalize"),
     path("add-player", player.add_player, name="add-player"),
 
     # view
     path("view/", view.report, name="view-report"),
-    path("view/round", view.round, name="view-report-round"),
 ]
 
 # htmx url patterns, cleaner this way?

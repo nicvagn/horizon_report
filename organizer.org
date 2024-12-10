@@ -1,0 +1,4 @@
+# Create a standard way to represent tournament rounds
+
+finish in creation.py
+def finalize_round(request) -> HttpResponse:

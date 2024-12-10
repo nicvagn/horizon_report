@@ -3,8 +3,8 @@
 {% block page_title %}Show Round: {{ round_number }}{% endblock %}
 
 {% block nav_bar %}
-  <a href="/" class="padded">
-    <input id="home_btn" type="button" value="Exit" />
+  <a href="{% url 'create-report-round' %}" class="padded">
+    <input id="back-btn" type="button" value="Return to builder" />
   </a>
 {% endblock %}
 
@@ -15,9 +15,34 @@
 
 <section id="round-{{ round_number }}">
   <h4>Matches:</h4>
-  {% include "cfc_report/view/partials/match-list.html" %}
+    <table>
+      <tr>
+        <th>White</th>
+        <th>Black</th>
+        <th>Result</th>
+      </tr>
+      {% for match in round.matches %}
+
+      <div id="{{match.pk}}">
+      <tr>
+        <td>{{ match.white }}</td>
+        <td>{{ match.black }}</td>
+        <td>{{ match.winner }}</td>
+      </tr>
+        <a
+         data-hx-target="#{{match.pk}}"
+         data-hx-swap="outerHTML"
+         data-hx-post="{{ match.get_absolute_url }}"
+        >Select</a>
+       </div>
+      {% endfor %}
+    </table>
+  {% include "cfc_report/show/partials/match-list.html" %}
   <hr>
   <h4>Players:</h4>
-  {% include "cfc_report/view/partials/player-list.html" %}
+  {% include "cfc_report/show/partials/player-list.html" %}
   <hr>
+</section>
+
+<input id="confirm-round-creation" type="button" value="finalize creation">
 {% endblock %}

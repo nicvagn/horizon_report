@@ -18,15 +18,6 @@ from cfc_report import logger
 from django.http import HttpResponse
 from django.shortcuts import render
 
-def round(request) -> HttpResponse:
-    """view a round in a CFC tournament"""
-
-    logger.debug("view.round entered with request: %s", request)
-
-    round_data = {"round_number": "69"}
-
-    return render(request, "cfc_report/show/round.html", round_data)
-
 
 
 def report(request) -> HttpResponse:

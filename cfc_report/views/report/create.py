@@ -149,16 +149,23 @@ def finalize_round(request) -> HttpResponse:
     ---------
     request : HttpRequest
     """
-    logger.debug("Create.make_round entered with request: %s", request)
+    # TODO
+    logger.debug("Create.finalize_round entered with request: %s", request)
     round_num = session.get_tournament_round()
     matches = session.get_matches()
-    t_round = models.Round(round_num=round_num, matches=matches)
 
-    logger.debug("round %s made, value: %s", round_num, t_round)
+    context = { "round_number": round_num, "matches": session.get_matches, "players": session.get_players }
+    return render(request, "cfc_report/show/round.html", context)
 
-    breakpoint()
-    # TODO make preview round functionality
+def finalize_report(request) -> HttpResponse:
+    """finalize a chess tournament report
 
+    Arguments
+    ---------
+    request : HttpRequest
+    """
+    logger.debug("Create.finalize_report entered with request: %s", request)
+    raise NotImplementedError()
 
 def tournament(request):
     """Build a tournament"""
