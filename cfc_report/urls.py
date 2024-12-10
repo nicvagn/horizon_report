@@ -27,16 +27,11 @@ urlpatterns = [
 
     # create
     path("create/", create.initial, name="create-report-info"),
-    path("create/players", create.players,
-         name="create-report-players"),
-    path("create/match", create.chess_match,
-         name="create-report-match"),
-    path("create/round", create.round,
-         name="create-report-round"),
-    path("create/finalize/round", create.finalize_round,
-         name="create-round-finalize"),
-    path("create/finalize/report", create.finalize_report,
-         name="create-report-finalize"),
+    path("create/players", create.players, name="create-report-players"),
+    path("create/match", create.chess_match, name="create-report-match"),
+    path("create/round", create.round, name="create-report-round"),
+    path("create/finalize/round", create.finalize_round, name="create-round-finalize"),
+    path("create/finalize/report", create.finalize_report, name="create-report-finalize"),
     path("add-player", player.add_player, name="add-player"),
 
     # view
@@ -45,10 +40,8 @@ urlpatterns = [
 
 # htmx url patterns, cleaner this way?
 htmx_urlpatterns = [
-    path("create/select/<str:cfc_id>",
-         create.toggle_player_session, name="create-toggle-player"),
-    path("create/select-match/<int:pk>",
-         create.remove_match_session, name="select-match-round")
+    path("create/select/<str:cfc_id>", create.toggle_player_session, name="create-toggle-player"),
+    path("create/select-match/<int:pk>", create.remove_match_session, name="select-match-round")
 ]
 
 urlpatterns = urlpatterns + htmx_urlpatterns

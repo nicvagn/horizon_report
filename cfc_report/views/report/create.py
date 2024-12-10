@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger, models
 from cfc_report.forms import MatchForm, RoundForm, TournamentInfoForm
+from cfc_report.models import Player
 from cfc_report.services import database as db
 from cfc_report.services import session
 from django.http import HttpResponse
@@ -154,7 +155,7 @@ def finalize_round(request) -> HttpResponse:
     round_num = session.get_tournament_round()
     matches = session.get_matches()
 
-    context = { "round_number": round_num, "matches": session.get_matches, "players": session.get_players }
+    context = { "round_number": round_num, "matches": matches, "players": session.get_players() }
     return render(request, "cfc_report/show/round.html", context)
 
 def finalize_report(request) -> HttpResponse:
@@ -178,7 +179,7 @@ def preview(request):
     tournament_info = session.get_tournament_info()
 
     # get information on tournament players from the session
-    players: list["Player"] = session.get_players()
+    players: list[Player] = session.get_players()
 
     context = {
         "name": tournament_info["name"],
@@ -263,8 +264,3 @@ def remove_match_session(request, pk=None) -> HttpResponse:
 
     # return an empty http response, because why not
     return HttpResponse("")
-
-
-def finalize(request):
-    """TODO"""
-    raise RuntimeError("Not done")
