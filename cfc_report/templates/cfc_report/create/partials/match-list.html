@@ -1,17 +1,14 @@
 <!-- match list for showing matches with htmx -->
 <table id="round-matches" class="players-table">
   <tr>
-    <th>White</th>
-    <th>Black</th>
-    <th>Result</th>
+  <th>Round Matches</th>
   </tr>
-  {% for match in round.matches %}
-  <div id="{{match.pk}}">
+  {% for match in entered_matches %}
     <tr>
-      <td>{{ match.white }}</td>
-      <td>{{ match.black }}</td>
-      <td>{{ match.winner }}</td>
+	<td>{{match}}</td>
+	<td>
+	    <button hx-get="{% url 'select-match-round' pk=match.pk %}" hx-target="closest tr" >Remove</button>
+	</td>
     </tr>
-  </div>
-{% endfor %}
+    {% endfor %}
 </table>
