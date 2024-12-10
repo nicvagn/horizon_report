@@ -103,6 +103,10 @@ def get_matches() -> QuerySet:
 
     return matches
 
+def enter_round() -> None:
+    """enter a round into database"""
+    pass
+
 
 def populate_database() -> None:
     """Populate the db with dumby data"""

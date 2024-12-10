@@ -18,7 +18,7 @@ from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
 import json
 
-from ..models import Match, Player
+from ..models import Match, Player, Round
 from .database import get_player_by_cfc
 
 # get the current session
@@ -381,3 +381,26 @@ def set_tournament_info(info: "TournamentInfo") -> None:
 
     # start building at round 1
     session["TournamentRound"] = 1
+
+def finalize_round() -> None:
+    """Save this round, and prepair to add another one
+    side-effects
+    ------------
+    - incrument tournamentRound in session
+    - reset matches in round to None
+    """
+    round_number = get_tournament_round()
+    matches = get_matches()
+    rnd = Round(round_num=round_number, matches=matches )
+    # save round
+    rnd.save()
+
+    logger.debug("round made and saved. round: %s", rnd)
+
+    # prepare for next round
+    # incrument round number
+    session["tournementRound"] += 1
+    # reset the matches
+    session["matches"] = None
+
+    logger.debug("session prepaired for round %s", session["tournamentRound"])

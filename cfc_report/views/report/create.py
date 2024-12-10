@@ -150,13 +150,12 @@ def finalize_round(request) -> HttpResponse:
     ---------
     request : HttpRequest
     """
-    # TODO
     logger.debug("Create.finalize_round entered with request: %s", request)
-    round_num = session.get_tournament_round()
-    matches = session.get_matches()
+    # finalize the round, and prep for new one
+    session.finalize_round()
 
-    context = { "round_number": round_num, "matches": matches, "players": session.get_players() }
-    return render(request, "cfc_report/show/round.html", context)
+    # start creation of next round
+    return redirect("create-report-round")
 
 def finalize_report(request) -> HttpResponse:
     """finalize a chess tournament report
