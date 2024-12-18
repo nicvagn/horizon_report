@@ -337,8 +337,8 @@ def set_tournament_round(rnd: int) -> None:
     session["TournamentRound"] = rnd
 
 
-def get_tournament_round() -> int:
-    """get the tournament round we are building from this session
+def get_tournament_round_number() -> int:
+    """get what tournament round  we are building from this session
 
     Uses
     ----
