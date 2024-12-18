@@ -193,8 +193,7 @@ def get_matches() -> list("Match"):
     return session_matches
 
 
-def create_match(
-        white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
+def create_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
     """Create a chess match in this session
     Uses
     ----
@@ -240,8 +239,7 @@ def remove_match_by_pk(pk: "PrimaryKey"):
     removes the match from this session
     """
     old_matches = get_matches()
-    logger.debug("removing match with pk: %s\n all matches: %s",
-                 pk, old_matches)
+    logger.debug("removing match with pk: %s\n all matches: %s", pk, old_matches)
     match_found = False
     new_matches = []
     # check all the matches in order appending them if match.pk != pk
@@ -253,9 +251,9 @@ def remove_match_by_pk(pk: "PrimaryKey"):
             new_matches.append(m)
 
     if match_found is False:
-        raise RuntimeError("Could not find match %s in session matches %s",
-                           m,
-                           get_matches())
+        raise RuntimeError(
+            "Could not find match %s in session matches %s", m, get_matches()
+        )
     logger.debug("match with pk %s removed. matches now %s", pk, new_matches)
     session["matches"] = new_matches
 
@@ -382,6 +380,7 @@ def set_tournament_info(info: "TournamentInfo") -> None:
     # start building at round 1
     session["TournamentRound"] = 1
 
+
 def finalize_round() -> None:
     """Save this round, and prepair to add another one
     side-effects
@@ -389,9 +388,17 @@ def finalize_round() -> None:
     - incrument tournamentRound in session
     - reset matches in round to None
     """
+
+    breakpoint()
     round_number = get_tournament_round()
     matches = get_matches()
-    rnd = Round(round_num=round_number, matches=matches )
+
+    logger.debug(
+        "session.finalize_round() entered. Finalizing rnd: %s, matches: %s",
+        round_number,
+        matches,
+    )
+    rnd = Round(round_num=round_number, matches=matches)
     # save round
     rnd.save()
 

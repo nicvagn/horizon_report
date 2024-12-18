@@ -115,7 +115,7 @@ def chess_match(request):
         # Continue letting user add more games
     context = {
         "tournament_players": session.get_players(),
-        "round_number": session.get_tournament_round(),
+        "round_number": session.get_tournament_round_number(),
         "entered_matches": session.get_matches(),
     }
 
