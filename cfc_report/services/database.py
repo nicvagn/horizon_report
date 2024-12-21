@@ -103,6 +103,7 @@ def get_matches() -> QuerySet:
 
     return matches
 
+
 def enter_round() -> None:
     """enter a round into database"""
     pass
@@ -143,10 +144,19 @@ def populate_database() -> None:
 
     # Matches
     # create some filler data
+
+    r = "w"
     matches = []
     for n in range(int(len(players) / 2)):
+
+        if r != "w":
+            if r == "b":
+                r = "d"
+            elif r == "d":
+                r = "w"
         matches.append(
-            Match(white=players[n], black=players[n+1], winner=players[n])
+            Match(white=players[n], black=players[n+1],
+                  result=r, round_number=0)
         )
 
     for m in matches:

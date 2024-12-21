@@ -139,6 +139,8 @@ def round(request) -> HttpResponse:
         # Continue letting user add more games
         return render(request, "cfc_report/create/round.html", {})
 
+    tournament = models.Tournament()
+    tournament.rounds = models.Round()
     context = {"entered_matches": session.get_matches()}
     return render(request, "cfc_report/create/round.html", context)
 

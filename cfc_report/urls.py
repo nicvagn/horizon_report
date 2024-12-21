@@ -19,7 +19,6 @@ from django.urls import path
 
 from .views import home, player
 from .views.report import create, view
-from .services import session
 
 
 urlpatterns = [
