@@ -188,7 +188,8 @@ def get_matches() -> list("Match"):
     """
     session_matches = session.get("matches")
 
-    logger.info("matches got from session: %s", session_matches)
+    logger.info("matches got from session: %s, of type: %s",
+                session_matches, type(session_matches))
 
     return session_matches
 
@@ -209,8 +210,10 @@ def create_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Ma
     """
     white_player = get_player_by_cfc(white_id)
     black_player = get_player_by_cfc(black_id)
-
-    chess_match = Match(white=white_player, black=black_player, result=result)
+    tournament_rnd = get_tournament_round()
+    chess_match = Match(
+        white=white_player, black=black_player, result=result,
+        round_number=tournament_rnd)
 
     if session.has_key("matches"):
         # update it
@@ -239,7 +242,8 @@ def remove_match_by_pk(pk: "PrimaryKey"):
     removes the match from this session
     """
     old_matches = get_matches()
-    logger.debug("removing match with pk: %s\n all matches: %s", pk, old_matches)
+    logger.debug("removing match with pk: %s\n all matches: %s",
+                 pk, old_matches)
     match_found = False
     new_matches = []
     # check all the matches in order appending them if match.pk != pk
@@ -389,7 +393,6 @@ def finalize_round() -> None:
     - reset matches in round to None
     """
 
-    breakpoint()
     round_number = get_tournament_round()
     matches = get_matches()
 
@@ -398,7 +401,7 @@ def finalize_round() -> None:
         round_number,
         matches,
     )
-    rnd = Round(round_num=round_number, matches=matches)
+    rnd = Round(round_num=round_number)
     # save round
     rnd.save()
 

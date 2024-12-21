@@ -43,7 +43,12 @@
         <th>Black</th>
         <th>Result</th>
       </tr>
+
+      <p>TEST DATA?</p>
+      {{ round }}
+      <!--
       {% for match in round.matches %}
+
 
       <div id="{{match.pk}}">
       <tr>
@@ -57,6 +62,7 @@
          data-hx-post="{{ match.get_absolute_url }}"
         >Select</a>
        </div>
+      -->
       {% endfor %}
     </table>
   </div>

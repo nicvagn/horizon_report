@@ -17,9 +17,6 @@ import logging
 from .constants import DEBUG, FILE_HANDLER, LOGGER_NAME
 from .services.log import set_up_logger
 # settings
-DEBUG = True
-FILE_HANDLER = True
-LOGGER_NAME = "CFC_REPORT"
 
 logger = set_up_logger(logger_name=LOGGER_NAME,
               debug=DEBUG, file_handler=FILE_HANDLER)

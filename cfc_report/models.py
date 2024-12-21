@@ -84,7 +84,7 @@ class PersonWithCfcId(models.Model):
         return reverse("player", args=[self.slug])
 
     def jsonify(self) -> "JSON":
-        """Make a JSON Persor string from this Person
+        """Make a JSON Person string from this Person
 
         Returns
         -------
@@ -248,6 +248,8 @@ class Match(models.Model):
         the black player in the match
     result : CharField
         KEY: {b == black victory, w == white victory, d == no victory)
+    round_number : Int
+        What round of the tournament this game is for
     """
 
     RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"),
@@ -261,6 +263,7 @@ class Match(models.Model):
     )
     result = models.CharField(max_length=1, choices=RESULT_CHOICES,
                               default=RESULT_CHOICES[3])
+    round_number = models.IntegerField()
 
     def get_absolute_url(self):
         return reverse('select-match-round', kwargs={"pk": self.pk})
@@ -271,6 +274,7 @@ class Match(models.Model):
             f"white: ({self.white}), "
             f"black: ({self.black}), "
             f"result: ({self.result}) ]"
+            f"round number: ({self.round_number}) ]"
         )
 
 
@@ -281,15 +285,10 @@ class Round(models.Model):
     ----------
     round_num : IntegerField
         the round of it's tournament this is
-    matches : ForeignKey(Match)
-        the matches in this round
     """
 
     round_num = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(999)]
-    )
-    matches = models.ForeignKey(
-        Match, on_delete=models.CASCADE, related_name="matches_in_round"
     )
 
 
