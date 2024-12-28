@@ -270,11 +270,11 @@ class Match(models.Model):
 
     def __str__(self):
         return (
-            f"MATCH-[ "
-            f"white: ({self.white}), "
-            f"black: ({self.black}), "
-            f"result: ({self.result}) ]"
-            f"round number: ({self.round_number}) ]"
+            f"MATCH - [ "
+            f" white: ({self.white}),"
+            f" black: ({self.black}),"
+            f" result: ({self.result}),"
+            f" round number: ({self.round_number}) ]"
         )
 
 

@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
-import json
 
 from ..models import Match, Player, Round
 from .database import get_player_by_cfc
@@ -210,12 +209,12 @@ def create_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Ma
     """
     white_player = get_player_by_cfc(white_id)
     black_player = get_player_by_cfc(black_id)
-    tournament_rnd = get_tournament_round()
+    tournament_rnd = get_tournament_round_number()
     chess_match = Match(
         white=white_player, black=black_player, result=result,
         round_number=tournament_rnd)
 
-    if session.has_key("matches"):
+    if session.has_key("matches") and session["matches"] is not None:
         # update it
         session["matches"].append(chess_match)
     else:
@@ -225,7 +224,7 @@ def create_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Ma
     return chess_match
 
 
-def remove_match_by_pk(pk: "PrimaryKey"):
+def remove_match_by_pk(pk: "PrimaryKey") -> None:
     """remove a match from this session by it's primarry key
 
     Parameters
@@ -294,18 +293,16 @@ def get_tournament_info() -> "TournamentInfo":
     return get
 
 
-def get_tournament_round() -> int:
-    """get the tournament round we are building from this session
+def get_tournament_round_number() -> int:
+    """get the number of the tournament round we are building from this session
 
     Uses
     ----
     session : A Django session
         the session got from the session store
-
     Returns
     -------
-    int
-        the tournament round number stored in the session
+    int : the round number
     """
     logger.debug("session keys: %s", session.keys())
 
@@ -337,21 +334,6 @@ def set_tournament_round(rnd: int) -> None:
     logger.debug("session keys: %s", session.keys())
 
     session["TournamentRound"] = rnd
-
-
-def get_tournament_round_number() -> int:
-    """get what tournament round  we are building from this session
-
-    Uses
-    ----
-    session : A Django session
-        the session got from the session store
-    Returns
-    -------
-    int : the round number
-    """
-    logger.debug("session 'TournamentRound': %s", session["TournamentRound"])
-    return session["TournamentRound"]
 
 
 def set_tournament_info(info: "TournamentInfo") -> None:
@@ -387,13 +369,15 @@ def set_tournament_info(info: "TournamentInfo") -> None:
 
 def finalize_round() -> None:
     """Save this round, and prepair to add another one
+
     side-effects
     ------------
-    - incrument tournamentRound in session
+    - round_number++
+    - create and save a round model
     - reset matches in round to None
     """
 
-    round_number = get_tournament_round()
+    round_number = get_tournament_round_number()
     matches = get_matches()
 
     logger.debug(
@@ -406,11 +390,10 @@ def finalize_round() -> None:
     rnd.save()
 
     logger.debug("round made and saved. round: %s", rnd)
-
     # prepare for next round
-    # incrument round number
-    session["tournementRound"] += 1
+    round_number += 1
+    set_tournament_round(round_number)
     # reset the matches
     session["matches"] = None
 
-    logger.debug("session prepaired for round %s", session["tournamentRound"])
+    logger.debug("session prepaired for round %s", round_number)

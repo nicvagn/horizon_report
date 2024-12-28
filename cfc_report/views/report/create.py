@@ -102,7 +102,7 @@ def chess_match(request):
 
         # Make match
         logger.debug(
-            "chess_match entered: black_id %s, white_id: %s, result: %s",
+            "chess_match entered: black_id %s, white_id: %s, result: %s, round: %s",
             black_id,
             white_id,
             result,
@@ -118,8 +118,6 @@ def chess_match(request):
         "round_number": session.get_tournament_round_number(),
         "entered_matches": session.get_matches(),
     }
-
-    # TODO: replicate choosing players for report, but make it for a game
 
     return render(request, "cfc_report/create/match.html", context)
 
