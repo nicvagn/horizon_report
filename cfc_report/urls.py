@@ -29,6 +29,7 @@ urlpatterns = [
     path("create/players", create.players, name="create-report-players"),
     path("create/match", create.chess_match, name="create-report-match"),
     path("create/round", create.round, name="create-report-round"),
+    path("create/confirm-round", create.confirm_round, name="create-round-confirm"),
     path("create/finalize/round", create.finalize_round, name="create-round-finalize"),
     path("create/finalize/report", create.finalize_report, name="create-report-finalize"),
     path("add-player", player.add_player, name="add-player"),

@@ -1,0 +1,25 @@
+{% extends "cfc_report/base/base.html" %}
+
+{% block page_title %}{{tournament_name}} Report{% endblock %}
+
+{% block nav_bar %}
+  <a href="{% url 'index' %}" class="padded">
+    <input type="button" value="Exit" />
+  </a>
+{% endblock %}
+
+{% block content %}
+<span>
+  <h1>{{ tournament_name }} Report</h1>
+</span>
+
+<section id="report_rounds">
+  {% for round in rounds %}
+  {% include "cfc_report/show/partials/round.html" %}
+</section>
+
+<section id="report_matches">
+  {% include "cfc_report/show/partials/match-list.html" %}
+</section>
+
+{% endblock %}

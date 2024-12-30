@@ -293,6 +293,28 @@ def get_tournament_info() -> "TournamentInfo":
     return get
 
 
+def get_tournament_name() -> str:
+    """get the name of the tournament we are building
+
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+    Returns
+    -------
+    str : the tournament name
+    """
+
+    info = session["TournamentInfo"]
+
+    tournament_name = info["name"]
+
+    logger.info("get_tournament_name() got %s from session['tournamentInfo'] %s",
+                tournament_name,
+                info,)
+    return tournament_name
+
+
 def get_tournament_round_number() -> int:
     """get the number of the tournament round we are building from this session
 

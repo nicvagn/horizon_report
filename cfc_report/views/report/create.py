@@ -65,13 +65,13 @@ def players(request):
         "include_nav_bar": False,
     }
 
-    # if the request is a POST it is the form submission not initial get
-    # So pass on to create games
+    """# if the request is a POST it is the form submission not initial get
     if request.method == "POST":
         player_info = request.POST
         logger.debug("POST request with value: %s", player_info)
         logger.debug("TournamentInfoForm made from POST: %s", player_info)
         return render(request, "cfc_report/create/round.html", player_info)
+    """
     logger.debug(
         "db_players: %s \n tournament_players: %s \n context: %s",
         db_players,
@@ -139,8 +139,31 @@ def round(request) -> HttpResponse:
 
     tournament = models.Tournament()
     tournament.rounds = models.Round()
-    context = {"entered_matches": session.get_matches()}
+    context = {"entered_matches": session.get_matches(),
+               "rounds": session.get_matches}
     return render(request, "cfc_report/create/round.html", context)
+
+
+def confirm_round(request) -> HttpResponse:
+    """Confirm a round for submission. If confirmed, finalize the round,
+    else return to edditing it
+
+    Arguments
+    ---------
+    request : HttpRequest
+    """
+
+    tournament_info = session.get_tournament_info()
+    context = {
+        "tournament_name": tournament_info["name"],
+        "round_number": session.get_tournament_round_number(),
+        "matches": session.get_matches(),
+        "players": session.get_players(),
+    }
+
+    logger.debug("Create.confirm_round entered, confirming round completion. TournamentInfo: %s", tournament_info)
+
+    return render(request, "cfc_report/create/confirm-round.html", context)
 
 
 def finalize_round(request) -> HttpResponse:
@@ -157,6 +180,7 @@ def finalize_round(request) -> HttpResponse:
     # start creation of next round
     return redirect("create-report-round")
 
+
 def finalize_report(request) -> HttpResponse:
     """finalize a chess tournament report
 
@@ -165,7 +189,9 @@ def finalize_report(request) -> HttpResponse:
     request : HttpRequest
     """
     logger.debug("Create.finalize_report entered with request: %s", request)
-    raise NotImplementedError()
+    context = {}
+    return render(request, "cfc_report/show/report.html", context)
+
 
 def tournament(request):
     """Build a tournament"""

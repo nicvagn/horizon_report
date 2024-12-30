@@ -9,69 +9,21 @@
 {% endblock %}
 
 {% block content %}
-<span>
-  <h1>Build Tournament Round</h1>
-</span>
 
 <section id="round-builder">
-  <h3>Building round: {{ Building_round }} </h3>
+  <h1>Building round number {{ round_number }} </h1>
 
   <a href="{% url 'create-report-match' %}">
     <button>Enter matches</button>
   </a>
 
-
   <h4>Entered Matches:</h4>
   {% include "cfc_report/create/partials/match-list.html" %}
 </section>
 
-<hr>
 <span>
-  <h2>Created Rounds:</h2>
-</span>
-<hr>
-
-{% for round in rounds %}
-<div class="tournament-round">
-  <h3>Round: {{ round.number }}</h3>
-
-  <h4>Matches:</h4>
-  <div id="round-matches">
-    <table>
-      <tr>
-        <th>White</th>
-        <th>Black</th>
-        <th>Result</th>
-      </tr>
-
-      <p>TEST DATA?</p>
-      {{ round }}
-      <!--
-      {% for match in round.matches %}
-
-
-      <div id="{{match.pk}}">
-      <tr>
-        <td>{{ match.white }}</td>
-        <td>{{ match.black }}</td>
-        <td>{{ match.winner }}</td>
-      </tr>
-        <a
-         data-hx-target="#{{match.pk}}"
-         data-hx-swap="outerHTML"
-         data-hx-post="{{ match.get_absolute_url }}"
-        >Select</a>
-       </div>
-      -->
-      {% endfor %}
-    </table>
-  </div>
-</div>
-{% endfor %}
-
-<span>
-  <a href="{% url 'create-round-finalize' %}">
-    <input id="submit_round_btn" type="button" value="finalize round" />
+  <a href="{% url 'create-round-confirm' %}">
+    <input id="confirm_round_btn" type="button" value="build round" />
   </a>
   <a href="{% url 'create-report-finalize' %}">
     <input id="submit_report_btn" type="button" value="done entering rounds" />
