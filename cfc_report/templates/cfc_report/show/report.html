@@ -3,7 +3,7 @@
 {% block page_title %}{{tournament_name}} Report{% endblock %}
 
 {% block nav_bar %}
-  <a href="{% url 'index' %}" class="padded">
+  <a href="{% url 'index' %}">
     <input type="button" value="Exit" />
   </a>
 {% endblock %}
@@ -15,7 +15,8 @@
 
 <section id="report_rounds">
   {% for round in rounds %}
-  {% include "cfc_report/show/partials/round.html" %}
+    {% include "cfc_report/show/partials/round.html" %}
+  {% endfor %}
 </section>
 
 <section id="report_matches">

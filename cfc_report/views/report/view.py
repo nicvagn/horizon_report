@@ -17,7 +17,7 @@
 from cfc_report import logger
 from django.http import HttpResponse
 from django.shortcuts import render
-
+from cfc_report.services import database
 
 
 def report(request) -> HttpResponse:
@@ -25,7 +25,7 @@ def report(request) -> HttpResponse:
 
     logger.debug("view.report entered with request: %s", request)
 
-    player_list = db.get_players()
+    player_list = database.get_players()
     num_players = player_list.count()
     report = {
         "name": "The Masters",

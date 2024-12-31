@@ -65,13 +65,14 @@ def players(request):
         "include_nav_bar": False,
     }
 
-    """# if the request is a POST it is the form submission not initial get
+    # if the request is a POST it is the form submission not initial get
+    # needed if no new players are choosen and you want to confirm players
     if request.method == "POST":
         player_info = request.POST
         logger.debug("POST request with value: %s", player_info)
         logger.debug("TournamentInfoForm made from POST: %s", player_info)
         return render(request, "cfc_report/create/round.html", player_info)
-    """
+
     logger.debug(
         "db_players: %s \n tournament_players: %s \n context: %s",
         db_players,
