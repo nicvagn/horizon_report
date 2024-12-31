@@ -181,6 +181,13 @@ def finalize_round(request) -> HttpResponse:
     # start creation of next round
     return redirect("create-report-round")
 
+def report(request) -> HttpResponse:
+    """Create report
+    """
+
+    context = {}
+    return render(request, "cfc_report/create/report.html", context)
+
 
 def finalize_report(request) -> HttpResponse:
     """finalize a chess tournament report

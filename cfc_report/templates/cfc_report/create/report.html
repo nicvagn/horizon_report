@@ -2,10 +2,9 @@
 
 <!-- vars used: tournament_name, roundsreport/views/report/-->
 
-{% block page_title %}{{tournament_name}} Report{% endblock %}
+{% block page_title %}Horizon Report: {{tournament_name }} Report{% endblock %}
 
 {% block nav_bar %}
-<input type=button value="Edit Round" onClick="javascript:history.go(-1);">
 {% endblock %}
 
 {% block content %}
@@ -16,11 +15,13 @@
 <section id="report_rounds">
   {% for round in rounds %}
     {% include "cfc_report/show/partials/round.html" %}
+    <input id="edit_round_btn" type="button" value="Edit">
   {% endfor %}
 </section>
 
-<section id="report_matches">
-  {% include "cfc_report/show/partials/match-list.html" %}
+<section id="report_players">
+  {% include "cfc_report/show/partials/player-list.html" %}
+  <input id="edit_round_btn" type="button" value="Edit">
 </section>
 
 {% endblock %}

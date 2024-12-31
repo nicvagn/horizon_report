@@ -28,10 +28,11 @@
         <td>{{player.name}}</td>
         <td>{{player.cfc_id}}</td>
         <td>
-          <a 
+          <!-- the url is defined in urls.py -->
+          <a
             data-hx-target="#players_section"
             data-hx-swap="outerHTML"
-            data-hx-post="select/{{ player.cfc_id }}"
+            data-hx-post="select-player/{{ player.cfc_id }}"
           >Remove</a>
         </td>
       </tr>
@@ -52,10 +53,10 @@
         <td>{{ player.name }}</td>
         <td>{{ player.cfc_id }}</td>
         <td>
-          <a 
+          <a
             data-hx-target="#players_section"
             data-hx-swap="outerHTML"
-            data-hx-post="select/{{ player.cfc_id }}"
+            data-hx-post="select-player/{{ player.cfc_id }}"
           >Select</a>
 
         </td>
@@ -64,7 +65,7 @@
     </table>
   </aside>
   <span>
-    <a href="{% url 'create-report-round' %}">
+    <a href="{% url 'create-report' %}">
       <input id="submit_btn" type="submit" value="Continue" />
     </a>
   </span>
