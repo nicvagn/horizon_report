@@ -167,6 +167,14 @@ def confirm_round(request) -> HttpResponse:
     return render(request, "cfc_report/create/confirm-round.html", context)
 
 
+def report(request) -> HttpResponse:
+    """Create report
+    """
+
+    context = {}
+    return render(request, "cfc_report/create/report.html", context)
+
+
 def finalize_round(request) -> HttpResponse:
     """finalize a round in a chess tournament
 
@@ -181,14 +189,6 @@ def finalize_round(request) -> HttpResponse:
     # start creation of next round
     return redirect("create-report-round")
 
-def report(request) -> HttpResponse:
-    """Create report
-    """
-
-    context = {}
-    return render(request, "cfc_report/create/report.html", context)
-
-
 def finalize_report(request) -> HttpResponse:
     """finalize a chess tournament report
 
@@ -197,7 +197,13 @@ def finalize_report(request) -> HttpResponse:
     request : HttpRequest
     """
     logger.debug("Create.finalize_report entered with request: %s", request)
-    context = {}
+    # get tournament information
+    tournament_info = session.get_tournament_info()
+    context = {
+        "tournament_name": tournament_info["name"],
+        "matches": session.get_matches(),
+        "players": session.get_players(),
+    }
     return render(request, "cfc_report/show/report.html", context)
 
 
