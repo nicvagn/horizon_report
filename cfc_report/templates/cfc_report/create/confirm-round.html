@@ -3,7 +3,7 @@
 {% block page_title %}Confirm round {{round_number}}{% endblock %}
 
 {% block nav_bar %}
-  <a href="/">
+<a href="{% url 'create-report-round' %}">
     <input id="return_btn" type="button" value="Return" />
   </a>
 {% endblock %}
