@@ -380,7 +380,6 @@ def set_tournament_info(info: "TournamentInfo") -> None:
     ----
     session : A Django session
         the session got from the session store
-
     """
     logger.debug("session key TournamentInfo set to %s", info)
     session["TournamentInfo"] = info

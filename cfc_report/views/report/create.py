@@ -18,6 +18,7 @@ from cfc_report.forms import MatchForm, RoundForm, TournamentInfoForm
 from cfc_report.models import Player
 from cfc_report.services import database as db
 from cfc_report.services import session
+from cfc_report.services.ctr import CTR
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -198,13 +199,15 @@ def finalize_report(request) -> HttpResponse:
     """
     logger.debug("Create.finalize_report entered with request: %s", request)
     # get tournament information
-    tournament_info = session.get_tournament_info()
+    t_info = session.get_tournament_info()
+
+    logger.debug("Tournament Info got: %s", t_info)
+    ctr = CTR(t_info, session)
     context = {
-        "tournament_name": tournament_info["name"],
-        "matches": session.get_matches(),
-        "players": session.get_players(),
+        "ctr": ctr
     }
-    return render(request, "cfc_report/show/report.html", context)
+
+    return render(request, "cfc_report/show/ctr.html", context)
 
 
 def tournament(request):

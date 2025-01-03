@@ -232,6 +232,7 @@ class Roster(models.Model):
 
     players = models.ForeignKey(Player, on_delete=models.CASCADE)
 
+
     def size(self):
         """Number of Player ie: size of this roster"""
         raise NotImplementedError
@@ -290,6 +291,7 @@ class Round(models.Model):
     round_num = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(999)]
     )
+    #TODO
 
 
 class Tournament(models.Model):
@@ -320,6 +322,10 @@ class Tournament(models.Model):
 
     name = models.CharField(max_length=30)
     num_rounds = models.IntegerField()
+    roster = models.ForeignKey(
+        Roster, on_delete=models.CASCADE, related_name="tournament_roster",
+        default=False
+    )
     rounds = models.ForeignKey(
         Round, on_delete=models.CASCADE, related_name="rounds_in_tournament",
         default=False
