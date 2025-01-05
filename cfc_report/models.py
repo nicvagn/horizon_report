@@ -260,7 +260,8 @@ class Match(models.Model):
         Player, on_delete=models.CASCADE, related_name="black_player"
     )
     result = models.CharField(max_length=1, choices=RESULT_CHOICES,
-                              default=RESULT_CHOICES[3])
+                              default="_")
+
 
     def get_absolute_url(self):
         return reverse('select-match-round', kwargs={"pk": self.pk})
@@ -281,15 +282,11 @@ class Round(models.Model):
     ----------
     round_num : IntegerField
         the round of it's tournament this is
-    matches : ForeignKey(Match)
-        the matches in this round
     """
 
-    round_num = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(999)]
-    )
-    matches = models.ForeignKey(
-        Match, on_delete=models.CASCADE, related_name="matches_in_round"
+
+    round_number = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(999)],
     )
 
 
@@ -321,10 +318,6 @@ class Tournament(models.Model):
 
     name = models.CharField(max_length=30)
     num_rounds = models.IntegerField()
-    rounds = models.ForeignKey(
-        Round, on_delete=models.CASCADE, related_name="rounds_in_tournament",
-        default=False
-    )
     date = models.DateField()
     pairing_system = PairingSystemField()
     province = ProvinceField()

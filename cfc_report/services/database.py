@@ -17,10 +17,11 @@
 
 from cfc_report import logger
 from cfc_report.models import (Match, Player, TournamentDirector,
-                               TournamentOrganizer)
+                               TournamentOrganizer, Tournament)
 from django.db.models import QuerySet
 
 
+# GET
 def get_players() -> QuerySet:
     """Get players in database
     returns:
@@ -44,31 +45,9 @@ def get_player_by_cfc(cfc_id: "Cfc_id") -> Player:
     DoesNotExist exception if player not found
     """
     p = Player.objects.get(cfc_id=cfc_id)
+
     logger.debug("Player %s got from cfc_id %s", p, cfc_id)
     return p
-
-
-def add_player(p: Player) -> None:
-    """Add a player to the database
-    parameters:
-        p: The models.Player object to add
-    """
-    logger.debug("player %s added to db", p)
-    p.save()
-
-
-def add_player_by_cfc(cfc_id: "CfcId", name: str) -> None:
-    """Add a player to the database using name and cfcid
-    parameters:
-        cfc_id : "CfcId"
-            the cfc id of the player
-        name : str
-            the players name.
-    """
-
-    p = Player(name, cfc_id)
-
-    add_player(p)
 
 
 def get_TDs() -> QuerySet:
@@ -103,9 +82,45 @@ def get_matches() -> QuerySet:
 
     return matches
 
-def enter_round() -> None:
-    """enter a round into database"""
-    pass
+# ADD
+def add_player(p: Player) -> None:
+    """Add a player to the database
+    parameters:
+        p: The models.Player object to add
+    """
+    logger.debug("player %s added to db", p)
+    p.save()
+
+
+def add_player_by_cfc(cfc_id: "CfcId", name: str) -> None:
+    """Add a player to the database using name and cfcid
+    parameters:
+        cfc_id : "CfcId"
+            the cfc id of the player
+        name : str
+            the players name.
+    """
+
+    p = Player(name, cfc_id)
+
+    add_player(p)
+def add_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
+    """white : Player
+        the White player in the match
+    black : Player
+        the black player in the match
+    result : CharField
+        KEY: {b == black victory, w == white victory, d == no victory)
+    """
+
+    white_player = get_player_by_cfc(white_id)
+    black_player = get_player_by_cfc(black_id)
+
+    chess_match = Match(white=white_player, black=black_player, result=result)
+
+    logger.debug("chess_match %s added to the database", chess_match)
+    chess_match.save()
+    return chess_match
 
 
 def populate_database() -> None:
@@ -146,7 +161,7 @@ def populate_database() -> None:
     matches = []
     for n in range(int(len(players) / 2)):
         matches.append(
-            Match(white=players[n], black=players[n+1], winner=players[n])
+            Match(white=players[n], black=players[n+1], result="w")
         )
 
     for m in matches:
