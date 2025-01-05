@@ -18,6 +18,7 @@ from cfc_report.forms import MatchForm, RoundForm, TournamentInfoForm
 from cfc_report.models import Player
 from cfc_report.services import database as db
 from cfc_report.services import session
+from cfc_report.services.ctr import CTR
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -66,12 +67,13 @@ def players(request):
     }
 
     # if the request is a POST it is the form submission not initial get
-    # So pass on to create games
+    # needed if no new players are choosen and you want to confirm players
     if request.method == "POST":
         player_info = request.POST
         logger.debug("POST request with value: %s", player_info)
         logger.debug("TournamentInfoForm made from POST: %s", player_info)
         return render(request, "cfc_report/create/round.html", player_info)
+
     logger.debug(
         "db_players: %s \n tournament_players: %s \n context: %s",
         db_players,
@@ -102,7 +104,7 @@ def chess_match(request):
 
         # Make match
         logger.debug(
-            "chess_match entered: black_id %s, white_id: %s, result: %s",
+            "chess_match entered: black_id %s, white_id: %s, result: %s, round: %s",
             black_id,
             white_id,
             result,
@@ -115,11 +117,9 @@ def chess_match(request):
         # Continue letting user add more games
     context = {
         "tournament_players": session.get_players(),
-        "round_number": session.get_tournament_round(),
+        "round_number": session.get_tournament_round_number(),
         "entered_matches": session.get_matches(),
     }
-
-    # TODO: replicate choosing players for report, but make it for a game
 
     return render(request, "cfc_report/create/match.html", context)
 
@@ -139,8 +139,41 @@ def round(request) -> HttpResponse:
         # Continue letting user add more games
         return render(request, "cfc_report/create/round.html", {})
 
-    context = {"entered_matches": session.get_matches()}
+    tournament = models.Tournament()
+    tournament.rounds = models.Round()
+    context = {"entered_matches": session.get_matches(),
+               "rounds": session.get_matches}
     return render(request, "cfc_report/create/round.html", context)
+
+
+def confirm_round(request) -> HttpResponse:
+    """Confirm a round for submission. If confirmed, finalize the round,
+    else return to edditing it
+
+    Arguments
+    ---------
+    request : HttpRequest
+    """
+
+    tournament_info = session.get_tournament_info()
+    context = {
+        "tournament_name": tournament_info["name"],
+        "round_number": session.get_tournament_round_number(),
+        "matches": session.get_matches(),
+        "players": session.get_players(),
+    }
+
+    logger.debug("Create.confirm_round entered, confirming round completion. TournamentInfo: %s", tournament_info)
+
+    return render(request, "cfc_report/create/confirm-round.html", context)
+
+
+def report(request) -> HttpResponse:
+    """Create report
+    """
+
+    context = {}
+    return render(request, "cfc_report/create/report.html", context)
 
 
 def finalize_round(request) -> HttpResponse:
@@ -165,7 +198,17 @@ def finalize_report(request) -> HttpResponse:
     request : HttpRequest
     """
     logger.debug("Create.finalize_report entered with request: %s", request)
-    raise NotImplementedError()
+    # get tournament information
+    t_info = session.get_tournament_info()
+
+    logger.debug("Tournament Info got: %s", t_info)
+    ctr = CTR(t_info, session)
+    context = {
+        "ctr": ctr
+    }
+
+    return render(request, "cfc_report/show/ctr.html", context)
+
 
 def tournament(request):
     """Build a tournament"""

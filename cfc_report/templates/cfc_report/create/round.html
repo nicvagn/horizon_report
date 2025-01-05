@@ -9,23 +9,18 @@
 {% endblock %}
 
 {% block content %}
-<span>
-  <h1>Build Tournament Round</h1>
-</span>
 
 <section id="round-builder">
-  <h3>Building round: {{ Building_round }} </h3>
+  <h1>Building round number {{ round_number }} </h1>
 
   <a href="{% url 'create-report-match' %}">
     <button>Enter matches</button>
   </a>
 
-
   <h4>Entered Matches:</h4>
   {% include "cfc_report/create/partials/match-list.html" %}
 </section>
 
-<hr>
 <span>
   <h2>Created Rounds:</h2>
 </span>
@@ -65,8 +60,8 @@
 {% endfor %}
 
 <span>
-  <a href="{% url 'create-round-finalize' %}">
-    <input id="submit_round_btn" type="button" value="finalize round" />
+  <a href="{% url 'create-round-confirm' %}">
+    <input id="confirm_round_btn" type="button" value="build round" />
   </a>
   <a href="{% url 'create-report-finalize' %}">
     <input id="submit_report_btn" type="button" value="done entering rounds" />

@@ -1,0 +1,30 @@
+{% extends "cfc_report/base/base.html" %}
+
+{% block page_title %}Confirm round {{round_number}}{% endblock %}
+
+{% block nav_bar %}
+<a href="{% url 'create-report-round' %}">
+    <input id="return_btn" type="button" value="Return" />
+  </a>
+{% endblock %}
+
+{% block content %}
+<span>
+  <h1>Confirm Tournament Round Info</h1>
+</span>
+
+<section id="round-preview">
+  <h2>{{ tournament_name }}: Round {{ round_number }} </h2>
+
+  <h3>Match List:</h3>
+  {% include "cfc_report/show/partials/match-list.html" %}
+
+  <h3>Player List:</h3>
+  {% include "cfc_report/show/partials/player-list.html" %}
+
+  <a href="{% url 'create-round-finalize' %}">
+    <input id="finalize_btn" type="button" value="Finalize" />
+  </a>
+</section>
+
+{% endblock %}

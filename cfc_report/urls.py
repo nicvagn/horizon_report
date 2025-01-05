@@ -19,7 +19,6 @@ from django.urls import path
 
 from .views import home, player
 from .views.report import create, view
-from .services import session
 
 
 urlpatterns = [
@@ -28,8 +27,10 @@ urlpatterns = [
     # create
     path("create/", create.initial, name="create-report-info"),
     path("create/players", create.players, name="create-report-players"),
-    path("create/match", create.chess_match, name="create-report-match"),
-    path("create/round", create.round, name="create-report-round"),
+    path("create/report", create.report, name="create-report"),
+    path("create/report/round", create.round, name="create-report-round"),
+    path("create/report/match", create.chess_match, name="create-report-match"),
+    path("create/report/confirm-round", create.confirm_round, name="create-round-confirm"),
     path("create/finalize/round", create.finalize_round, name="create-round-finalize"),
     path("create/finalize/report", create.finalize_report, name="create-report-finalize"),
     path("add-player", player.add_player, name="add-player"),
@@ -40,8 +41,9 @@ urlpatterns = [
 
 # htmx url patterns, cleaner this way?
 htmx_urlpatterns = [
-    path("create/select/<str:cfc_id>", create.toggle_player_session, name="create-toggle-player"),
-    path("create/select-match/<int:pk>", create.remove_match_session, name="select-match-round")
+    path("create/select-player/<str:cfc_id>", create.toggle_player_session, name="create-toggle-player"),
+    path("create/select-match/<int:pk>", create.remove_match_session, name="select-match-round"),
+    # path("create/select-round/<int:pk>", TODO
 ]
 
 urlpatterns = urlpatterns + htmx_urlpatterns

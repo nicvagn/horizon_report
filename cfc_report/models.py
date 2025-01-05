@@ -70,8 +70,8 @@ class PersonWithCfcId(models.Model):
 
         self.slug = slugify(self.name)
         logger.info(
-            "PersonWithCfdId: (%s) saved and slug (%s) created for it",
-            self, self.slug)
+            "PersonWithCfdId: (%s) saved and slug (%s) created for it", self, self.slug
+        )
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -84,7 +84,7 @@ class PersonWithCfcId(models.Model):
         return reverse("player", args=[self.slug])
 
     def jsonify(self) -> "JSON":
-        """Make a JSON Persor string from this Person
+        """Make a JSON Person string from this Person
 
         Returns
         -------
@@ -248,10 +248,11 @@ class Match(models.Model):
         the black player in the match
     result : CharField
         KEY: {b == black victory, w == white victory, d == no victory)
+    round_number : Int
+        What round of the tournament this game is for
     """
 
-    RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"),
-                      ("d", "0.5 - 0.5"), ("_", "_")]
+    RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"), ("d", "0.5 - 0.5"), ("_", "_")]
 
     white = models.ForeignKey(
         Player, on_delete=models.CASCADE, related_name="white_player"
@@ -259,19 +260,21 @@ class Match(models.Model):
     black = models.ForeignKey(
         Player, on_delete=models.CASCADE, related_name="black_player"
     )
-    result = models.CharField(max_length=1, choices=RESULT_CHOICES,
-                              default="_")
-
+    result = models.CharField(
+        max_length=1, choices=RESULT_CHOICES, default=RESULT_CHOICES[3]
+    )
+    round_number = models.IntegerField()
 
     def get_absolute_url(self):
-        return reverse('select-match-round', kwargs={"pk": self.pk})
+        return reverse("select-match-round", kwargs={"pk": self.pk})
 
     def __str__(self):
         return (
-            f"MATCH-[ "
-            f"white: ({self.white}), "
-            f"black: ({self.black}), "
-            f"result: ({self.result}) ]"
+            f"MATCH - [ "
+            f" white: ({self.white}),"
+            f" black: ({self.black}),"
+            f" result: ({self.result}),"
+            f" round number: ({self.round_number}) ]"
         )
 
 
@@ -284,10 +287,10 @@ class Round(models.Model):
         the round of it's tournament this is
     """
 
-
-    round_number = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(999)],
+    round_num = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(999)]
     )
+    # TODO
 
 
 class Tournament(models.Model):
@@ -318,6 +321,19 @@ class Tournament(models.Model):
 
     name = models.CharField(max_length=30)
     num_rounds = models.IntegerField()
+    roster = models.ForeignKey(
+        Roster,
+        on_delete=models.CASCADE,
+        related_name="tournament_roster",
+        default=False,
+    )
+    rounds = models.ForeignKey(
+        Round,
+        on_delete=models.CASCADE,
+        related_name="rounds_in_tournament",
+        default=False,
+    )
+
     date = models.DateField()
     pairing_system = PairingSystemField()
     province = ProvinceField()

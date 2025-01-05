@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
-import json
 
 from . import database
 from ..models import Match, Player, Round, Tournament
@@ -189,14 +188,14 @@ def get_matches() -> list("Match"):
     """
     session_matches = session.get("matches")
 
-    logger.info("matches got from session: %s", session_matches)
+    logger.info("matches got from session: %s, of type: %s",
+                session_matches, type(session_matches))
 
     return session_matches
 
 
-def create_match(
-        white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
-    """Create a chess match in database, and adds it to this session
+def create_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
+    """Create a chess match in this session
     Uses
     ----
     session - the django session got from the session store
@@ -209,13 +208,15 @@ def create_match(
     -------
     the created match
     """
+    # get match players from database
     white_player = database.get_player_by_cfc(white_id)
     black_player = database.get_player_by_cfc(black_id)
+    tournament_rnd = get_tournament_round_number()
+    chess_match = Match(
+        white=white_player, black=black_player, result=result,
+        round_number=tournament_rnd)
 
-    chess_match = database.add_match(white_id, black_id, result)
-
-
-    if session.has_key("matches"):
+    if session.has_key("matches") and session["matches"] is not None:
         # update it
         session["matches"].append(chess_match)
     else:
@@ -225,7 +226,7 @@ def create_match(
     return chess_match
 
 
-def remove_match_by_pk(pk: "PrimaryKey"):
+def remove_match_by_pk(pk: "PrimaryKey") -> None:
     """remove a match from this session by it's primarry key
 
     Parameters
@@ -255,9 +256,9 @@ def remove_match_by_pk(pk: "PrimaryKey"):
             new_matches.append(m)
 
     if match_found is False:
-        raise RuntimeError("Could not find match %s in session matches %s",
-                           m,
-                           get_matches())
+        raise RuntimeError(
+            "Could not find match %s in session matches %s", m, get_matches()
+        )
     logger.debug("match with pk %s removed. matches now %s", pk, new_matches)
     session["matches"] = new_matches
 
@@ -294,7 +295,54 @@ def get_tournament_info() -> "TournamentInfo":
     return get
 
 
-def set_tournament_round(rnd: int) -> None:
+def get_tournament_name() -> str:
+    """get the name of the tournament we are building
+
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+    Returns
+    -------
+    str : the tournament name
+    """
+
+    info = session["TournamentInfo"]
+
+    tournament_name = info["name"]
+
+    logger.info("get_tournament_name() got %s from session['tournamentInfo'] %s",
+                tournament_name,
+                info,)
+    return tournament_name
+
+
+def get_tournament_round_number() -> int:
+    """get the number of the tournament round we are building from this session
+
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+    Returns
+    -------
+    int : the round number
+    """
+    logger.debug("session keys: %s", session.keys())
+
+    get = session.get("TournamentRound")
+
+    logger.debug("get_tournament_round: session get: %s", get)
+
+    # HACK: need to set "TournamentRound"
+    if get is None:
+        logger.error("--------- HACKY AF ------------")
+        return 1
+    # else
+    return int(get)
+
+
+def set_tournament_round_number(rnd: int) -> None:
     """set the tournament round we are building from this session
 
     Parameters
@@ -310,24 +358,6 @@ def set_tournament_round(rnd: int) -> None:
     logger.debug("session keys: %s", session.keys())
 
     session["TournamentRound"] = rnd
-
-
-def get_tournament_round() -> int:
-    """get the tournament round we are building from this session
-
-    USES
-    ----
-    session : A Django session
-        the session got from the session store
-
-    Returns
-    -------
-    int : the round number
-    """
-    logger.debug("session 'TournamentRound': %s", session["TournamentRound"])
-
-    return int(session["TournamentRound"])
-
 
 
 def set_tournament_info(info: "TournamentInfo") -> None:
@@ -352,7 +382,6 @@ def set_tournament_info(info: "TournamentInfo") -> None:
     ----
     session : A Django session
         the session got from the session store
-
     """
     logger.debug("session key TournamentInfo set to %s", info)
     session["TournamentInfo"] = info
@@ -360,31 +389,35 @@ def set_tournament_info(info: "TournamentInfo") -> None:
     # start building at round 1
     session["TournamentRound"] = 1
 
+
 def finalize_round() -> None:
-    """Save the round being built in the session, and prepair to add another one
-    be built.
+    """Save this round, and prepair to add another one
 
     side-effects
     ------------
-    - incrument tournamentRound in session
+    - round_number++
+    - create and save a round model
     - reset matches in round to None
     """
-    breakpoint()
-    round_number = get_tournament_round()
 
-    logger.debug("finalize_round: round %s finalized ", round_number)
-    rnd = Round(round_number=round_number)
+    round_number = get_tournament_round_number()
+    matches = get_matches()
+
+    logger.debug(
+        "session.finalize_round() entered. Finalizing rnd: %s, matches: %s",
+        round_number,
+        matches,
+    )
+    rnd = Round(round_num=round_number)
+    # save round
     rnd.save()
     logger.debug("Tournament round %s made and saved. round: %s", round_number, rnd)
 
+    logger.debug("round made and saved. round: %s", rnd)
+    # prepare for next round
+    round_number += 1
+    set_tournament_round(round_number)
+    # reset the matches
+    session["matches"] = None
 
-    session["matches"] = new_matches
-
-    session["TournamentRound"] += 1
-
-
-def dumby_populate():
-    """populate session w dummby data"""
-    players = database.get_players()
-
-    breakpoint()
+    logger.debug("session prepaired for round %s", round_number)

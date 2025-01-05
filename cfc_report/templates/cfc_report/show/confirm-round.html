@@ -1,0 +1,16 @@
+{% extends "cfc_report/base/base.html" %}
+
+{% block page_title %}confirm Round: {{ round_number }}{% endblock %}
+
+{% block nav_bar %}
+  <a href="{% url 'create-report-round' %}">
+    <input id="back-btn" type="button" value="Return to builder" />
+  </a>
+{% endblock %}
+
+{% block content %}
+
+{% include "cfc_report/show/partials/round.html" %}
+
+<input id="confirm-round-creation" type="button" value="finalize creation">
+{% endblock %}
