@@ -102,16 +102,22 @@ def chess_match(request):
         white_id = match_info["white"]
         result = match_info["result"]
 
-        # Make match
+        # set the winning player_id from the result
+        if result == "1 - 0":
+           winner = white_id
+        elif result == "0 - 1":
+            winner = black_id
+        else:
+            winner = None
+        # create the chess match model, and save it to the db
+        chess_match = session.create_match(white_id, black_id, winner)
         logger.debug(
-            "chess_match entered: black_id %s, white_id: %s, result: %s, round: %s",
+            "chess_match entered: black_id %s, white_id: %s, result: %s, winner: %s",
             black_id,
             white_id,
             result,
+            winner,
         )
-
-        # create tea chess match model, and save it to the db
-        chess_match = session.create_match(white_id, black_id, result)
         chess_match.save()
 
         # Continue letting user add more games
@@ -169,8 +175,7 @@ def confirm_round(request) -> HttpResponse:
 
 
 def report(request) -> HttpResponse:
-    """Create report
-    """
+    """Create report"""
 
     context = {}
     return render(request, "cfc_report/create/report.html", context)

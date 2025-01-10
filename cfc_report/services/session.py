@@ -336,7 +336,7 @@ def get_tournament_round_number() -> int:
 
     # HACK: need to set "TournamentRound"
     if get is None:
-        logger.error("--------- HACKY AF ------------")
+        logger.error("--------- HACKY set to round 1 ------------")
         return 1
     # else
     return int(get)
@@ -416,7 +416,7 @@ def finalize_round() -> None:
     logger.debug("round made and saved. round: %s", rnd)
     # prepare for next round
     round_number += 1
-    set_tournament_round(round_number)
+    set_tournament_round_number(round_number)
     # reset the matches
     session["matches"] = None
 
