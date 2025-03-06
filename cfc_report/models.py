@@ -319,7 +319,7 @@ class Tournament(models.Model):
         add a player to the tournament
     """
 
-    name = models.CharField(max_length=30)
+    name = models.CharField(help_text="Tournament Name.", primary_key=True, max_length=30)
     num_rounds = models.IntegerField()
     roster = models.ForeignKey(
         Roster,

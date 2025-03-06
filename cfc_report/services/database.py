@@ -1,4 +1,5 @@
 """Data services for modifying and creating data for a CFC rated tournament"""
+
 # horizon_report
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -16,9 +17,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from cfc_report import logger
-from cfc_report.models import (Match, Player, TournamentDirector,
-                               TournamentOrganizer, Tournament)
+from cfc_report.models import (
+    Match,
+    Player,
+    TournamentDirector,
+    TournamentOrganizer,
+    Tournament,
+)
 from django.db.models import QuerySet
+from django.shortcuts import get_object_or_404
 
 
 # GET
@@ -82,6 +89,17 @@ def get_matches() -> QuerySet:
 
     return matches
 
+
+#def get_tournament(name: str) -> Tournament:
+    #"""Get a tournament with the name provided
+#
+    #Returns
+    #-------
+    #Tournament - with the name provided
+    #"""
+    #t = get_object_or_404(Tournament, pk=name)
+
+
 # ADD
 def add_player(p: Player) -> None:
     """Add a player to the database
@@ -104,6 +122,8 @@ def add_player_by_cfc(cfc_id: "CfcId", name: str) -> None:
     p = Player(name, cfc_id)
 
     add_player(p)
+
+
 def add_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
     """white : Player
         the White player in the match
@@ -129,9 +149,19 @@ def populate_database() -> None:
     # players
     cfc_id = 111111
     players = []
-    for n in ["charles Fool", "Jake Bell", "Albert Fish", "Jonny Boy",
-              "Dad Dadderson", "11111111", "222222222", "33333333",
-              "44444444444", "55555555555", "6666666"]:
+    for n in [
+        "charles Fool",
+        "Jake Bell",
+        "Albert Fish",
+        "Jonny Boy",
+        "Dad Dadderson",
+        "11111111",
+        "222222222",
+        "33333333",
+        "44444444444",
+        "55555555555",
+        "6666666",
+    ]:
         players.append(Player(name=n, cfc_id=str(cfc_id)))
         cfc_id += 1
 
@@ -169,8 +199,7 @@ def populate_database() -> None:
             elif r == "d":
                 r = "w"
         matches.append(
-            Match(white=players[n], black=players[n+1],
-                  result=r, round_number=0)
+            Match(white=players[n], black=players[n + 1], result=r, round_number=0)
         )
 
     for m in matches:

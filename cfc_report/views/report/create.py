@@ -15,12 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger, models
 from cfc_report.forms import MatchForm, RoundForm, TournamentInfoForm
-from cfc_report.models import Player
+from cfc_report.models import Match, Player
 from cfc_report.services import database as db
 from cfc_report.services import session
 from cfc_report.services.ctr import CTR
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.vary import vary_on_headers
 
@@ -39,6 +39,7 @@ def initial(request):
         # save tournament info to session
         session.set_tournament_info(tournament_info)
         logger.debug("TournamentInfoForm made from POST: %s", tournament_info)
+
         # redirect to view to choose players
         return redirect("create-report-players")
 
@@ -103,12 +104,12 @@ def chess_match(request):
         result = match_info["result"]
 
         # set the winning player_id from the result
-        if result == "1 - 0":
+        if result == Match.RESULT_CHOICES["W"]:
            winner = white_id
         elif result == "0 - 1":
             winner = black_id
         else:
-            winner = None
+            winner = Match.R
         # create the chess match model, and save it to the db
         chess_match = session.create_match(white_id, black_id, winner)
         logger.debug(
@@ -145,10 +146,9 @@ def round(request) -> HttpResponse:
         # Continue letting user add more games
         return render(request, "cfc_report/create/round.html", {})
 
-    tournament = models.Tournament()
-    tournament.rounds = models.Round()
     context = {"entered_matches": session.get_matches(),
-               "rounds": session.get_matches}
+               "round_number": session.get_tournament_round_number(),
+               "rounds": session.get_rounds()}
     return render(request, "cfc_report/create/round.html", context)
 
 

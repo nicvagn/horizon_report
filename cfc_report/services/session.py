@@ -16,10 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
+from django.shortcuts import get_object_or_404
 
 from . import database
 from ..models import Match, Player, Round, Tournament
-
 # get the current session
 session = SessionStore()
 
@@ -262,6 +262,67 @@ def remove_match_by_pk(pk: "PrimaryKey") -> None:
     logger.debug("match with pk %s removed. matches now %s", pk, new_matches)
     session["matches"] = new_matches
 
+def get_rounds() -> "Queryset":
+    """Get the rounds from this session
+
+    Uses
+    ----
+    session : Django session
+        the current session got from session store
+
+    """
+
+
+def finalize_round() -> None:
+    """Save this round, and prepair to add another one
+
+    side-effects
+    ------------
+    - round_number++
+    - create and save a round model
+    - reset matches in round to None
+    """
+
+    round_number = get_tournament_round_number()
+    matches = get_matches()
+
+    logger.debug(
+        "session.finalize_round() entered. Finalizing rnd: %s, matches: %s",
+        round_number,
+        matches,
+    )
+    rnd = Round(round_num=round_number, )
+    # save round
+    rnd.save()
+    logger.debug("Tournament round %s made and saved. round: %s", round_number, rnd)
+
+    logger.debug("round made and saved. round: %s", rnd)
+    # prepare for next round
+    set_tournament_round_number(round_number + 1)
+    # reset the matches
+    session["matches"] = None
+
+    logger.debug("session prepaired for round %s", round_number)
+
+#def get_tournament() -> Tournament:
+    #"""get the tournament worked on in this session
+#
+    #Uses
+    #----
+    #session : A Django session
+        #the session got from the session store
+#
+    #Returns
+    #-------
+    #models.Tournament being worked on in this session.
+    #"""
+#
+    #key = get_tournament_name()
+#
+    #return get_object_or_404(Tournament, pk=key)
+#
+
+
 
 def get_tournament_info() -> "TournamentInfo":
     """get the TournamentInfo from this session
@@ -336,7 +397,8 @@ def get_tournament_round_number() -> int:
 
     # HACK: need to set "TournamentRound"
     if get is None:
-        logger.error("--------- HACKY set to round 1 ------------")
+        session["TournamentRound"] =  1
+        logger.error("--------- HACKY set session to round 1 ------------")
         return 1
     # else
     return int(get)
@@ -388,36 +450,3 @@ def set_tournament_info(info: "TournamentInfo") -> None:
 
     # start building at round 1
     session["TournamentRound"] = 1
-
-
-def finalize_round() -> None:
-    """Save this round, and prepair to add another one
-
-    side-effects
-    ------------
-    - round_number++
-    - create and save a round model
-    - reset matches in round to None
-    """
-
-    round_number = get_tournament_round_number()
-    matches = get_matches()
-
-    logger.debug(
-        "session.finalize_round() entered. Finalizing rnd: %s, matches: %s",
-        round_number,
-        matches,
-    )
-    rnd = Round(round_num=round_number)
-    # save round
-    rnd.save()
-    logger.debug("Tournament round %s made and saved. round: %s", round_number, rnd)
-
-    logger.debug("round made and saved. round: %s", rnd)
-    # prepare for next round
-    round_number += 1
-    set_tournament_round_number(round_number)
-    # reset the matches
-    session["matches"] = None
-
-    logger.debug("session prepaired for round %s", round_number)
