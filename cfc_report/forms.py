@@ -47,8 +47,8 @@ class TournamentInfoForm(forms.Form):
     """
 
     name = forms.CharField(label="Tournament Name",
-                           initial="test data", max_length=60)
-    num_rounds = forms.IntegerField(label="Number of Rounds", initial=0)
+                           initial="Test Open", max_length=60)
+    num_rounds = forms.IntegerField(label="Number of Rounds", initial=1)
     date = forms.DateField(widget=SelectDateWidget)
     pairing_system = PairingSystemField(label="Pairing system used")
     province = ProvinceField()

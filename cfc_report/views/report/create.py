@@ -103,13 +103,15 @@ def chess_match(request):
         white_id = match_info["white"]
         result = match_info["result"]
 
+        # RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"), ("d", "0.5 - 0.5"), ("_", "_")]
         # set the winning player_id from the result
-        if result == Match.RESULT_CHOICES["W"]:
+        if result == Match.RESULT_CHOICES[0][1]:
            winner = white_id
-        elif result == "0 - 1":
+        elif result == Match.RESULT_CHOICES[1][1]:
             winner = black_id
+        # we are assuming match is done, :. draw
         else:
-            winner = Match.R
+            winner = Match.RESULT_CHOICES[2][1]
         # create the chess match model, and save it to the db
         chess_match = session.create_match(white_id, black_id, winner)
         logger.debug(
@@ -121,7 +123,7 @@ def chess_match(request):
         )
         chess_match.save()
 
-        # Continue letting user add more games
+    # Continue letting user add more games
     context = {
         "tournament_players": session.get_players(),
         "round_number": session.get_tournament_round_number(),
@@ -133,6 +135,7 @@ def chess_match(request):
 
 def round(request) -> HttpResponse:
     """Enter info for a round in a chess tournament
+
     Arguments
     ---------
     request : HttpRequest
@@ -168,7 +171,6 @@ def confirm_round(request) -> HttpResponse:
         "matches": session.get_matches(),
         "players": session.get_players(),
     }
-
     logger.debug("Create.confirm_round entered, confirming round completion. TournamentInfo: %s", tournament_info)
 
     return render(request, "cfc_report/create/confirm-round.html", context)
@@ -177,7 +179,13 @@ def confirm_round(request) -> HttpResponse:
 def report(request) -> HttpResponse:
     """Create report"""
 
-    context = {}
+    tournament_info = session.get_tournament_info()
+    context = {
+        "tournament_name": tournament_info["name"],
+        "round_number": session.get_tournament_round_number(),
+        "matches": session.get_matches(),
+        "players": session.get_players(),
+    }
     return render(request, "cfc_report/create/report.html", context)
 
 
@@ -208,16 +216,12 @@ def finalize_report(request) -> HttpResponse:
 
     logger.debug("Tournament Info got: %s", t_info)
     ctr = CTR(t_info, session)
+    logger.debug("|CTR| created: %s", ctr)
     context = {
-        "ctr": ctr
+        "ctr": str(ctr)
     }
 
     return render(request, "cfc_report/show/ctr.html", context)
-
-
-def tournament(request):
-    """Build a tournament"""
-    pass
 
 
 def preview(request):

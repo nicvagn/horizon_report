@@ -290,7 +290,7 @@ class Round(models.Model):
     round_num = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(999)]
     )
-    # TODO
+
 
 
 class Tournament(models.Model):
@@ -340,19 +340,6 @@ class Tournament(models.Model):
     to_cfc = CfcIdField()  # TournamentOrganizer CFC id
     td_cfc = CfcIdField()  # TournamentDirector CFC id
 
-    def add_player(self, player: Player):
-        """Choose a player to be in created tournament
-
-        Arguments
-        ---------
-        playern : Player
-            Chosen player
-
-        Returns
-        -------
-            None
-        """
-        raise NotImplementedError
 
     def __str__(self):
         return f"""Tournament name: {self.name}

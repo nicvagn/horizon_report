@@ -18,12 +18,11 @@ from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
 from django.shortcuts import get_object_or_404
 
-from . import database
 from ..models import Match, Player, Round, Tournament
+from . import database
+
 # get the current session
 session = SessionStore()
-
-
 
 def get_players() -> list[Player]:
     """get the players in current session
