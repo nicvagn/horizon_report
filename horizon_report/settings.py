@@ -128,4 +128,4 @@ class Dev(Configuration):
 class Prod(Dev):
     DEBUG = False
     SECRET_KEY = values.SecretValue()
-    ALLOWED_HOSTS = values.ListValue()
+    ALLOWED_HOSTS = values.ListValue(['.localhost', '127.0.0.1', '127.0.0.1:8000', '[::1]'])
