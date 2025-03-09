@@ -148,3 +148,15 @@ class CTR:
         for line in self.ctr:
             ctr += line + "\n"
         return ctr
+
+if __name__ == "__main__":
+    # test
+    T = {"name": "my test tornament",
+         "num_rounds": 4,
+         "pairing_system": "Swiss",
+         "td_cfc": "111111",
+         "to_cfc": "222222",
+         "date_year": "1",
+         "date_month": "1",
+         "date_day": "1",}
+    ctr = CTR(T)
