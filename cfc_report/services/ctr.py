@@ -160,3 +160,4 @@ if __name__ == "__main__":
          "date_month": "1",
          "date_day": "1",}
     ctr = CTR(T)
+    ctr.write_to_file()

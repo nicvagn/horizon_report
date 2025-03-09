@@ -217,6 +217,8 @@ def finalize_report(request) -> HttpResponse:
     logger.debug("Tournament Info got: %s", t_info)
     ctr = CTR(t_info, session)
     logger.debug("|CTR| created: %s", ctr)
+
+    ctr.write_file()
     context = {
         "ctr": str(ctr)
     }
