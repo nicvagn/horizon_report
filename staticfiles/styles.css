@@ -1,0 +1,20 @@
+.title {
+  text-align: center;
+}
+
+.padded {
+  padding: 0.2em 0.6em;
+}
+#content {
+  margin: 0 3em;
+}
+
+#home_btn {
+  margin: 0.2em 3em;
+  width: 5em;
+}
+
+.players-table {
+  color: red;
+  border: 4px;
+}
