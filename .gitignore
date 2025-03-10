@@ -4,6 +4,9 @@ cspell*
 **/trash
 # TODO
 TODO
+
+#ctr files
+*.ctr
 # logs
 *.log
 
