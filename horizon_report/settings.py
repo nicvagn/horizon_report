@@ -55,6 +55,18 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "horizon_report.urls"
 
+=======
+SECRET_KEY = "django-insecure-5n41p&8@@e^0g0)7j(i%5lc&ne_#8pbbh=65$7lc&n^y6q=j6u"
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+ALLOWED_HOSTS = ["www.nrv773.pythonanywhere.com"]
+
+ROOT_URLCONF = "horizon_report.urls"
+
 # dirs added: /static /templates
 TEMPLATES = [
     {
@@ -119,10 +131,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    "/var/www/static/",
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_files')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
