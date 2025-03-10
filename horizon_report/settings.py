@@ -55,7 +55,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "horizon_report.urls"
 
-=======
 SECRET_KEY = "django-insecure-5n41p&8@@e^0g0)7j(i%5lc&ne_#8pbbh=65$7lc&n^y6q=j6u"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -136,7 +135,7 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
     "/var/www/static/",
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_files')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
