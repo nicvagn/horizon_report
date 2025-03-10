@@ -13,8 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from cfc_report import logger, models
-from cfc_report.forms import MatchForm, RoundForm, TournamentInfoForm
+from cfc_report import logger
+from cfc_report.forms import TournamentInfoForm
 from cfc_report.models import Match, Player
 from cfc_report.services import database as db
 from cfc_report.services import session
@@ -22,7 +22,6 @@ from cfc_report.services.ctr import CTR
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.views.decorators.vary import vary_on_headers
 
 
 def initial(request):
@@ -103,10 +102,11 @@ def chess_match(request):
         white_id = match_info["white"]
         result = match_info["result"]
 
-        # RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"), ("d", "0.5 - 0.5"), ("_", "_")]
+        # RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"), ("d", "0.5 - 0.5"),
+        # ... ("_", "_")]
         # set the winning player_id from the result
         if result == Match.RESULT_CHOICES[0][1]:
-           winner = white_id
+            winner = white_id
         elif result == Match.RESULT_CHOICES[1][1]:
             winner = black_id
         # we are assuming match is done, :. draw
@@ -171,7 +171,9 @@ def confirm_round(request) -> HttpResponse:
         "matches": session.get_matches(),
         "players": session.get_players(),
     }
-    logger.debug("Create.confirm_round entered, confirming round completion. TournamentInfo: %s", tournament_info)
+    logger.debug(
+        "Create.confirm_round entered, confirming round completion. TournamentInfo: %s",
+        tournament_info)
 
     return render(request, "cfc_report/create/confirm-round.html", context)
 
@@ -202,6 +204,7 @@ def finalize_round(request) -> HttpResponse:
 
     # start creation of next round
     return redirect("create-report-round")
+
 
 def finalize_report(request) -> HttpResponse:
     """finalize a chess tournament report
