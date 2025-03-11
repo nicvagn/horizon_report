@@ -2,6 +2,5 @@
 
 cd $(dirname -- "$( readlink -f -- "$0"; )";);
 
-source ./activate 
-
+workon horizon_report
 python manage.py runserver
