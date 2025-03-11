@@ -394,12 +394,6 @@ def get_tournament_round_number() -> int:
 
     logger.debug("get_tournament_round: session get: %s", get)
 
-    # HACK: need to set "TournamentRound"
-    if get is None:
-        session["TournamentRound"] =  1
-        logger.error("--------- HACKY set session to round 1 ------------")
-        return 1
-    # else
     return int(get)
 
 
