@@ -24,6 +24,7 @@ from . import database
 # get the current session
 session = SessionStore()
 
+
 def get_players() -> list[Player]:
     """get the players in current session
 
@@ -413,6 +414,26 @@ def set_tournament_round_number(rnd: int) -> None:
     logger.debug("session keys: %s", session.keys())
 
     session["TournamentRound"] = rnd
+
+
+def is_last_round() -> bool:
+    """Check to see if this is the last round of the tourniment we are building
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+    """
+    cur_round = get_tournament_round_number()
+
+    logger.debug("is_last_round entered on round %s", round)
+
+    info = get_tournament_info()
+
+    # check if number of rounds < cur_round.
+    lr = int(info["num_rounds"]) < cur_round
+
+    logger.debug("is_last_round() found: %s", lr)
+    return lr
 
 
 def set_tournament_info(info: "TournamentInfo") -> None:

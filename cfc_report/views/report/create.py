@@ -140,14 +140,9 @@ def round(request) -> HttpResponse:
     ---------
     request : HttpRequest
     """
+    tournament_info = session.get_tournament_info()
+
     logger.debug("Create.round entered with request: %s", request)
-    # if is the form being submitted
-    if request.method == "POST":
-        round_info = request.POST
-        logger.debug("POST request with value: %s", round_info)
-        # TODO
-        # Continue letting user add more games
-        return render(request, "cfc_report/create/round.html", {})
 
     context = {"entered_matches": session.get_matches(),
                "round_number": session.get_tournament_round_number(),
@@ -201,6 +196,10 @@ def finalize_round(request) -> HttpResponse:
     logger.debug("Create.finalize_round entered with request: %s", request)
     # finalize the round, and prep for new one
     session.finalize_round()
+
+    # check if rounds are over. IE this is the last round
+    if session.is_last_round():
+        return redirect("create-report-finalize")
 
     # start creation of next round
     return redirect("create-report-round")
