@@ -1,4 +1,5 @@
 """Data services for modifying and creating data for a CFC rated tournament"""
+
 # horizon_report
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -16,11 +17,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from cfc_report import logger
-from cfc_report.models import (Match, Player, TournamentDirector,
-                               TournamentOrganizer)
+from cfc_report.models import (
+    Match,
+    Player,
+    TournamentDirector,
+    TournamentOrganizer,
+    Tournament,
+)
 from django.db.models import QuerySet
+from django.shortcuts import get_object_or_404
 
 
+# GET
 def get_players() -> QuerySet:
     """Get players in database
     returns:
@@ -44,31 +52,9 @@ def get_player_by_cfc(cfc_id: "Cfc_id") -> Player:
     DoesNotExist exception if player not found
     """
     p = Player.objects.get(cfc_id=cfc_id)
+
     logger.debug("Player %s got from cfc_id %s", p, cfc_id)
     return p
-
-
-def add_player(p: Player) -> None:
-    """Add a player to the database
-    parameters:
-        p: The models.Player object to add
-    """
-    logger.debug("player %s added to db", p)
-    p.save()
-
-
-def add_player_by_cfc(cfc_id: "CfcId", name: str) -> None:
-    """Add a player to the database using name and cfcid
-    parameters:
-        cfc_id : "CfcId"
-            the cfc id of the player
-        name : str
-            the players name.
-    """
-
-    p = Player(name, cfc_id)
-
-    add_player(p)
 
 
 def get_TDs() -> QuerySet:
@@ -103,9 +89,58 @@ def get_matches() -> QuerySet:
 
     return matches
 
-def enter_round() -> None:
-    """enter a round into database"""
-    pass
+
+#def get_tournament(name: str) -> Tournament:
+    #"""Get a tournament with the name provided
+#
+    #Returns
+    #-------
+    #Tournament - with the name provided
+    #"""
+    #t = get_object_or_404(Tournament, pk=name)
+
+
+# ADD
+def add_player(p: Player) -> None:
+    """Add a player to the database
+    parameters:
+        p: The models.Player object to add
+    """
+    logger.debug("player %s added to db", p)
+    p.save()
+
+
+def add_player_by_cfc(cfc_id: "CfcId", name: str) -> None:
+    """Add a player to the database using name and cfcid
+    parameters:
+        cfc_id : "CfcId"
+            the cfc id of the player
+        name : str
+            the players name.
+    """
+
+    p = Player(name, cfc_id)
+
+    add_player(p)
+
+
+def add_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
+    """white : Player
+        the White player in the match
+    black : Player
+        the black player in the match
+    result : CharField
+        KEY: {b == black victory, w == white victory, d == no victory)
+    """
+
+    white_player = get_player_by_cfc(white_id)
+    black_player = get_player_by_cfc(black_id)
+
+    chess_match = Match(white=white_player, black=black_player, result=result)
+
+    logger.debug("chess_match %s added to the database", chess_match)
+    chess_match.save()
+    return chess_match
 
 
 def populate_database() -> None:
@@ -114,9 +149,19 @@ def populate_database() -> None:
     # players
     cfc_id = 111111
     players = []
-    for n in ["charles Fool", "Jake Bell", "Albert Fish", "Jonny Boy",
-              "Dad Dadderson", "11111111", "222222222", "33333333",
-              "44444444444", "55555555555", "6666666"]:
+    for n in [
+        "charles Fool",
+        "Jake Bell",
+        "Albert Fish",
+        "Jonny Boy",
+        "Dad Dadderson",
+        "11111111",
+        "222222222",
+        "33333333",
+        "44444444444",
+        "55555555555",
+        "6666666",
+    ]:
         players.append(Player(name=n, cfc_id=str(cfc_id)))
         cfc_id += 1
 
@@ -143,10 +188,18 @@ def populate_database() -> None:
 
     # Matches
     # create some filler data
+
+    r = "w"
     matches = []
     for n in range(int(len(players) / 2)):
+
+        if r != "w":
+            if r == "b":
+                r = "d"
+            elif r == "d":
+                r = "w"
         matches.append(
-            Match(white=players[n], black=players[n+1], winner=players[n])
+            Match(white=players[n], black=players[n + 1], result=r, round_number=0)
         )
 
     for m in matches:

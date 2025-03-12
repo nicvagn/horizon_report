@@ -70,8 +70,8 @@ class PersonWithCfcId(models.Model):
 
         self.slug = slugify(self.name)
         logger.info(
-            "PersonWithCfdId: (%s) saved and slug (%s) created for it",
-            self, self.slug)
+            "PersonWithCfdId: (%s) saved and slug (%s) created for it", self, self.slug
+        )
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -84,7 +84,7 @@ class PersonWithCfcId(models.Model):
         return reverse("player", args=[self.slug])
 
     def jsonify(self) -> "JSON":
-        """Make a JSON Persor string from this Person
+        """Make a JSON Person string from this Person
 
         Returns
         -------
@@ -248,10 +248,11 @@ class Match(models.Model):
         the black player in the match
     result : CharField
         KEY: {b == black victory, w == white victory, d == no victory)
+    round_number : Int
+        What round of the tournament this game is for
     """
 
-    RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"),
-                      ("d", "0.5 - 0.5"), ("_", "_")]
+    RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"), ("d", "0.5 - 0.5"), ("_", "_")]
 
     white = models.ForeignKey(
         Player, on_delete=models.CASCADE, related_name="white_player"
@@ -259,18 +260,21 @@ class Match(models.Model):
     black = models.ForeignKey(
         Player, on_delete=models.CASCADE, related_name="black_player"
     )
-    result = models.CharField(max_length=1, choices=RESULT_CHOICES,
-                              default=RESULT_CHOICES[3])
+    result = models.CharField(
+        max_length=1, choices=RESULT_CHOICES, default=RESULT_CHOICES[3]
+    )
+    round_number = models.IntegerField()
 
     def get_absolute_url(self):
-        return reverse('select-match-round', kwargs={"pk": self.pk})
+        return reverse("select-match-round", kwargs={"pk": self.pk})
 
     def __str__(self):
         return (
-            f"MATCH-[ "
-            f"white: ({self.white}), "
-            f"black: ({self.black}), "
-            f"result: ({self.result}) ]"
+            f"MATCH - [ "
+            f" white: ({self.white}),"
+            f" black: ({self.black}),"
+            f" result: ({self.result}),"
+            f" round number: ({self.round_number}) ]"
         )
 
 
@@ -281,16 +285,12 @@ class Round(models.Model):
     ----------
     round_num : IntegerField
         the round of it's tournament this is
-    matches : ForeignKey(Match)
-        the matches in this round
     """
 
     round_num = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(999)]
     )
-    matches = models.ForeignKey(
-        Match, on_delete=models.CASCADE, related_name="matches_in_round"
-    )
+
 
 
 class Tournament(models.Model):
@@ -319,31 +319,27 @@ class Tournament(models.Model):
         add a player to the tournament
     """
 
-    name = models.CharField(max_length=30)
+    name = models.CharField(help_text="Tournament Name.", primary_key=True, max_length=30)
     num_rounds = models.IntegerField()
-    rounds = models.ForeignKey(
-        Round, on_delete=models.CASCADE, related_name="rounds_in_tournament",
-        default=False
+    roster = models.ForeignKey(
+        Roster,
+        on_delete=models.CASCADE,
+        related_name="tournament_roster",
+        default=False,
     )
+    rounds = models.ForeignKey(
+        Round,
+        on_delete=models.CASCADE,
+        related_name="rounds_in_tournament",
+        default=False,
+    )
+
     date = models.DateField()
     pairing_system = PairingSystemField()
     province = ProvinceField()
     to_cfc = CfcIdField()  # TournamentOrganizer CFC id
     td_cfc = CfcIdField()  # TournamentDirector CFC id
 
-    def add_player(self, player: Player):
-        """Choose a player to be in created tournament
-
-        Arguments
-        ---------
-        playern : Player
-            Chosen player
-
-        Returns
-        -------
-            None
-        """
-        raise NotImplementedError
 
     def __str__(self):
         return f"""Tournament name: {self.name}

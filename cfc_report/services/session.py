@@ -16,10 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
-import json
+from django.shortcuts import get_object_or_404
 
-from ..models import Match, Player, Round
-from .database import get_player_by_cfc
+from ..models import Match, Player, Round, Tournament
+from . import database
 
 # get the current session
 session = SessionStore()
@@ -47,7 +47,7 @@ def get_players() -> list[Player]:
     if session_ids:
         for cfc_id in session_ids:
 
-            p = get_player_by_cfc(cfc_id)
+            p = database.get_player_by_cfc(cfc_id)
             players.append(p)
 
             logger.debug("session_id: %s got %s", cfc_id, p)
@@ -81,7 +81,7 @@ def get_players_by_id() -> "dict{CfcId:Player}":
         for cfc_id in session_players:
             logger.debug("session_players: %s", session_players)
 
-            p = get_player_by_cfc(cfc_id)
+            p = database.get_player_by_cfc(cfc_id)
 
             players[cfc_id] = p
 
@@ -188,13 +188,13 @@ def get_matches() -> list("Match"):
     """
     session_matches = session.get("matches")
 
-    logger.info("matches got from session: %s", session_matches)
+    logger.info("matches got from session: %s, of type: %s",
+                session_matches, type(session_matches))
 
     return session_matches
 
 
-def create_match(
-        white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
+def create_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
     """Create a chess match in this session
     Uses
     ----
@@ -208,12 +208,15 @@ def create_match(
     -------
     the created match
     """
-    white_player = get_player_by_cfc(white_id)
-    black_player = get_player_by_cfc(black_id)
+    # get match players from database
+    white_player = database.get_player_by_cfc(white_id)
+    black_player = database.get_player_by_cfc(black_id)
+    tournament_rnd = get_tournament_round_number()
+    chess_match = Match(
+        white=white_player, black=black_player, result=result,
+        round_number=tournament_rnd)
 
-    chess_match = Match(white=white_player, black=black_player, result=result)
-
-    if session.has_key("matches"):
+    if session.has_key("matches") and session["matches"] is not None:
         # update it
         session["matches"].append(chess_match)
     else:
@@ -223,7 +226,7 @@ def create_match(
     return chess_match
 
 
-def remove_match_by_pk(pk: "PrimaryKey"):
+def remove_match_by_pk(pk: "PrimaryKey") -> None:
     """remove a match from this session by it's primarry key
 
     Parameters
@@ -253,11 +256,72 @@ def remove_match_by_pk(pk: "PrimaryKey"):
             new_matches.append(m)
 
     if match_found is False:
-        raise RuntimeError("Could not find match %s in session matches %s",
-                           m,
-                           get_matches())
+        raise RuntimeError(
+            "Could not find match %s in session matches %s", m, get_matches()
+        )
     logger.debug("match with pk %s removed. matches now %s", pk, new_matches)
     session["matches"] = new_matches
+
+def get_rounds() -> "Queryset":
+    """Get the rounds from this session
+
+    Uses
+    ----
+    session : Django session
+        the current session got from session store
+
+    """
+
+
+def finalize_round() -> None:
+    """Save this round, and prepair to add another one
+
+    side-effects
+    ------------
+    - round_number++
+    - create and save a round model
+    - reset matches in round to None
+    """
+
+    round_number = get_tournament_round_number()
+    matches = get_matches()
+
+    logger.debug(
+        "session.finalize_round() entered. Finalizing rnd: %s, matches: %s",
+        round_number,
+        matches,
+    )
+    rnd = Round(round_num=round_number, )
+    # save round
+    rnd.save()
+    logger.debug("Tournament round %s made and saved. round: %s", round_number, rnd)
+
+    logger.debug("round made and saved. round: %s", rnd)
+    # prepare for next round
+    set_tournament_round_number(round_number + 1)
+    # reset the matches
+    session["matches"] = None
+
+    logger.debug("session prepaired for round %s", round_number)
+
+#def get_tournament() -> Tournament:
+    #"""get the tournament worked on in this session
+#
+    #Uses
+    #----
+    #session : A Django session
+        #the session got from the session store
+#
+    #Returns
+    #-------
+    #models.Tournament being worked on in this session.
+    #"""
+#
+    #key = get_tournament_name()
+#
+    #return get_object_or_404(Tournament, pk=key)
+#
+
 
 
 def get_tournament_info() -> "TournamentInfo":
@@ -292,18 +356,38 @@ def get_tournament_info() -> "TournamentInfo":
     return get
 
 
-def get_tournament_round() -> int:
-    """get the tournament round we are building from this session
+def get_tournament_name() -> str:
+    """get the name of the tournament we are building
 
     Uses
     ----
     session : A Django session
         the session got from the session store
-
     Returns
     -------
-    int
-        the tournament round number stored in the session
+    str : the tournament name
+    """
+
+    info = session["TournamentInfo"]
+
+    tournament_name = info["name"]
+
+    logger.info("get_tournament_name() got %s from session['tournamentInfo'] %s",
+                tournament_name,
+                info,)
+    return tournament_name
+
+
+def get_tournament_round_number() -> int:
+    """get the number of the tournament round we are building from this session
+
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+    Returns
+    -------
+    int : the round number
     """
     logger.debug("session keys: %s", session.keys())
 
@@ -311,15 +395,10 @@ def get_tournament_round() -> int:
 
     logger.debug("get_tournament_round: session get: %s", get)
 
-    # HACK: need to set "TournamentRound"
-    if get is None:
-        logger.error("--------- HACKY AF ------------")
-        return 1
-    # else
     return int(get)
 
 
-def set_tournament_round(rnd: int) -> None:
+def set_tournament_round_number(rnd: int) -> None:
     """set the tournament round we are building from this session
 
     Parameters
@@ -337,19 +416,24 @@ def set_tournament_round(rnd: int) -> None:
     session["TournamentRound"] = rnd
 
 
-def get_tournament_round() -> int:
-    """get the tournament round we are building from this session
-
+def is_last_round() -> bool:
+    """Check to see if this is the last round of the tourniment we are building
     Uses
     ----
     session : A Django session
         the session got from the session store
-    Returns
-    -------
-    int : the round number
     """
-    logger.debug("session 'TournamentRound': %s", session["TournamentRound"])
-    return session["TournamentRound"]
+    cur_round = get_tournament_round_number()
+
+    logger.debug("is_last_round entered on round %s", round)
+
+    info = get_tournament_info()
+
+    # check if number of rounds < cur_round.
+    lr = int(info["num_rounds"]) < cur_round
+
+    logger.debug("is_last_round() found: %s", lr)
+    return lr
 
 
 def set_tournament_info(info: "TournamentInfo") -> None:
@@ -367,40 +451,16 @@ def set_tournament_info(info: "TournamentInfo") -> None:
             "to_cfc": str(self.to_cfc),
             # TournamentDirector CFC id
             "td_cfc": str(self.td_cfc),
-        }
+
         from tournament info from form
 
     Uses
     ----
     session : A Django session
         the session got from the session store
-
     """
     logger.debug("session key TournamentInfo set to %s", info)
     session["TournamentInfo"] = info
 
     # start building at round 1
     session["TournamentRound"] = 1
-
-def finalize_round() -> None:
-    """Save this round, and prepair to add another one
-    side-effects
-    ------------
-    - incrument tournamentRound in session
-    - reset matches in round to None
-    """
-    round_number = get_tournament_round()
-    matches = get_matches()
-    rnd = Round(round_num=round_number, matches=matches )
-    # save round
-    rnd.save()
-
-    logger.debug("round made and saved. round: %s", rnd)
-
-    # prepare for next round
-    # incrument round number
-    session["tournementRound"] += 1
-    # reset the matches
-    session["matches"] = None
-
-    logger.debug("session prepaired for round %s", session["tournamentRound"])

@@ -23,7 +23,7 @@ class CfcIdField(forms.IntegerField):
     Attributes
     ----------
     validators :
-        int in field x must be x where 1000000 > x > 99999
+        int in field x must be x where 100 000 > x > 999 999
     """
 
     def __init__(self, *args, **kwargs):

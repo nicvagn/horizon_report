@@ -13,15 +13,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from cfc_report import logger, models
-from cfc_report.forms import MatchForm, RoundForm, TournamentInfoForm
-from cfc_report.models import Player
+from cfc_report import logger
+from cfc_report.forms import TournamentInfoForm
+from cfc_report.models import Match, Player
 from cfc_report.services import database as db
 from cfc_report.services import session
+from cfc_report.services.ctr import CTR
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.views.decorators.vary import vary_on_headers
 
 
 def initial(request):
@@ -38,6 +38,7 @@ def initial(request):
         # save tournament info to session
         session.set_tournament_info(tournament_info)
         logger.debug("TournamentInfoForm made from POST: %s", tournament_info)
+
         # redirect to view to choose players
         return redirect("create-report-players")
 
@@ -66,12 +67,13 @@ def players(request):
     }
 
     # if the request is a POST it is the form submission not initial get
-    # So pass on to create games
+    # needed if no new players are choosen and you want to confirm players
     if request.method == "POST":
         player_info = request.POST
         logger.debug("POST request with value: %s", player_info)
         logger.debug("TournamentInfoForm made from POST: %s", player_info)
         return render(request, "cfc_report/create/round.html", player_info)
+
     logger.debug(
         "db_players: %s \n tournament_players: %s \n context: %s",
         db_players,
@@ -100,47 +102,88 @@ def chess_match(request):
         white_id = match_info["white"]
         result = match_info["result"]
 
-        # Make match
+        # RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"), ("d", "0.5 - 0.5"),
+        # ... ("_", "_")]
+        # set the winning player_id from the result
+        if result == Match.RESULT_CHOICES[0][1]:
+            winner = white_id
+        elif result == Match.RESULT_CHOICES[1][1]:
+            winner = black_id
+        # we are assuming match is done, :. draw
+        else:
+            winner = Match.RESULT_CHOICES[2][1]
+        # create the chess match model, and save it to the db
+        chess_match = session.create_match(white_id, black_id, winner)
         logger.debug(
-            "chess_match entered: black_id %s, white_id: %s, result: %s",
+            "chess_match entered: black_id %s, white_id: %s, result: %s, winner: %s",
             black_id,
             white_id,
             result,
+            winner,
         )
-
-        # create tea chess match model, and save it to the db
-        chess_match = session.create_match(white_id, black_id, result)
         chess_match.save()
 
-        # Continue letting user add more games
+    # Continue letting user add more games
     context = {
         "tournament_players": session.get_players(),
-        "round_number": session.get_tournament_round(),
+        "round_number": session.get_tournament_round_number(),
         "entered_matches": session.get_matches(),
     }
-
-    # TODO: replicate choosing players for report, but make it for a game
 
     return render(request, "cfc_report/create/match.html", context)
 
 
 def round(request) -> HttpResponse:
     """Enter info for a round in a chess tournament
+
     Arguments
     ---------
     request : HttpRequest
     """
-    logger.debug("Create.round entered with request: %s", request)
-    # if is the form being submitted
-    if request.method == "POST":
-        round_info = request.POST
-        logger.debug("POST request with value: %s", round_info)
-        # TODO
-        # Continue letting user add more games
-        return render(request, "cfc_report/create/round.html", {})
+    tournament_info = session.get_tournament_info()
 
-    context = {"entered_matches": session.get_matches()}
+    logger.debug("Create.round entered with request: %s", request)
+
+    context = {"entered_matches": session.get_matches(),
+               "round_number": session.get_tournament_round_number(),
+               "rounds": session.get_rounds()}
     return render(request, "cfc_report/create/round.html", context)
+
+
+def confirm_round(request) -> HttpResponse:
+    """Confirm a round for submission. If confirmed, finalize the round,
+    else return to edditing it
+
+    Arguments
+    ---------
+    request : HttpRequest
+    """
+
+    tournament_info = session.get_tournament_info()
+    context = {
+        "tournament_name": tournament_info["name"],
+        "round_number": session.get_tournament_round_number(),
+        "matches": session.get_matches(),
+        "players": session.get_players(),
+    }
+    logger.debug(
+        "Create.confirm_round entered, confirming round completion. TournamentInfo: %s",
+        tournament_info)
+
+    return render(request, "cfc_report/create/confirm-round.html", context)
+
+
+def report(request) -> HttpResponse:
+    """Create report"""
+
+    tournament_info = session.get_tournament_info()
+    context = {
+        "tournament_name": tournament_info["name"],
+        "round_number": session.get_tournament_round_number(),
+        "matches": session.get_matches(),
+        "players": session.get_players(),
+    }
+    return render(request, "cfc_report/create/report.html", context)
 
 
 def finalize_round(request) -> HttpResponse:
@@ -154,8 +197,13 @@ def finalize_round(request) -> HttpResponse:
     # finalize the round, and prep for new one
     session.finalize_round()
 
+    # check if rounds are over. IE this is the last round
+    if session.is_last_round():
+        return redirect("create-report-finalize")
+
     # start creation of next round
     return redirect("create-report-round")
+
 
 def finalize_report(request) -> HttpResponse:
     """finalize a chess tournament report
@@ -165,11 +213,19 @@ def finalize_report(request) -> HttpResponse:
     request : HttpRequest
     """
     logger.debug("Create.finalize_report entered with request: %s", request)
-    raise NotImplementedError()
+    # get tournament information
+    t_info = session.get_tournament_info()
 
-def tournament(request):
-    """Build a tournament"""
-    pass
+    logger.debug("Tournament Info got: %s", t_info)
+    ctr = CTR(t_info, session)
+    logger.debug("|CTR| created: %s", ctr)
+
+    ctr.write_file()
+    context = {
+        "ctr": str(ctr)
+    }
+
+    return render(request, "cfc_report/show/ctr.html", context)
 
 
 def preview(request):

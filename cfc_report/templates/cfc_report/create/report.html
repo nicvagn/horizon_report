@@ -1,0 +1,27 @@
+{% extends "cfc_report/base/base.html" %}
+
+<!-- vars used: tournament_name, rounds report/views/report/-->
+
+{% block page_title %}Horizon Report: {{tournament_name }} Report{% endblock %}
+
+{% block nav_bar %}
+{% endblock %}
+
+{% block content %}
+<span>
+  <h1>{{ tournament_name }} Report</h1>
+</span>
+
+<section id="report_rounds">
+  {% for round in rounds %}
+    {% include "cfc_report/show/partials/round.html" %}
+    <input id="edit_round_btn" type="button" value="Edit">
+  {% endfor %}
+</section>
+
+<section id="report_players">
+  {% include "cfc_report/show/partials/player-list.html" %}
+  <input id="edit_round_btn" type="button" value="Edit">
+</section>
+
+{% endblock %}

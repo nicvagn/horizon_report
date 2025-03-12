@@ -1,4 +1,9 @@
 asgiref==3.8.1
 Django==5.1.2
+django-configurations==2.5.1
 django-htmx==1.21.0
+gunicorn==23.0.0
+packaging==24.2
+pip==24.2
 sqlparse==0.5.1
+python-dotenv==1.0.1
