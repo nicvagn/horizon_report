@@ -26,11 +26,14 @@ class CtrCreationException(Exception):
     """Something went wrong with ctr creation"""
     pass
 
+
 class CTR:
     """CTR is a wrapper class for CTR (Tournament Report) File format"""
 
     def __init__(self, tournament_info, session):
-        logger.info("class CTR init w -- tournament_info: %s, session: %s", tournament_info, session)
+        logger.info(
+            "class CTR init w -- tournament_info: %s, session: %s",
+            tournament_info, session)
         self.player_ids = session.get_player_ids()
         self.num_players = len(self.player_ids)
 
@@ -39,10 +42,10 @@ class CTR:
         pairing_system = tournament_info["pairing_system"]
         td_cfc_id = tournament_info["td_cfc"]
         to_cfc_id = tournament_info["to_cfc"]
-        province =  tournament_info["province"]
-        date = (tournament_info["date_year"] + "-" + tournament_info["date_month"]
-                + "-" + tournament_info["date_day"])
-
+        province = tournament_info["province"]
+        date = (tournament_info["date_year"] + "-" +
+                tournament_info["date_month"] +
+                "-" + tournament_info["date_day"])
 
         # make sure the tournament has requisite data
         try:
@@ -69,7 +72,8 @@ class CTR:
 
         # start by building the 1st line of the ctr
         self.ctr.append(
-            f'"{name}","{province}","0","{pairing_abriviation}","{date}","{self.num_players}","{td_cfc_id}","{to_cfc_id}"'
+            f'"{name}","{province}","0","{pairing_abriviation}","{
+                date}","{self.num_players}","{td_cfc_id}","{to_cfc_id}"'
         )
 
         logger.info("ctr init. ctr: %s", self.ctr)
@@ -77,7 +81,7 @@ class CTR:
         # add all matches to report
         for rnd in range(num_rounds):
             # get matches in round
-            matches =  Match.objects.filter(round_number=rnd)
+            matches = Match.objects.filter(round_number=rnd)
 
             logger.info("building round: %s \nw: Matches: %s", rnd, matches)
             for match in matches:
@@ -117,7 +121,9 @@ class CTR:
         """make a match part of ctr report file for a given player
         returns: a list of strings to be written to ctr_report one per line"""
 
-        logger.info("make_match_report entered with match: %s, and player: %s", m, player)
+        logger.info(
+            "make_match_report entered with match: %s, and player: %s",
+            m, player)
         match_result = m.result
         if match_result == player.cfc_id:
             res = "W"
@@ -149,6 +155,7 @@ class CTR:
             ctr += line + "\n"
         return ctr
 
+
 if __name__ == "__main__":
     # test
     T = {"name": "my test tornament",
@@ -158,6 +165,6 @@ if __name__ == "__main__":
          "to_cfc": "222222",
          "date_year": "1",
          "date_month": "1",
-         "date_day": "1",}
+         "date_day": "1", }
     ctr = CTR(T)
     ctr.write_to_file()

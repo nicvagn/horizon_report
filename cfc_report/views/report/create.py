@@ -19,6 +19,7 @@ from cfc_report.models import Match, Player
 from cfc_report.services import database as db
 from cfc_report.services import session
 from cfc_report.services.ctr import CTR
+from cfc_report.services.tms import TMS
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -140,7 +141,6 @@ def round(request) -> HttpResponse:
     ---------
     request : HttpRequest
     """
-    tournament_info = session.get_tournament_info()
 
     logger.debug("Create.round entered with request: %s", request)
 
@@ -205,8 +205,36 @@ def finalize_round(request) -> HttpResponse:
     return redirect("create-report-round")
 
 
+def preview_report(request) -> HttpResponse:
+    """Preview chess report, see all the players, rounds and games that will be
+    in the report
+
+
+    Arguments
+    ---------
+    request : HttpRequest
+    """
+
+    logger.debug("create.preview_report entered with request: %s", request)
+    # get tournament information
+    t_info = session.get_tournament_info()
+
+    logger.debug("Tournament Info got: %s", t_info)
+    ctr = CTR(t_info, session)
+    logger.debug("|CTR| created: %s", ctr)
+
+    tms = TMS()
+
+    ctr.write_file()
+    context = {
+        "tms": str(tms)
+    }
+
+    return render(request, "cfc_report/show/ctr.html", context)
+
+
 def finalize_report(request) -> HttpResponse:
-    """finalize a chess tournament report
+    """Finalize a chess tournament report
 
     Arguments
     ---------

@@ -21,6 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env_path = load_dotenv(str(BASE_DIR / '.env'))
 load_dotenv(env_path)
 
+
 class Dev(Configuration):
     DEBUG = os.getenv("DJANGO_DEBUG")
     SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
@@ -48,7 +49,6 @@ class Dev(Configuration):
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
         "django_htmx.middleware.HtmxMiddleware",
     ]
-
 
     ROOT_URLCONF = "horizon_report.urls"
 
@@ -119,7 +119,7 @@ class Dev(Configuration):
     STATIC_URL = "static/"
     STATICFILES_DIRS = [
         BASE_DIR / "static",
-        #"/var/www/static/",
+        # "/var/www/static/",
     ]
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     # Default primary key field type
