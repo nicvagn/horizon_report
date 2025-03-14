@@ -262,14 +262,14 @@ def remove_match_by_pk(pk: "PrimaryKey") -> None:
     logger.debug("match with pk %s removed. matches now %s", pk, new_matches)
     session["matches"] = new_matches
 
-def get_rounds() -> "Queryset":
+
+def get_rounds():
     """Get the rounds from this session
 
     Uses
     ----
     session : Django session
         the current session got from session store
-
     """
 
 
@@ -304,24 +304,22 @@ def finalize_round() -> None:
 
     logger.debug("session prepaired for round %s", round_number)
 
-#def get_tournament() -> Tournament:
-    #"""get the tournament worked on in this session
-#
-    #Uses
-    #----
-    #session : A Django session
-        #the session got from the session store
-#
-    #Returns
-    #-------
-    #models.Tournament being worked on in this session.
-    #"""
-#
-    #key = get_tournament_name()
-#
-    #return get_object_or_404(Tournament, pk=key)
-#
+def get_tournament() -> Tournament:
+    """get the tournament worked on in this session
 
+    Uses
+    ----
+    session : A Django session
+        the session got from the session store
+
+    Returns
+    -------
+    models.Tournament being worked on in this session.
+    """
+
+    key = get_tournament_name()
+
+    return get_object_or_404(Tournament, pk=key)
 
 
 def get_tournament_info() -> "TournamentInfo":

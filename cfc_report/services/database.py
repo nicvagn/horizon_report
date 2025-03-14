@@ -51,7 +51,8 @@ def get_player_by_cfc(cfc_id: "Cfc_id") -> Player:
     ------
     DoesNotExist exception if player not found
     """
-    p = Player.objects.get(cfc_id=cfc_id)
+
+    p = get_object_or_404(Player, cfc_id=cfc_id)
 
     logger.debug("Player %s got from cfc_id %s", p, cfc_id)
     return p
@@ -130,7 +131,7 @@ def add_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match
     black : Player
         the black player in the match
     result : CharField
-        KEY: {b == black victory, w == white victory, d == no victory)
+        KEY: (b == black victory, w == white victory, d == no victory)
     """
 
     white_player = get_player_by_cfc(white_id)

@@ -2,6 +2,11 @@
   text-align: center;
 }
 
+.sub-title {
+    text-align: center;
+    text-decoration: underline;
+}
+
 .padded {
   padding: 0.2em 0.6em;
 }

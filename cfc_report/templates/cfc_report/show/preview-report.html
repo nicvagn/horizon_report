@@ -1,0 +1,25 @@
+{% extends "cfc_report/base/base.html" %}
+{% block page_title %} Horizon Report: CTR {% endblock %}
+{% block content %}
+  <script>
+    const downloadFile = (file) => {
+        const link = document.createElement("a");
+        const content = document.querySelector("textarea").value;
+        const file = new Blob([content], { type: 'text/plain' });
+        link.href = URL.createObjectURL(file);
+        link.download = file;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    };
+  </script>
+  <h1 class="title">Preview Report</h1>
+
+  <h2 class="sub-title">CTR created:</h2>
+  <textarea style="height: 25rem;" readonly> {{ctr}} </textarea>
+  <br/>
+  <button onclick="downloadFile('{{tournament_name}}.ctr')">click me to download.</button>
+  <h2 class="sub-title">TMS created:</h2>
+  <textarea style="height: 25rem;" readonly> {{tms}} </textarea>
+  <br/>
+  <button onclick="downloadFile('{{tournament_name}}.tms')">click me to download.</button>
+{% endblock %}

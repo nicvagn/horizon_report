@@ -70,7 +70,9 @@ class PersonWithCfcId(models.Model):
 
         self.slug = slugify(self.name)
         logger.info(
-            "PersonWithCfdId: (%s) saved and slug (%s) created for it", self, self.slug
+            "PersonWithCfdId: (%s) saved and slug (%s) created for it",
+            self,
+            self.slug
         )
         super().save(*args, **kwargs)
 
@@ -247,12 +249,13 @@ class Match(models.Model):
     black : Player
         the black player in the match
     result : CharField
-        KEY: {b == black victory, w == white victory, d == no victory)
+        KEY: (b == black victory, w == white victory, d == no victory)
     round_number : Int
         What round of the tournament this game is for
     """
 
-    RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"), ("d", "0.5 - 0.5"), ("_", "_")]
+    RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"),
+                      ("d", "0.5 - 0.5"), ("_", "_")]
 
     white = models.ForeignKey(
         Player, on_delete=models.CASCADE, related_name="white_player"
@@ -292,7 +295,6 @@ class Round(models.Model):
     )
 
 
-
 class Tournament(models.Model):
     """A cfc rated chess tournament
 
@@ -319,7 +321,8 @@ class Tournament(models.Model):
         add a player to the tournament
     """
 
-    name = models.CharField(help_text="Tournament Name.", primary_key=True, max_length=30)
+    name = models.CharField(help_text="Tournament Name.", primary_key=True,
+                            max_length=40)
     num_rounds = models.IntegerField()
     roster = models.ForeignKey(
         Roster,
@@ -340,7 +343,6 @@ class Tournament(models.Model):
     to_cfc = CfcIdField()  # TournamentOrganizer CFC id
     td_cfc = CfcIdField()  # TournamentDirector CFC id
 
-
     def __str__(self):
         return f"""Tournament name: {self.name}
         Number of rounds: {self.num_rounds}
@@ -359,13 +361,18 @@ class Report(models.Model):
     ----------
     tournament : Tournament
         The Tournament this report is for
-
+    ctr : CTR
+        A wrapper class around the cfc ctr file
+    tms : TMS
+        A wraper class around the cfd tms file
     Methods
     -------
 
     """
 
     tournament = Tournament()
+    ctr = None
+    tms = None
 
     def __str__(self):
         return f"tournament: {self.tournament}"

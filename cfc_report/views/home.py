@@ -26,7 +26,6 @@ def index(request):
     """Main index page"""
     player_list = db.get_players()
 
-
     return render(
         request, "cfc_report/home/index.html", {
             "reports": {},

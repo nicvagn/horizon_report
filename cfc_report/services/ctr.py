@@ -95,6 +95,7 @@ class CTR:
                 for line in match_report:
                     self.ctr.append(line)
 
+    # obsolete
     def write_file(self) -> None:
         """write the ctr report to file.
         side effect: creates file 'ctr_report.crt' in current directory.
@@ -112,7 +113,7 @@ class CTR:
             )
 
         # write the ctr report to file
-        ctr_report = open("ctr_report.crt", "w")
+        ctr_report = open("ctr_report.ctr", "w")
         for line in self.ctr:
             ctr_report.write(line)
         ctr_report.close()

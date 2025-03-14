@@ -20,17 +20,34 @@ from typing import List
 # make a ctr tournament report file
 from cfc_report import logger
 from cfc_report.models import Match, Player, Tournament
+from cfc_report.services import session
 
 
-class CtrCreationException(Exception):
+class TmsCreationException(Exception):
     """Something went wrong with ctr creation"""
     pass
 
 
 class TMS:
     """TMS is a wrapper class for TMS (Tournament Report) File format"""
-    def __init__():
-        tms = []
+
+    def __init__(self, tournament):
+        breakpoint()
+        players = session.get_players()
+        tournament_info = session.get_tournament_info()
+
+        name = tournament_info["name"]
+        self.tms: List[str] = []
+
+        for p in players:
+            line = f"""x  {p.name}  {p.cfc_id} x X X X X"""
+            self.tms.append(line)
+
+    def __str__(self):
+        tms = ""
+        for line in self.tms:
+            tms = tms + line + "\n"
+        return tms
 
 
 if __name__ == "__main__":

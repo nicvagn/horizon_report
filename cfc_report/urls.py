@@ -36,7 +36,7 @@ urlpatterns = [
     path("create/finalize/round", create.finalize_round,
          name="create-round-finalize"),
     path("create/report/preview", create.preview_report,
-         "create-report-preview"),
+         name="create-report-preview"),
     path("create/finalize/report", create.finalize_report,
          name="create-report-finalize"),
     path("add-player", player.add_player, name="add-player"),

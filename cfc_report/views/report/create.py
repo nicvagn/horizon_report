@@ -199,7 +199,7 @@ def finalize_round(request) -> HttpResponse:
 
     # check if rounds are over. IE this is the last round
     if session.is_last_round():
-        return redirect("create-report-finalize")
+        return redirect("create-report-preview")
 
     # start creation of next round
     return redirect("create-report-round")
@@ -223,14 +223,16 @@ def preview_report(request) -> HttpResponse:
     ctr = CTR(t_info, session)
     logger.debug("|CTR| created: %s", ctr)
 
-    tms = TMS()
+    tms = TMS(t_info)
 
     ctr.write_file()
     context = {
+        "tournament_name": session.get_tournament_name(),
+        "ctr": str(ctr),
         "tms": str(tms)
     }
 
-    return render(request, "cfc_report/show/ctr.html", context)
+    return render(request, "cfc_report/show/preview-report.html", context)
 
 
 def finalize_report(request) -> HttpResponse:
@@ -248,7 +250,7 @@ def finalize_report(request) -> HttpResponse:
     ctr = CTR(t_info, session)
     logger.debug("|CTR| created: %s", ctr)
 
-    ctr.write_file()
+    ctr.write_file(t_info)
     context = {
         "ctr": str(ctr)
     }
