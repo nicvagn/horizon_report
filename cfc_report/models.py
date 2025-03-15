@@ -294,6 +294,13 @@ class Round(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(999)]
     )
 
+    matches = models.ForeignKey(
+        Match,
+        on_delete=models.CASCADE,
+        related_name="round_matches",
+        default=False,
+    )
+
 
 class Tournament(models.Model):
     """A cfc rated chess tournament
