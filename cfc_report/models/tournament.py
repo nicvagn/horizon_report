@@ -20,32 +20,10 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
-from .. import logger
 from .fields import PairingSystemField, ProvinceField
 from .person import Player, TournamentDirector, TournamentOrganizer
 
 # models relating to a CFC Rated chess tournament.
-class Province(models.TextChoices):
-    """A Canadian province
-
-    Attributes
-    ----------
-    ON : "Ontario"
-        The province of onterio
-    ... : ...
-        One for every province
-    """
-
-    ON = "Ontario"
-    QC = "Quebec"
-    NS = "Nova Scotia"
-    NB = "New Brunswick"
-    MB = "Manitoba"
-    BC = "British Columbia"
-    PE = "Prince Edward Island"
-    SK = "Saskachewan"
-    AB = "Alberta"
-    NL = "Newfoundland and Labrador"
 
 class Roster(models.Model):
     """A roster of players in a cfc rated tournament
@@ -61,11 +39,8 @@ class Roster(models.Model):
         number of players in this roster
     """
 
-    players = models.ForeignKey(Player, on_delete=models.CASCADE)
+    players = models.ForeignKey(Player, on_delete=models.PROTECT)
 
-    def size(self):
-        """Number of Player ie: size of this roster"""
-        raise NotImplementedError
 
 
 class Match(models.Model):
@@ -178,10 +153,10 @@ class Tournament(models.Model):
     province = ProvinceField()
     tournament_organizer = models.ForeignKey(TournamentOrganizer,
                                              related_name="TO",
-                                             on_delete=models.CASCADE,)
+                                             on_delete=models.PROTECT)
     tournament_director = models.ForeignKey(TournamentDirector,
                                              related_name="TD",
-                                            on_delete=models.CASCADE,)
+                                            on_delete=models.PROTECT)
 
     def __str__(self):
         return f"""Tournament name: {self.name}
