@@ -27,6 +27,17 @@ from .model_fields import CfcIdField, PairingSystemField, ProvinceField
 # models relating to a CFC Rated chess tournament.
 
 
+class CfcId(models.Model):
+    """A CFC ID number, a six char number
+
+    Attributes
+    ----------
+    number : a cfc id number in range 100000 - 999999
+    """
+
+    number = CfcIdField()
+
+
 class PersonWithCfcId(models.Model):
     """A Person with a CFC id
 
@@ -51,7 +62,7 @@ class PersonWithCfcId(models.Model):
     """
 
     name = models.CharField(max_length=20)
-    cfc_id = CfcIdField()
+    cfc_id = models.ForeignKey(CfcId, on_delete=models.CASCADE)
     slug = models.SlugField(default="", unique=True, null=False)
     # make sure slug exists for every person
 
@@ -85,7 +96,7 @@ class PersonWithCfcId(models.Model):
         """
         return reverse("player", args=[self.slug])
 
-    def jsonify(self) -> "JSON":
+    def jsonify(self):  # -> "JSON":
         """Make a JSON Person string from this Person
 
         Returns
@@ -125,7 +136,7 @@ class Player(PersonWithCfcId):
         return f"Player: {self.name} CFC: {self.cfc_id}"
 
     @staticmethod
-    def decode(json_player: "JSON"):
+    def decode(json_player):
         """Decode a jsonified into a Player object
 
         Parameters
@@ -162,7 +173,7 @@ class TournamentDirector(PersonWithCfcId):
         return f"Tournament Director: {self.name}, CFC: {self.cfc_id}"
 
     @staticmethod
-    def decode(json_td: "JSON"):
+    def decode(json_td):
         """Decode a jsonified into a Player object
 
         Parameters
@@ -200,7 +211,7 @@ class TournamentOrganizer(PersonWithCfcId):
         return f"Tournament Organizer: {self.name}, CFC: {self.cfc_id}"
 
     @staticmethod
-    def decode(json_to: "JSON"):
+    def decode(json_to):
         """Decode a jsonified into a TournamentOrganizer object
 
         Parameters
@@ -254,8 +265,10 @@ class Match(models.Model):
         What round of the tournament this game is for
     """
 
-    RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"),
-                      ("d", "0.5 - 0.5"), ("_", "_")]
+    RESULT_CHOICES = [("b", "0 - 1"),
+                      ("w", "1 - 0"),
+                      ("d", "0.5 - 0.5"),
+                      ("_", "_")]
 
     white = models.ForeignKey(
         Player, on_delete=models.CASCADE, related_name="white_player"
@@ -293,6 +306,10 @@ class Round(models.Model):
     round_num = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(999)]
     )
+
+    matches = models.ForeignKey(Match,
+                                on_delete=models.CASCADE,
+                                related_name="round_matches")
 
 
 class Tournament(models.Model):
@@ -340,8 +357,14 @@ class Tournament(models.Model):
     date = models.DateField()
     pairing_system = PairingSystemField()
     province = ProvinceField()
-    to_cfc = CfcIdField()  # TournamentOrganizer CFC id
-    td_cfc = CfcIdField()  # TournamentDirector CFC id
+    # TournamentOrganizer CFC id
+    to_cfc = models.ForeignKey(CfcId,
+                               related_name="Tournament_Organizer",
+                               on_delete=models.CASCADE)
+    # TournamentDirector CFC id
+    td_cfc = models.ForeignKey(CfcId,
+                              related_name="Tournament_Director",
+                              on_delete=models.CASCADE)
 
     def __str__(self):
         return f"""Tournament name: {self.name}

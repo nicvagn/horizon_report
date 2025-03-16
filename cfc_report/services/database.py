@@ -19,6 +19,7 @@
 from cfc_report import logger
 from cfc_report.models import (
     Match,
+    CfcId,
     Player,
     TournamentDirector,
     TournamentOrganizer,
@@ -39,7 +40,7 @@ def get_players() -> QuerySet:
     return all_players
 
 
-def get_player_by_cfc(cfc_id: "Cfc_id") -> Player:
+def get_player_by_cfc(cfc_id: CfcId) -> Player:
     """Get a player by their cfc_id
 
     Returns
@@ -111,10 +112,10 @@ def add_player(p: Player) -> None:
     p.save()
 
 
-def add_player_by_cfc(cfc_id: "CfcId", name: str) -> None:
+def add_player_by_cfc(cfc_id: CfcId, name: str) -> None:
     """Add a player to the database using name and cfcid
     parameters:
-        cfc_id : "CfcId"
+        cfc_id : CfcId
             the cfc id of the player
         name : str
             the players name.
@@ -125,7 +126,7 @@ def add_player_by_cfc(cfc_id: "CfcId", name: str) -> None:
     add_player(p)
 
 
-def add_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
+def add_match(white_id: CfcId, black_id: CfcId, result: "w,b,or d") -> Match:
     """white : Player
         the White player in the match
     black : Player
@@ -147,8 +148,8 @@ def add_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match
 def populate_database() -> None:
     """Populate the db with dumby data"""
 
-    # players
     cfc_id = 111111
+    # players
     players = []
     for n in [
         "charles Fool",
@@ -156,14 +157,14 @@ def populate_database() -> None:
         "Albert Fish",
         "Jonny Boy",
         "Dad Dadderson",
-        "11111111",
-        "222222222",
-        "33333333",
-        "44444444444",
-        "55555555555",
-        "6666666",
+        "Joan Boat",
+        "Carl Marz",
+        "Lover Bou",
+        "Paul Lark",
+        "Papa Vaagen",
+        "Alex Charter"
     ]:
-        players.append(Player(name=n, cfc_id=str(cfc_id)))
+        players.append(Player(name=n, cfc_id=CfcId(number=cfc_id)))
         cfc_id += 1
 
     for p in players:
@@ -172,7 +173,7 @@ def populate_database() -> None:
     # TournamentDirector
     td = []
     for n in ["Big Mommy", "Small Low"]:
-        td.append(TournamentDirector(name=n, cfc_id=str(cfc_id)))
+        td.append(TournamentDirector(name=n, cfc_id=CfcId(number=cfc_id)))
         cfc_id += 1
 
     for p in td:
@@ -181,7 +182,7 @@ def populate_database() -> None:
     # TournamentOrganizer
     tos = []
     for n in ["Tonka Dump", "Great Leap"]:
-        tos.append(TournamentOrganizer(name=n, cfc_id=str(cfc_id)))
+        tos.append(TournamentOrganizer(name=n, cfc_id=CfcId(number=cfc_id)))
         cfc_id += 1
 
     for p in tos:

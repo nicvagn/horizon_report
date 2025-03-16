@@ -30,13 +30,19 @@ class CtrCreationException(Exception):
 class CTR:
     """CTR is a wrapper class for CTR (Tournament Report) File format"""
 
-    def __init__(self, tournament_info, session):
+    def __init__(self, session, name=None, num_rounds=None,
+                 pairing_system=None, to_cfc_id=None, td_cfc_id=None,
+                 province=None, date=None):
+
         logger.info(
-            "class CTR init w -- tournament_info: %s, session: %s",
-            tournament_info, session)
+            "class CTR init w -- session: %s, name: %s, num_rounds: %s,  \
+            pairing_system: %s, TO CFC: %s, TD CFC: %s, date: %s",
+            session, name, num_rounds, pairing_system, to_cfc_id, td_cfc_id,
+            date)
+
         self.player_ids = session.get_player_ids()
         self.num_players = len(self.player_ids)
-
+        ''' old tournament_info format
         name = tournament_info["name"]
         num_rounds = int(tournament_info["num_rounds"])
         pairing_system = tournament_info["pairing_system"]
@@ -46,7 +52,7 @@ class CTR:
         date = (tournament_info["date_year"] + "-" +
                 tournament_info["date_month"] +
                 "-" + tournament_info["date_day"])
-
+        '''
         # make sure the tournament has requisite data
         try:
             assert name is not None
