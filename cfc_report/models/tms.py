@@ -35,7 +35,7 @@ class TMS:
         players = session.get_players()
         tournament_info = session.get_tournament_info()
 
-        """A way to represent a tms file. one line per index"""
+        name = tournament_info["name"]
         self.tms: List[str] = []
 
         for p in players:

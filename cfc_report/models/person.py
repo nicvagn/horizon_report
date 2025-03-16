@@ -16,13 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import json
 
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
-from . import logger
-from .model_fields import CfcIdField, PairingSystemField, ProvinceField
+from .. import logger
+from .fields import CfcIdField
 
 # models relating to a CFC Rated chess tournament.
 
@@ -96,7 +95,7 @@ class PersonWithCfcId(models.Model):
         """
         return reverse("player", args=[self.slug])
 
-    def jsonify(self):  # -> "JSON":
+    def jsonify(self):
         """Make a JSON Person string from this Person
 
         Returns
@@ -141,7 +140,7 @@ class Player(PersonWithCfcId):
 
         Parameters
         ----------
-        sp : "JSON"
+        sp
             the JSON string to decode player from
 
         Returns
@@ -166,7 +165,7 @@ class TournamentDirector(PersonWithCfcId):
 
     Methods
     -------
-    decode(json_td: "JSON")
+    decode(json_td)
     """
 
     def __str__(self):
@@ -178,7 +177,7 @@ class TournamentDirector(PersonWithCfcId):
 
         Parameters
         ----------
-        json_td : "JSON"
+        json_td
             the JSON string to decode TournamentDirector from
 
         Returns
@@ -227,175 +226,3 @@ class TournamentOrganizer(PersonWithCfcId):
         jp = json.loads(json_to)
         logger.debug("decoded %s from %s json", jp, json_to)
         return TournamentDirector(name=jp["name"], cfc_id=jp["cfc_id"])
-
-
-class Roster(models.Model):
-    """A roster of players in a cfc rated tournament
-
-    Attributes
-    ----------
-    players : ForeignKey
-        players in roster
-
-    Methods
-    _______
-    size : int
-        number of players in this roster
-    """
-
-    players = models.ForeignKey(Player, on_delete=models.CASCADE)
-
-    def size(self):
-        """Number of Player ie: size of this roster"""
-        raise NotImplementedError
-
-
-class Match(models.Model):
-    """A cfc rated chess match
-
-    Attributes
-    ----------
-    white : Player
-        the White player in the match
-    black : Player
-        the black player in the match
-    result : CharField
-        KEY: (b == black victory, w == white victory, d == no victory)
-    round_number : Int
-        What round of the tournament this game is for
-    """
-
-    RESULT_CHOICES = [("b", "0 - 1"),
-                      ("w", "1 - 0"),
-                      ("d", "0.5 - 0.5"),
-                      ("_", "_")]
-
-    white = models.ForeignKey(
-        Player, on_delete=models.CASCADE, related_name="white_player"
-    )
-    black = models.ForeignKey(
-        Player, on_delete=models.CASCADE, related_name="black_player"
-    )
-    result = models.CharField(
-        max_length=1, choices=RESULT_CHOICES, default=RESULT_CHOICES[3]
-    )
-    round_number = models.IntegerField()
-
-    def get_absolute_url(self):
-        return reverse("select-match-round", kwargs={"pk": self.pk})
-
-    def __str__(self):
-        return (
-            f"MATCH - [ "
-            f" white: ({self.white}),"
-            f" black: ({self.black}),"
-            f" result: ({self.result}),"
-            f" round number: ({self.round_number}) ]"
-        )
-
-
-class Round(models.Model):
-    """A Round in a cfc rated tournament
-
-    Attributes
-    ----------
-    round_num : IntegerField
-        the round of it's tournament this is
-    """
-
-    round_num = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(999)]
-    )
-
-    matches = models.ForeignKey(Match,
-                                on_delete=models.CASCADE,
-                                related_name="round_matches")
-
-
-class Tournament(models.Model):
-    """A cfc rated chess tournament
-
-    Attributes
-    ----------
-    name : models.CharField
-        name of the tournament
-    num_rounds : models.IntegerField
-        number of rounds
-    date : models.DateField
-        The date of the tournament
-    pairing_system : PairingSystem
-        The pairing system used in this tournament.
-    province : Province
-        The canadian province this tournament was held
-    to_cfc : CfcIdField
-        The CFC ID of the TournamentOrganizer
-    td_cfc : CfcIdField
-        The CFC ID of the TournamentDirector
-
-    Methods
-    -------
-    add_player(player)
-        add a player to the tournament
-    """
-
-    name = models.CharField(help_text="Tournament Name.", primary_key=True,
-                            max_length=40)
-    num_rounds = models.IntegerField()
-    roster = models.ForeignKey(
-        Roster,
-        on_delete=models.CASCADE,
-        related_name="tournament_roster",
-        default=False,
-    )
-    rounds = models.ForeignKey(
-        Round,
-        on_delete=models.CASCADE,
-        related_name="rounds_in_tournament",
-        default=False,
-    )
-
-    date = models.DateField()
-    pairing_system = PairingSystemField()
-    province = ProvinceField()
-    # TournamentOrganizer CFC id
-    to_cfc = models.ForeignKey(CfcId,
-                               related_name="Tournament_Organizer",
-                               on_delete=models.CASCADE)
-    # TournamentDirector CFC id
-    td_cfc = models.ForeignKey(CfcId,
-                              related_name="Tournament_Director",
-                              on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"""Tournament name: {self.name}
-        Number of rounds: {self.num_rounds}
-        date: {self.date}
-        Pairing System: {self.pairing_system}
-        province: {self.province}
-        TournamentOrganizer CFC: {self.to_cfc}
-        TournamentDirector CFC: {self.td_cfc}
-        """
-
-
-class Report(models.Model):
-    """A CFC Report for a tournament
-
-    Attributes
-    ----------
-    tournament : Tournament
-        The Tournament this report is for
-    ctr : CTR
-        A wrapper class around the cfc ctr file
-    tms : TMS
-        A wraper class around the cfd tms file
-    Methods
-    -------
-
-    """
-
-    tournament = Tournament()
-    ctr = None
-    tms = None
-
-    def __str__(self):
-        return f"tournament: {self.tournament}"

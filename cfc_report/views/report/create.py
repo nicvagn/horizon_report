@@ -71,7 +71,6 @@ def players(request):
     # needed if no new players are choosen and you want to confirm players
     if request.method == "POST":
         player_info = request.POST
-        logger.debug("POST request with value: %s", player_info)
         logger.debug("TournamentInfoForm made from POST: %s", player_info)
         return render(request, "cfc_report/create/round.html", player_info)
 

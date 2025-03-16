@@ -21,11 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env_path = load_dotenv(str(BASE_DIR / '.env'))
 load_dotenv(env_path)
 
+ALLOWED_HOSTS = ["nrv773.pythonanywhere.com", "127.0.0.1"]
 
 class Dev(Configuration):
     DEBUG = os.getenv("DJANGO_DEBUG")
     SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
-    ALLOWED_HOSTS = ["www.nrv773.pythonanywhere.com", "127.0.0.1"]
+    ALLOWED_HOSTS = ["nrv773.pythonanywhere.com", "127.0.0.1"]
 
     # Application definition
     INSTALLED_APPS = [
