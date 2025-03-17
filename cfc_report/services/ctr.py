@@ -78,8 +78,8 @@ class CTR:
 
         # start by building the 1st line of the ctr
         self.ctr.append(
-            f'"{name}","{province}","0","{pairing_abriviation}","{
-                date}","{self.num_players}","{td_cfc_id}","{to_cfc_id}"'
+            f'''"{name}","{province}","0","{pairing_abriviation}","{
+                date}","{self.num_players}","{td_cfc_id}","{to_cfc_id}"'''
         )
 
         logger.info("ctr init. ctr: %s", self.ctr)
