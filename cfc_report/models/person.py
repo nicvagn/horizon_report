@@ -21,20 +21,9 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 from .. import logger
-from .fields import CfcIdField
+from .etc import CfcId
 
 # models relating to a CFC Rated chess tournament.
-
-
-class CfcId(models.Model):
-    """A CFC ID number, a six char number
-
-    Attributes
-    ----------
-    number : a cfc id number in range 100000 - 999999
-    """
-
-    number = CfcIdField()
 
 
 class PersonWithCfcId(models.Model):

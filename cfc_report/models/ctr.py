@@ -15,12 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Copyright (C) 2024  Nicolas Vaagen
-from typing import List
-
-# make a ctr tournament report file
-from cfc_report import logger
-
-im
-
-class CTR(:
-    """CTR is a wrapper class for CTR (Tournament Report) File format"""
+from .person import
+class CTR():
+    """CFC CTR (Tournament Report) File format"""
+    tournamentOrganizer =

@@ -18,6 +18,20 @@
 
 from django.db import models
 
+from .fields import CfcIdField
+
+
+class CfcId(models.Model):
+    """A CFC ID number, a six char number
+
+    Attributes
+    ----------
+    number : a cfc id number in range 100000 - 999999
+    """
+
+    number = CfcIdField()
+
+
 class Province(models.TextChoices):
     """A Canadian province
 
