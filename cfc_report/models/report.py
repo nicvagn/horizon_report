@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Copyright (C) 2024  Nicolas Vaagen
 from Django import models
-from cfc_report.models import Tournament
+from cfc_report.models.tournament import Tournament
+
 
 class TMS(models.Model):
-    """TMS model wrapper class for TMS (Tournament Report) File format"""
-
+    """model wrapping CFC TMS (Tournament Report) File format"""
 
     def __str__(self):
         tms = ""

@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Copyright (C) 2024  Nicolas Vaagen
 from cfc_report import logger
-from cfc_report.fields import CfcIdField
+from cfc_report.models.fields import CfcIdField
 from django.db import models
 from django.utils.text import slugify
 
