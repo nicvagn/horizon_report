@@ -15,7 +15,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Copyright (C) 2024  Nicolas Vaagen
-from .person import
-class CTR():
+from .tournament import Tournament
+from django.db import models
+from django.urls import reverse
+from django.utils.text import slugify
+
+
+class CTR(models.Model):
     """CFC CTR (Tournament Report) File format"""
-    tournamentOrganizer =
+    tournament = models.ForignKey(Tournament, on_delete=models.PROTECT)
+    # the CTR report stored as text
+    report = models.TextField()
+
+    def __str__(self):
+        return self.report.to_python()

@@ -19,7 +19,7 @@ from typing import List
 
 # make a ctr tournament report file
 from cfc_report import logger
-from cfc_report.models import Match, Player, Tournament
+from cfc_report.models import Match, Player
 
 
 class CtrCreationException(Exception):
@@ -27,7 +27,7 @@ class CtrCreationException(Exception):
     pass
 
 
-class CTR:
+class CTR_builder:
     """CTR is a wrapper class for CTR (Tournament Report) File format"""
 
     def __init__(self, session, name=None, num_rounds=None,
@@ -35,8 +35,9 @@ class CTR:
                  province=None, date=None):
 
         logger.info(
-            "class CTR init w -- session: %s, name: %s, num_rounds: %s,  \
-            pairing_system: %s, TO CFC: %s, TD CFC: %s, date: %s",
+            "class CTR_builder init w -- session: %s, name: %s,  \
+            num_rounds: %s, pairing_system: %s, TO CFC: %s, TD CFC: %s, \
+            date: %s",
             session, name, num_rounds, pairing_system, to_cfc_id, td_cfc_id,
             date)
 
@@ -173,5 +174,5 @@ if __name__ == "__main__":
          "date_year": "1",
          "date_month": "1",
          "date_day": "1", }
-    ctr = CTR(T)
+    ctr = CTR_builder(T)
     ctr.write_to_file()
