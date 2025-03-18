@@ -24,8 +24,8 @@ from django.utils.text import slugify
 class CTR(models.Model):
     """CFC CTR (Tournament Report) File format"""
     tournament = models.ForignKey(Tournament, on_delete=models.PROTECT)
-    # the CTR report stored as text
-    report = models.TextField()
+
+    rounds = models.IntegerField()
 
     def __str__(self):
         return self.report.to_python()

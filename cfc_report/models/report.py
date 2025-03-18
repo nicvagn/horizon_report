@@ -1,5 +1,4 @@
-"""cfc_report admin.py"""
-# horizon_pair
+# report.py -- models for CFC report file formats
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,14 +13,26 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.contrib import admin
-from .models.person import (Player, TournamentDirector, TournamentOrganizer)
-from .models.tournament import Roster, Match
+# Copyright (C) 2024  Nicolas Vaagen
+from Django import models
+from cfc_report.models import Tournament
 
-# Register your models here.
-Roster
-admin.site.register(Player)
-admin.site.register(Roster)
-admin.site.register(TournamentDirector)
-admin.site.register(TournamentOrganizer)
-admin.site.register(Match)
+class TMS(models.Model):
+    """TMS model wrapper class for TMS (Tournament Report) File format"""
+
+
+    def __str__(self):
+        tms = ""
+        for line in self.tms:
+            tms = tms + line + "\n"
+        return tms
+
+
+class CTR(models.Model):
+    """model wrapping CFC CTR (Tournament Report) File format"""
+    tournament = models.ForignKey(Tournament, on_delete=models.PROTECT)
+
+    rounds = models.IntegerField()
+
+    def __str__(self):
+        return self.report.to_python()

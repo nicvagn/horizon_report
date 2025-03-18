@@ -19,7 +19,7 @@ from typing import List
 
 # make a ctr tournament report file
 from cfc_report import logger
-from cfc_report.models import Match, Player
+from cfc_report.models import Match, Player, CTR
 
 
 class CtrCreationException(Exception):
@@ -27,147 +27,135 @@ class CtrCreationException(Exception):
     pass
 
 
-class CTR_builder:
-    """CTR is a wrapper class for CTR (Tournament Report) File format"""
+def make_match_report(self, m: Match, player: Player) -> List[str]:
+    """make a match part of ctr report file for a given player
+    returns: a list of strings to be written to ctr_report one per line"""
 
-    def __init__(self, session, name=None, num_rounds=None,
-                 pairing_system=None, to_cfc_id=None, td_cfc_id=None,
-                 province=None, date=None):
+    logger.info(
+        "make_match_report entered with match: %s, and player: %s",
+        m, player)
+    match_result = m.result
+    if match_result == player.cfc_id:
+        res = "W"
+        points = "1.0"
+    elif match_result is None:
+        res = "D"
+        points = "0.5"
+    else:
+        res = "L"
+        points = "0.0"
 
-        logger.info(
-            "class CTR_builder init w -- session: %s, name: %s,  \
-            num_rounds: %s, pairing_system: %s, TO CFC: %s, TD CFC: %s, \
-            date: %s",
-            session, name, num_rounds, pairing_system, to_cfc_id, td_cfc_id,
-            date)
+    # match report
+    match_report: List[str] = []
 
-        self.player_ids = session.get_player_ids()
-        self.num_players = len(self.player_ids)
-        ''' old tournament_info format
-        name = tournament_info["name"]
-        num_rounds = int(tournament_info["num_rounds"])
-        pairing_system = tournament_info["pairing_system"]
-        td_cfc_id = tournament_info["td_cfc"]
-        to_cfc_id = tournament_info["to_cfc"]
-        province = tournament_info["province"]
-        date = (tournament_info["date_year"] + "-" +
-                tournament_info["date_month"] +
-                "-" + tournament_info["date_day"])
-        '''
-        # make sure the tournament has requisite data
-        try:
-            assert name is not None
-            assert pairing_system is not None
-            assert td_cfc_id is not None
-            assert province is not None
-            assert date is not None
-            assert self.num_players > 0
-        except AssertionError:
-            print(f"make_ctr_report: missing tournament data in {name}")
-            raise CtrCreationException("missing tournament data.")
+    # line 1
+    match_report.append(f'"{player.cfc_id}"')
 
-        # get the pairing abbreviation
-        if pairing_system == "Swiss":
-            pairing_abriviation = "S"
-        else:
-            # Round Robin is default,
-            # I think this works ie: I think there are only 2 options
-            pairing_abriviation = "R"
+    # line 2
+    match_report.append(f'"{res}","0"')
 
-        """List with one index per CTR line"""
-        self.ctr: List[str] = []
+    # line 3
+    match_report.append(f'"{points}"')
 
-        # start by building the 1st line of the ctr
-        self.ctr.append(
-            f'''"{name}","{province}","0","{pairing_abriviation}","{
-                date}","{self.num_players}","{td_cfc_id}","{to_cfc_id}"'''
-        )
+    return match_report
 
-        logger.info("ctr init. ctr: %s", self.ctr)
 
-        # add all matches to report
-        for rnd in range(num_rounds):
-            # get matches in round
-            matches = Match.objects.filter(round_number=rnd)
+def CTR_builder(session, name=None, rounds=None,
+                pairing_system=None, to_cfc_id=None, td_cfc_id=None,
+                province=None, date=None) -> CTR:
+    """Build a CTR model
 
-            logger.info("building round: %s \nw: Matches: %s", rnd, matches)
-            for match in matches:
-                match_report = self.make_match_report(
-                    match, match.white
-                )
-                match_report += self.make_match_report(
-                    match, match.black
-                )
-                # append both players match reports to main report
-                for line in match_report:
-                    self.ctr.append(line)
+    Parameters
+    ----------
+    session : the active Django session
+        used to get player and match info
+    name : str
+        Tournament Name
+    rounds : int
+        the number of rounds in the tournament
+    pairing_system : str
+        Pairing System used. ie: Swiss, Round Robin
+    to_cfc_id : CfdId
+        Tournament Organizer CFC ID
+    td_cfc_id : CfdId
+        Tournament Director CFC ID
+    province : str
+        Province abreviation tournament is in
+    date : str
+        Date of the tournament
+    """
+    logger.info(
+        "CTR_builder entered w -- session: %s, name: %s,  \
+        rounds: %s, pairing_system: %s, TO CFC: %s, TD CFC: %s, \
+        date: %s",
+        session, name, rounds, pairing_system, to_cfc_id, td_cfc_id,
+        date)
 
-    # obsolete
-    def write_file(self) -> None:
-        """write the ctr report to file.
-        side effect: creates file 'ctr_report.crt' in current directory.
-                     If file already exists, it will be overwritten.
-        """
+    player_ids = session.get_player_ids()
+    num_players = len(player_ids)
+    # make sure the tournament has requisite data
+    try:
+        assert name is not None
+        assert pairing_system is not None
+        assert td_cfc_id is not None
+        assert province is not None
+        assert date is not None
+        assert num_players > 0
+    except AssertionError:
+        print(f"make_ctr_report: missing tournament data in {name}")
+        raise CtrCreationException("missing tournament data.")
 
-        # make sure ctr data has been created
-        try:
-            assert self.ctr
+    # get the pairing abbreviation
+    if pairing_system == "Swiss":
+        pairing_abriviation = "S"
+    else:
+        # Round Robin is default,
+        # I think this works ie: I think there are only 2 options
+        pairing_abriviation = "R"
 
-        except AssertionError:
-            print("make_ctr_report: asked to write ctr file but no ctr data")
-            raise CtrCreationException(
-                "missing ctr data when asked to write file"
+    """List with one index per CTR line"""
+    ctr: List[str] = []
+
+    # start by building the 1st line of the ctr
+    ctr.append(
+        f'''"{name}","{province}","0","{pairing_abriviation}","{
+            date}","{num_players}","{td_cfc_id}","{to_cfc_id}"'''
+    )
+
+    logger.info("CTR_builder(...) made: ctr: %s", ctr)
+
+    # add all matches to report
+    for rnd in range(rounds):
+        # get matches in round
+        matches = Match.objects.filter(round_number=rnd)
+
+        logger.info("building round: %s \nw: Matches: %s", rnd, matches)
+        for match in matches:
+            match_report = make_match_report(
+                match, match.white
             )
+            match_report += make_match_report(
+                match, match.black
+            )
+            # append both players match reports to main report
+            for line in match_report:
+                ctr.append(line)
 
-        # write the ctr report to file
-        ctr_report = open("ctr_report.ctr", "w")
-        for line in self.ctr:
-            ctr_report.write(line)
-        ctr_report.close()
 
-    def make_match_report(self, m: Match, player: Player) -> List[str]:
-        """make a match part of ctr report file for a given player
-        returns: a list of strings to be written to ctr_report one per line"""
+def ctr_to_str(ctr) -> str:
+    """take a ctr prototype and return a ctr report as a string
 
-        logger.info(
-            "make_match_report entered with match: %s, and player: %s",
-            m, player)
-        match_result = m.result
-        if match_result == player.cfc_id:
-            res = "W"
-            points = "1.0"
-        elif match_result is None:
-            res = "D"
-            points = "0.5"
-        else:
-            res = "L"
-            points = "0.0"
-
-        # match report
-        match_report: List[str] = []
-
-        # line 1
-        match_report.append(f'"{player.cfc_id}"')
-
-        # line 2
-        match_report.append(f'"{res}","0"')
-
-        # line 3
-        match_report.append(f'"{points}"')
-
-        return match_report
-
-    def __str__(self) -> str:
-        ctr = ""
-        for line in self.ctr:
-            ctr += line + "\n"
-        return ctr
+    """
+    ctr = ""
+    for line in ctr:
+        ctr += line + "\n"
+    return ctr
 
 
 if __name__ == "__main__":
     # test
     T = {"name": "my test tornament",
-         "num_rounds": 4,
+         "rounds": 4,
          "pairing_system": "Swiss",
          "td_cfc": "111111",
          "to_cfc": "222222",

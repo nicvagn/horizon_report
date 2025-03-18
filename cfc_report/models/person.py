@@ -21,7 +21,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 from .. import logger
-from .etc import CfcId
+from .cfc import CfcId
 
 # models relating to a CFC Rated chess tournament.
 

@@ -1,5 +1,5 @@
-"""Data models related to ..."""
-
+"""a CFC models"""
+# horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,11 +14,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
+# Copyright (C) 2024  Nicolas Vaagen
+from cfc_report import logger
+from cfc_report.fields import CfcIdField
 from django.db import models
-
-from .fields import CfcIdField
+from django.utils.text import slugify
 
 
 class CfcId(models.Model):
@@ -30,26 +30,28 @@ class CfcId(models.Model):
     """
 
     number = CfcIdField()
+    slug = models.SlugField(default="", unique=True, null=False)
 
+    def save(self, *args, **kwargs):
+        """create slug url before saving
+        Override of save()
 
-class Province(models.TextChoices):
-    """A Canadian province
+        Arguments
+        ---------
+        *args and **kwargs - passed on to super().save(...)
 
-    Attributes
-    ----------
-    ON : "Ontario"
-        The province of onterio
-    ... : ...
-        One for every province
-    """
+        Returns
+        -------
+        None
+        """
 
-    ON = "Ontario"
-    QC = "Quebec"
-    NS = "Nova Scotia"
-    NB = "New Brunswick"
-    MB = "Manitoba"
-    BC = "British Columbia"
-    PE = "Prince Edward Island"
-    SK = "Saskachewan"
-    AB = "Alberta"
-    NL = "Newfoundland and Labrador"
+        self.slug = slugify(self.number)
+        logger.info(
+            "PersonWithCfdId: (%s) saved and slug (%s) created for it",
+            self,
+            self.slug
+        )
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return str(self.number)

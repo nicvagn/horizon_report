@@ -15,10 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger
 from cfc_report.forms import TournamentInfoForm
-from cfc_report.models import Match, Player
+from cfc_report.models.cfc import Match, CTR
+from cfc_report.models.person import Player
 from cfc_report.services import database as db
 from cfc_report.services import session
-from cfc_report.services.ctr import CTR
+from cfc_report.services.ctr import CTR_builder
 from cfc_report.services.tms import TMS
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -115,7 +116,8 @@ def chess_match(request):
         # create the chess match model, and save it to the db
         chess_match = session.create_match(white_id, black_id, winner)
         logger.debug(
-            "chess_match entered: black_id %s, white_id: %s, result: %s, winner: %s",
+            "chess_match entered: black_id %s, white_id: %s, result: %s,  \
+            winner: %s",
             black_id,
             white_id,
             result,
@@ -166,7 +168,8 @@ def confirm_round(request) -> HttpResponse:
         "players": session.get_players(),
     }
     logger.debug(
-        "Create.confirm_round entered, confirming round completion. TournamentInfo: %s",
+        "Create.confirm_round entered, confirming round completion. \
+        TournamentInfo: %s",
         tournament_info)
 
     return render(request, "cfc_report/create/confirm-round.html", context)
@@ -208,7 +211,6 @@ def preview_report(request) -> HttpResponse:
     """Preview chess report, see all the players, rounds and games that will be
     in the report
 
-
     Arguments
     ---------
     request : HttpRequest
@@ -219,7 +221,7 @@ def preview_report(request) -> HttpResponse:
     t_info = session.get_tournament_info()
 
     logger.debug("Tournament Info got: %s", t_info)
-    ctr = CTR(t_info, session)
+    ctr = CTR_builder(t_info, session)
     logger.debug("|CTR| created: %s", ctr)
 
     tms = TMS(t_info)

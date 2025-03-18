@@ -155,7 +155,7 @@ class Tournament(models.Model):
                                              related_name="TO",
                                              on_delete=models.PROTECT)
     tournament_director = models.ForeignKey(TournamentDirector,
-                                             related_name="TD",
+                                            related_name="TD",
                                             on_delete=models.PROTECT)
 
     def __str__(self):

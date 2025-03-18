@@ -17,14 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from cfc_report import logger
-from cfc_report.models import (
-    Match,
-    CfcId,
-    Player,
-    TournamentDirector,
-    TournamentOrganizer,
-    Tournament,
-)
+from cfc_report.models.person import (Player, TournamentDirector,
+                                      TournamentOrganizer)
+from cfc_report.models.tournament import Match, Roster, Round
+from cfc_report.cfc import CfcId
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
 
@@ -89,17 +85,7 @@ def get_matches() -> QuerySet:
     matches = Match.objects.all()
     logger.debug("get_matches got: %s", matches)
 
-    return matches
-
-
-#def get_tournament(name: str) -> Tournament:
-    #"""Get a tournament with the name provided
-#
-    #Returns
-    #-------
-    #Tournament - with the name provided
-    #"""
-    #t = get_object_or_404(Tournament, pk=name)
+    return
 
 
 # ADD
@@ -126,12 +112,12 @@ def add_player_by_cfc(cfc_id: CfcId, name: str) -> None:
     add_player(p)
 
 
-def add_match(white_id: CfcId, black_id: CfcId, result: "w,b,or d") -> Match:
+def add_match(white_id: CfcId, black_id: CfcId, result: str) -> Match:
     """white : Player
         the White player in the match
     black : Player
         the black player in the match
-    result : CharField
+    result : CharField -- "w,b,or d"
         KEY: (b == black victory, w == white victory, d == no victory)
     """
 
@@ -201,7 +187,8 @@ def populate_database() -> None:
             elif r == "d":
                 r = "w"
         matches.append(
-            Match(white=players[n], black=players[n + 1], result=r, round_number=0)
+            Match(white=players[n], black=players[n + 1],
+                  result=r, round_number=1)
         )
 
     for m in matches:
