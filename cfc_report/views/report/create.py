@@ -21,8 +21,7 @@ from cfc_report.models.report import CTR
 from cfc_report.models.tournament import Match
 from cfc_report.services import database as db
 from cfc_report.services import session
-from cfc_report.services.ctr import CTR_builder
-from cfc_report.services.tms import TMS
+from cfc_report.services.ctr_builder import CTR_builder
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -168,13 +167,15 @@ def confirm_round(request) -> HttpResponse:
     context = {
         "tournament_name": tournament_info["name"],
         "round_number": session.get_tournament_round_number(),
-        "matches": session.get_matches(),
-        "players": session.get_players(),
+        # HACK: FIXME figgure out db sessions
+        "matches": db.get_matches(),
+        "players": db.get_players(),
     }
     logger.debug(
-        "Create.confirm_round entered, confirming round completion. \
-        TournamentInfo: %s",
+        "Create.confirm_round entered, confirming round completion.\n \
+            TournamentInfo: %s \n context: %s \n",
         tournament_info,
+        context,
     )
 
     return render(request, "cfc_report/create/confirm-round.html", context)
@@ -229,13 +230,10 @@ def preview_report(request) -> HttpResponse:
     ctr = CTR_builder(t_info, session)
     logger.debug("|CTR| created: %s", ctr)
 
-    tms = TMS(t_info)
-
-    ctr.write_file()
     context = {
         "tournament_name": session.get_tournament_name(),
         "ctr": str(ctr),
-        "tms": str(tms),
+        "tms": "TMS NOT DONE",
     }
 
     return render(request, "cfc_report/show/preview-report.html", context)
@@ -253,7 +251,7 @@ def finalize_report(request) -> HttpResponse:
     t_info = session.get_tournament_info()
 
     logger.debug("Tournament Info got: %s", t_info)
-    ctr = CTR(t_info, session)
+    ctr = CTR_builder(t_info, session)
     logger.debug("|CTR| created: %s", ctr)
 
     ctr.write_file(t_info)

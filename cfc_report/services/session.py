@@ -295,7 +295,7 @@ def finalize_round() -> None:
         round_number,
         matches,
     )
-    rnd = Round(round_num=round_number, )
+    rnd = Round(round_num=round_number, matches=matches )
     # save round
     rnd.save()
     logger.debug("Tournament round %s made and saved. round: %s",

@@ -84,7 +84,7 @@ def get_matches() -> QuerySet:
     matches = Match.objects.all()
     logger.debug("get_matches got: %s", matches)
 
-    return
+    return matches
 
 
 # ADD
