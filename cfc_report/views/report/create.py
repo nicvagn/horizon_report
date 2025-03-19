@@ -1,4 +1,5 @@
 """view for creating a cfc report"""
+
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,9 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger
 from cfc_report.forms import TournamentInfoForm
-from cfc_report.models.tournament import Match
-from cfc_report.models.report import CTR
 from cfc_report.models.person import Player
+from cfc_report.models.report import CTR
+from cfc_report.models.tournament import Match
 from cfc_report.services import database as db
 from cfc_report.services import session
 from cfc_report.services.ctr import CTR_builder
@@ -146,9 +147,11 @@ def round(request) -> HttpResponse:
 
     logger.debug("Create.round entered with request: %s", request)
 
-    context = {"entered_matches": session.get_matches(),
-               "round_number": session.get_tournament_round_number(),
-               "rounds": session.get_rounds()}
+    context = {
+        "entered_matches": session.get_matches(),
+        "round_number": session.get_tournament_round_number(),
+        "rounds": session.get_rounds(),
+    }
     return render(request, "cfc_report/create/round.html", context)
 
 
@@ -171,7 +174,8 @@ def confirm_round(request) -> HttpResponse:
     logger.debug(
         "Create.confirm_round entered, confirming round completion. \
         TournamentInfo: %s",
-        tournament_info)
+        tournament_info,
+    )
 
     return render(request, "cfc_report/create/confirm-round.html", context)
 
@@ -231,7 +235,7 @@ def preview_report(request) -> HttpResponse:
     context = {
         "tournament_name": session.get_tournament_name(),
         "ctr": str(ctr),
-        "tms": str(tms)
+        "tms": str(tms),
     }
 
     return render(request, "cfc_report/show/preview-report.html", context)
@@ -253,9 +257,7 @@ def finalize_report(request) -> HttpResponse:
     logger.debug("|CTR| created: %s", ctr)
 
     ctr.write_file(t_info)
-    context = {
-        "ctr": str(ctr)
-    }
+    context = {"ctr": str(ctr)}
 
     return render(request, "cfc_report/show/ctr.html", context)
 

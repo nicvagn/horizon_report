@@ -29,7 +29,7 @@ class CfcId(models.Model):
     number : a cfc id number in range 100000 - 999999
     """
 
-    number = CfcIdField()
+    number = CfcIdField(primary_key=True)
     slug = models.SlugField(default="", unique=True, null=False)
 
     def save(self, *args, **kwargs):

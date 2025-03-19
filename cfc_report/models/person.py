@@ -73,6 +73,8 @@ class PersonWithCfcId(models.Model):
             self,
             self.slug
         )
+        # ensure that the cfc id used is always saved too
+        self.cfc_id.save()
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

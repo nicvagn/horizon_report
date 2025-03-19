@@ -19,9 +19,7 @@ from typing import List
 
 # make a ctr tournament report file
 from cfc_report import logger
-from cfc_report.models.person import Player
-from cfc_report.models.tournament import Match
-from cfc_report.models.ctr import CTR
+from cfc_report.models import Player, Match, CTR
 
 
 class CtrCreationException(Exception):

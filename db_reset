@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 
-# enter the dir and venv
+# enter the dir
 cd $(dirname -- "$( readlink -f -- "$0"; )";);
-source ./activate 
 
-echo "This will delete the database."
+echo "This will delete the database. You should be in venv"
 read -p "Are you sure? " -n 1 -r
-echo 
+echo
 
 
 if [[ $REPLY =~ ^[Yy]$ ]]
@@ -15,19 +14,18 @@ then
     #cfc_report/migrations/0001_initial.py
     find cfc_report/migrations -type f -name '*.pyc' -delete
     find cfc_report/migrations -type f -name "*.py" -not -name "__init__.py" -delete
-    
+
     rm "db.sqlite3"
     echo "Django db and migrations cleared"
-    
+
     python manage.py makemigrations
     # make the tables
     python manage.py migrate
     # run python to populate test data
     echo "from cfc_report.services import database as db; db.populate_database();" | \
-        python manage.py shell 
+        python manage.py shell
     python manage.py makemigrations
     python manage.py migrate
     echo "database repopulated with dumbby data and migrated."
 
 fi
-
