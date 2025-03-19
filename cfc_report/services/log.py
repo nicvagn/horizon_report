@@ -18,7 +18,8 @@ import logging
 import sys
 
 
-def set_up_logger(logger_name=None, debug=False, file_handler=False) -> logging.Logger:
+def set_up_logger(logger_name=None,
+                  debug=False, file_handler=False) -> logging.Logger:
     """set up logger, including:
         console handler,
         file handler

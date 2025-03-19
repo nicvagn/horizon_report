@@ -16,7 +16,7 @@
 from django.shortcuts import render
 
 from .. import logger
-from ..models import Player
+from ..models.person import Player
 from ..services import database as db_services
 from ..services import player as player_services
 

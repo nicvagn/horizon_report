@@ -15,7 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger
 from cfc_report.forms import TournamentInfoForm
-from cfc_report.models.cfc import Match, CTR
+from cfc_report.models.tournament import Match
+from cfc_report.models.report import CTR
 from cfc_report.models.person import Player
 from cfc_report.services import database as db
 from cfc_report.services import session

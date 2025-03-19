@@ -18,8 +18,10 @@ from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
 from django.shortcuts import get_object_or_404
 
-from ..models import Match, Player, Round, Tournament
-from . import database
+from cfc_report.models.cfc import CfcId
+from cfc_report.models.person import Player
+from cfc_report.models.tournament import Match, Round, Tournament
+from cfc_report.services import database
 
 # get the current session
 session = SessionStore()
@@ -59,7 +61,7 @@ def get_players() -> list[Player]:
     return players
 
 
-def get_players_by_id() -> "dict{CfcId:Player}":
+def get_players_by_id():
     """get the players in current session
 
     Uses
@@ -69,13 +71,13 @@ def get_players_by_id() -> "dict{CfcId:Player}":
 
     Returns
     -------
-    players: "dict{CfcId:Player}"
+    players : "dict{CfcId:Player}"
         A dict of the players in session by there id
     """
 
     session_players = session.get("players_by_cfc")
     logger.debug("players got from session: %s", session_players)
-    players: "dict{CfcId:Player}" = {}
+    players = {}
 
     if session_players:
         for cfc_id in session_players:
@@ -134,7 +136,7 @@ def update_players(players: list[Player]) -> None:
     session["players_by_cfc"] = session_players_cfc_id
 
 
-def add_player_by_id(cfc_id: "CfcId") -> None:
+def add_player_by_id(cfc_id: CfcId) -> None:
     """add a player to the current session
 
     Side-effects

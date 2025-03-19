@@ -19,7 +19,9 @@ from typing import List
 
 # make a ctr tournament report file
 from cfc_report import logger
-from cfc_report.models import Match, Player, CTR
+from cfc_report.models.person import Player
+from cfc_report.models.tournament import Match
+from cfc_report.models.ctr import CTR
 
 
 class CtrCreationException(Exception):
@@ -83,6 +85,11 @@ def CTR_builder(session, name=None, rounds=None,
         Province abreviation tournament is in
     date : str
         Date of the tournament
+
+    Returns
+    -------
+    CTR : cfc_report.models.ctr.CTR
+        A CTR model
     """
     logger.info(
         "CTR_builder entered w -- session: %s, name: %s,  \

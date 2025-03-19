@@ -1,5 +1,5 @@
-# report.py -- models for CFC report file formats
-# Copyright (C) 2024  Nicolas Vaagen
+"""models for CFC report file formats"""
+# report.py --# Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Copyright (C) 2024  Nicolas Vaagen
-from Django import models
+from django.db import models
 from cfc_report.models.tournament import Tournament
 
 
@@ -30,7 +30,7 @@ class TMS(models.Model):
 
 class CTR(models.Model):
     """model wrapping CFC CTR (Tournament Report) File format"""
-    tournament = models.ForignKey(Tournament, on_delete=models.PROTECT)
+    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT)
 
     rounds = models.IntegerField()
 

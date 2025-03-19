@@ -14,7 +14,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from cfc_report.models import Player, CfcId
+from cfc_report.models.cfc import CfcId
+from cfc_report.models.person import Player
 from cfc_report import logger
 
 

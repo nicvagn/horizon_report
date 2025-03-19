@@ -1,5 +1,4 @@
 """Data services for modifying and creating data for a CFC rated tournament"""
-
 # horizon_report
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -20,7 +19,7 @@ from cfc_report import logger
 from cfc_report.models.person import (Player, TournamentDirector,
                                       TournamentOrganizer)
 from cfc_report.models.tournament import Match, Roster, Round
-from cfc_report.cfc import CfcId
+from cfc_report.models.cfc import CfcId
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
 
