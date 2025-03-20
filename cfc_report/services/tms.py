@@ -31,11 +31,10 @@ class TmsCreationException(Exception):
 class TMS:
     """TMS is a wrapper class for TMS (Tournament Report) File format"""
 
-    def __init__(self, tournament):
-        players = session.get_players()
-        tournament_info = session.get_tournament_info()
+    def __init__(self, tournament: Tournament):
+        players: Player = session.get_players()
 
-        name = tournament_info["name"]
+        """A way to represent a tms file. one line per index"""
         self.tms: List[str] = []
 
         for p in players:

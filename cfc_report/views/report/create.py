@@ -1,4 +1,5 @@
 """view for creating a cfc report"""
+
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,13 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger
 from cfc_report.forms import TournamentInfoForm
-from cfc_report.models import Match, Player
+from cfc_report.models import CTR, CfcId, Player, Match, Round, Tournament
 from cfc_report.services import database as db
 from cfc_report.services import session
-from cfc_report.services.ctr import CTR
-from cfc_report.services.tms import TMS
+from cfc_report.services.ctr_builder import CTR_builder
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 
 
@@ -34,12 +34,21 @@ def initial(request):
     logger.debug("Report.initial entered with request: %s", request)
     # if is the form being submitted
     if request.method == "POST":
+        # get the tournament info from the form submit
         tournament_info = request.POST
         logger.debug("POST request with value: %s", tournament_info)
         # save tournament info to session
         session.set_tournament_info(tournament_info)
         logger.debug("TournamentInfoForm made from POST: %s", tournament_info)
-
+        # Make the tournament model for this tournament
+        T = Tournament.objects.create(name=tournament_info["name"],
+                                      num_rounds=tournament_info["num_rounds"],
+                                      date=tournament_info["date"],
+                                      province=tournament_info["province"],
+                                      to_cfc=tournament_info["to_cfc"],
+                                      td_cfc=tournament_info["to_cfc"])
+        logger.debug("Tournament object made: %s", T)
+        T.save()
         # redirect to view to choose players
         return redirect("create-report-players")
 
@@ -97,29 +106,34 @@ def chess_match(request):
     if request.method == "POST":
         match_info = request.POST
         logger.debug("POST request with value: %s", match_info)
-
-        black_id = match_info["black"]
-        white_id = match_info["white"]
+        # I am debugging creation of chess match
+        black_id = get_object_or_404(CfcId, number=match_info["black"])
+        white_id = get_object_or_404(CfcId, number=match_info["white"])
         result = match_info["result"]
-
-        # RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"), ("d", "0.5 - 0.5"),
-        # ... ("_", "_")]
-        # set the winning player_id from the result
-        if result == Match.RESULT_CHOICES[0][1]:
-            winner = white_id
-        elif result == Match.RESULT_CHOICES[1][1]:
-            winner = black_id
-        # we are assuming match is done, :. draw
+        if result == Match.RESULT_CHOICES[Match.RESULT_BLACK]:
+            result = Match.RESULT_BLACK
+        elif result == Match.RESULT_CHOICES[Match.RESULT_WHITE]:
+            result = Match.RESULT_WHITE
+        elif result == Match.RESULT_CHOICES[Match.RESULT_DRAW]:
+            result = Match.RESULT_DRAW
         else:
-            winner = Match.RESULT_CHOICES[2][1]
+            logger.error("Unknown Match Result: %s", result)
+            result = Match.RESULT_UNKNOWN
+
+        # get the players
+        black = get_object_or_404(Player, cfc_id=black_id)
+        white = get_object_or_404(Player, cfc_id=white_id)
+        rnd = get_object_or_404(
+            Round, round_num=session.get_tournament_round_number())
         # create the chess match model, and save it to the db
-        chess_match = session.create_match(white_id, black_id, winner)
+        chess_match = Match(white=white, black=black, result=result,
+                            round=rnd)
         logger.debug(
-            "chess_match entered: black_id %s, white_id: %s, result: %s, winner: %s",
+            "chess_match entered: black_id %s, white_id: %s, result: %s,  \
+            winner: %s",
             black_id,
             white_id,
             result,
-            winner,
         )
         chess_match.save()
 
@@ -134,7 +148,7 @@ def chess_match(request):
 
 
 def round(request) -> HttpResponse:
-    """Enter info for a round in a chess tournament
+    """Enter info for a round in a chess tournament, create the round model
 
     Arguments
     ---------
@@ -142,10 +156,18 @@ def round(request) -> HttpResponse:
     """
 
     logger.debug("Create.round entered with request: %s", request)
+    # round we are building
+    cur_round = session.get_tournament_round_number()
+    # create Round model in dadabase
+    new_round = Round(round_num=cur_round, tournament=session.get_tournament())
+    new_round.save()
+    logger.debug("new round created. Round: %s", new_round)
 
-    context = {"entered_matches": session.get_matches(),
-               "round_number": session.get_tournament_round_number(),
-               "rounds": session.get_rounds()}
+    context = {
+        "entered_matches": session.get_matches(),
+        "round_number": cur_round,
+        "rounds": session.get_rounds(),
+    }
     return render(request, "cfc_report/create/round.html", context)
 
 
@@ -162,12 +184,16 @@ def confirm_round(request) -> HttpResponse:
     context = {
         "tournament_name": tournament_info["name"],
         "round_number": session.get_tournament_round_number(),
-        "matches": session.get_matches(),
-        "players": session.get_players(),
+        # HACK: FIXME figgure out db sessions
+        "matches": db.get_matches(),
+        "players": db.get_players(),
     }
     logger.debug(
-        "Create.confirm_round entered, confirming round completion. TournamentInfo: %s",
-        tournament_info)
+        "Create.confirm_round entered, confirming round completion.\n \
+         TournamentInfo: %s \n context: %s \n",
+        tournament_info,
+        context,
+    )
 
     return render(request, "cfc_report/create/confirm-round.html", context)
 
@@ -208,7 +234,6 @@ def preview_report(request) -> HttpResponse:
     """Preview chess report, see all the players, rounds and games that will be
     in the report
 
-
     Arguments
     ---------
     request : HttpRequest
@@ -219,16 +244,13 @@ def preview_report(request) -> HttpResponse:
     t_info = session.get_tournament_info()
 
     logger.debug("Tournament Info got: %s", t_info)
-    ctr = CTR(t_info, session)
+    ctr = CTR_builder(t_info, session)
     logger.debug("|CTR| created: %s", ctr)
 
-    tms = TMS(t_info)
-
-    ctr.write_file()
     context = {
         "tournament_name": session.get_tournament_name(),
         "ctr": str(ctr),
-        "tms": str(tms)
+        "tms": "TMS NOT DONE",
     }
 
     return render(request, "cfc_report/show/preview-report.html", context)
@@ -246,13 +268,12 @@ def finalize_report(request) -> HttpResponse:
     t_info = session.get_tournament_info()
 
     logger.debug("Tournament Info got: %s", t_info)
-    ctr = CTR(t_info, session)
-    logger.debug("|CTR| created: %s", ctr)
+    ctr = CTR_builder(t_info, session)
+    ctr.save()
+    logger.debug("|CTR| created and saved: %s", ctr)
 
     ctr.write_file(t_info)
-    context = {
-        "ctr": str(ctr)
-    }
+    context = {"ctr": str(ctr)}
 
     return render(request, "cfc_report/show/ctr.html", context)
 

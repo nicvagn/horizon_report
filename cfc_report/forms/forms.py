@@ -1,4 +1,5 @@
 """forms.py: Forms for CFC rated tournament"""
+
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,7 +18,7 @@
 import json
 
 from django import forms
-from django.forms import  SelectDateWidget
+from django.forms import SelectDateWidget
 
 from .. import logger
 from .fields import CfcIdField, PairingSystemField, ProvinceField
@@ -44,42 +45,17 @@ class TournamentInfoForm(forms.Form):
         The CFC ID of the TournamentDirector
     """
 
-    name = forms.CharField(label="Tournament Name",
-                           initial="Test Open", max_length=60)
+    name = forms.CharField(
+        label="Tournament Name", initial="Test Open", max_length=60)
     num_rounds = forms.IntegerField(label="Number of Rounds", initial=1)
-    date = forms.DateField(widget=SelectDateWidget)
+    date = forms.DateField(required=True, attrs={"type": "date"}, input_formats=[
+                           "%Y-%m-%d"], widget=SelectDateWidget)
     pairing_system = PairingSystemField(label="Pairing system used")
     province = ProvinceField()
     # TournamentOrganizer CFC id
     to_cfc = CfcIdField(label="Tournament Organizer CFC id", initial="000000")
     # TournamentDirector CFC id
     td_cfc = CfcIdField(label="Tournament Director CFC id", initial="000000")
-
-    def jsonify(self) -> str:
-        """Create string JSON representation of form
-
-        Returns
-        -------
-        The JSON string with all the form information in it
-        """
-        try:
-            j = json.dumps({"name": self.name,
-                            "num_rounds": self.num_rounds,
-                            "date": str(self.date),
-                            "pairing_system": str(self.pairing_system),
-                            "province": str(self.province),
-                            # TournamentOrganizer CFC id
-                            "to_cfc": str(self.to_cfc),
-                            # TournamentDirector CFC id
-                            "td_cfc": str(self.td_cfc),
-                            })
-        except AttributeError as err:
-            logger.warning("Failure to jasonify %s", self)
-            raise err
-
-        logger.debug(
-            "json created: \n %s", j)
-        return j
 
 
 class RoundForm(forms.Form):
@@ -94,6 +70,7 @@ class MatchForm(forms.Form):
     """A form for entering the data for a single Match
     TODO
     """
+
     white = CfcIdField()
     black = CfcIdField()
     winner = CfcIdField()

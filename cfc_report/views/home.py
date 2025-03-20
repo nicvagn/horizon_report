@@ -13,17 +13,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .. import logger
-
 from django.shortcuts import render
-
-from ..constants import LOGGER_NAME
-from ..models import Player
 from ..services import database as db
 
 
 def index(request):
     """Main index page"""
+
     player_list = db.get_players()
 
     return render(

@@ -21,7 +21,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 from .. import logger
-from .fields import CfcIdField
+from .cfc import CfcId
 
 # models relating to a CFC Rated chess tournament.
 
@@ -49,8 +49,8 @@ class PersonWithCfcId(models.Model):
         classmethod to decode a serialized player into a python object
     """
 
-    name = models.CharField(max_length=20)
-    cfc_id = CfcIdField()
+    name = models.CharField(max_length=40)
+    cfc_id = models.OneToOneField(CfcId, on_delete=models.CASCADE)
     slug = models.SlugField(default="", unique=True, null=False)
     # make sure slug exists for every person
 
@@ -73,6 +73,8 @@ class PersonWithCfcId(models.Model):
             self,
             self.slug
         )
+        # ensure that the cfc id used is always saved too
+        self.cfc_id.save()
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -177,6 +179,7 @@ class TournamentDirector(PersonWithCfcId):
         jp = json.loads(json_td)
         logger.debug("decoded %s from %s json", jp, json_td)
         return TournamentDirector(name=jp["name"], cfc_id=jp["cfc_id"])
+
 
 class TournamentOrganizer(PersonWithCfcId):
     """A tournament organizer for a cfc chess tournament.

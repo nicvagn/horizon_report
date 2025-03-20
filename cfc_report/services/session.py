@@ -18,8 +18,10 @@ from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
 from django.shortcuts import get_object_or_404
 
-from ..models import Match, Player, Round, Tournament
-from . import database
+from cfc_report.models.cfc import CfcId
+from cfc_report.models.person import Player
+from cfc_report.models.tournament import Match, Round, Tournament
+from cfc_report.services import database
 
 # get the current session
 session = SessionStore()
@@ -59,7 +61,7 @@ def get_players() -> list[Player]:
     return players
 
 
-def get_players_by_id() -> "dict{CfcId:Player}":
+def get_players_by_id():
     """get the players in current session
 
     Uses
@@ -69,13 +71,13 @@ def get_players_by_id() -> "dict{CfcId:Player}":
 
     Returns
     -------
-    players: "dict{CfcId:Player}"
+    players : "dict{CfcId:Player}"
         A dict of the players in session by there id
     """
 
     session_players = session.get("players_by_cfc")
     logger.debug("players got from session: %s", session_players)
-    players: "dict{CfcId:Player}" = {}
+    players = {}
 
     if session_players:
         for cfc_id in session_players:
@@ -134,7 +136,7 @@ def update_players(players: list[Player]) -> None:
     session["players_by_cfc"] = session_players_cfc_id
 
 
-def add_player_by_id(cfc_id: "CfcId") -> None:
+def add_player_by_id(cfc_id: str) -> None:
     """add a player to the current session
 
     Side-effects
@@ -144,17 +146,16 @@ def add_player_by_id(cfc_id: "CfcId") -> None:
 
     Parameters
     ----------
-    cfc_id : CfcId
+    cfc_id : String CFC id ie: 123123
         some player's cfc id to add to list
     """
-
     if "players_by_cfc" in session:
         session["players_by_cfc"].append(cfc_id)
     else:
         session["players_by_cfc"] = [cfc_id]
 
 
-def remove_player_by_id(cfc_id: "CfcId") -> None:
+def remove_player_by_id(cfc_id: str) -> None:
     """remove a player from session by id
 
     Side-effects
@@ -163,7 +164,7 @@ def remove_player_by_id(cfc_id: "CfcId") -> None:
 
     Parameters
     ----------
-    cfc_id : CfcId
+    cfc_id : str
         some player's cfc id to remove from the session list
     """
     session_players = session.get("players_by_cfc")
@@ -194,8 +195,13 @@ def get_matches() -> list("Match"):
     return session_matches
 
 
-def create_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Match:
+def create_match(white_id: CfcId, black_id: CfcId, result) -> Match:
     """Create a chess match in this session
+    Arguments
+    ---------
+    result : one of Match.RESULT_CHOICES ie:
+        RESULT_CHOICES = [(RESULT_BLACK, "0 - 1"), (RESULT_WHITE, "1 - 0"),
+                        (RESULT_DRAW, "0.5 - 0.5"), (RESULT_UNKNOWN, "_")]
     Uses
     ----
     session - the django session got from the session store
@@ -214,7 +220,7 @@ def create_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Ma
     tournament_rnd = get_tournament_round_number()
     chess_match = Match(
         white=white_player, black=black_player, result=result,
-        round_number=tournament_rnd)
+        round=tournament_rnd)
 
     if session.has_key("matches") and session["matches"] is not None:
         # update it
@@ -226,7 +232,7 @@ def create_match(white_id: "CfcId", black_id: "CfcId", result: "w,b,or d") -> Ma
     return chess_match
 
 
-def remove_match_by_pk(pk: "PrimaryKey") -> None:
+def remove_match_by_pk(pk) -> None:
     """remove a match from this session by it's primarry key
 
     Parameters
@@ -284,17 +290,16 @@ def finalize_round() -> None:
     """
 
     round_number = get_tournament_round_number()
-    matches = get_matches()
 
     logger.debug(
         "session.finalize_round() entered. Finalizing rnd: %s, matches: %s",
         round_number,
-        matches,
     )
-    rnd = Round(round_num=round_number, )
+    rnd = Round(round_num=round_number)
     # save round
     rnd.save()
-    logger.debug("Tournament round %s made and saved. round: %s", round_number, rnd)
+    logger.debug("Tournament round %s made and saved. round: %s",
+                 round_number, rnd)
 
     logger.debug("round made and saved. round: %s", rnd)
     # prepare for next round
@@ -303,6 +308,7 @@ def finalize_round() -> None:
     session["matches"] = None
 
     logger.debug("session prepaired for round %s", round_number)
+
 
 def get_tournament() -> Tournament:
     """get the tournament worked on in this session
@@ -318,11 +324,12 @@ def get_tournament() -> Tournament:
     """
 
     key = get_tournament_name()
-
+    logger.info("get_tournament_name() gave: %s", key)
+    breakpoint()
     return get_object_or_404(Tournament, pk=key)
 
 
-def get_tournament_info() -> "TournamentInfo":
+def get_tournament_info():  # -> "TournamentInfo":
     """get the TournamentInfo from this session
 
     Uses
@@ -370,9 +377,10 @@ def get_tournament_name() -> str:
 
     tournament_name = info["name"]
 
-    logger.info("get_tournament_name() got %s from session['tournamentInfo'] %s",
-                tournament_name,
-                info,)
+    logger.info(
+        "get_tournament_name() got %s from session['tournamentInfo'] %s",
+        tournament_name,
+        info,)
     return tournament_name
 
 
@@ -412,8 +420,6 @@ def set_tournament_round_number(rnd: int) -> None:
     logger.debug("session keys: %s", session.keys())
 
     session["TournamentRound"] = rnd
-
-
 def is_last_round() -> bool:
     """Check to see if this is the last round of the tourniment we are building
     Uses
@@ -434,7 +440,7 @@ def is_last_round() -> bool:
     return lr
 
 
-def set_tournament_info(info: "TournamentInfo") -> None:
+def set_tournament_info(info: dict) -> None:
     """set the tournament info for this session
 
     Parameters
