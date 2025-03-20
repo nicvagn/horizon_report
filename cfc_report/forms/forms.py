@@ -17,12 +17,10 @@
 import json
 
 from django import forms
-from django.forms import ChoiceField, SelectDateWidget
+from django.forms import  SelectDateWidget
 
-from . import logger
-from .form_fields import CfcIdField, PairingSystemField, ProvinceField
-from .models import Match
-from .services import session
+from .. import logger
+from .fields import CfcIdField, PairingSystemField, ProvinceField
 
 
 class TournamentInfoForm(forms.Form):
