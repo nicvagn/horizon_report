@@ -54,12 +54,6 @@ class Tournament(models.Model):
     date = models.DateField()
     pairing_system = PairingSystemField()
     province = ProvinceField()
-    tournament_organizer = models.ForeignKey(TournamentOrganizer,
-                                             related_name="TO",
-                                             on_delete=models.PROTECT)
-    tournament_director = models.ForeignKey(TournamentDirector,
-                                            related_name="TD",
-                                            on_delete=models.PROTECT)
 
     def __str__(self):
         return f"""Tournament name: {self.name}
@@ -67,8 +61,6 @@ class Tournament(models.Model):
         date: {self.date}
         Pairing System: {self.pairing_system}
         province: {self.province}
-        TournamentOrganizer CFC: {self.to_cfc}
-        TournamentDirector CFC: {self.td_cfc}
         """
 
 
@@ -96,10 +88,6 @@ class Roster(models.Model):
     players : ForeignKey
         players in roster
 
-    Methods
-    _______
-    size : int
-        number of players in this roster
     """
 
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
@@ -119,9 +107,15 @@ class Match(models.Model):
     round : ForignKey
         The round of the tournament this game is for
     """
+    RESULT_BLACK = "B"
+    RESULT_WHITE = "W"
+    RESULT_DRAW = "D"
+    RESULT_UNKNOWN = "_"
 
-    RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"),
-                      ("d", "0.5 - 0.5"), ("_", "_")]
+    RESULT_CHOICES = {RESULT_BLACK: "0 - 1",
+                      RESULT_WHITE: "1 - 0",
+                      RESULT_DRAW: "0.5 - 0.5",
+                      RESULT_UNKNOWN: "NOT SURE"}
 
     white = models.ForeignKey(
         Player, on_delete=models.CASCADE, related_name="white_player"
@@ -130,7 +124,7 @@ class Match(models.Model):
         Player, on_delete=models.CASCADE, related_name="black_player"
     )
     result = models.CharField(
-        max_length=1, choices=RESULT_CHOICES, default=RESULT_CHOICES[3]
+        max_length=1, choices=RESULT_CHOICES, default=RESULT_UNKNOWN
     )
     round = models.ForeignKey(
         Round,

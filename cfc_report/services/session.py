@@ -199,7 +199,9 @@ def create_match(white_id: CfcId, black_id: CfcId, result) -> Match:
     """Create a chess match in this session
     Arguments
     ---------
-    result : "w,b,or d"
+    result : one of Match.RESULT_CHOICES ie:
+        RESULT_CHOICES = [(RESULT_BLACK, "0 - 1"), (RESULT_WHITE, "1 - 0"),
+                        (RESULT_DRAW, "0.5 - 0.5"), (RESULT_UNKNOWN, "_")]
     Uses
     ----
     session - the django session got from the session store
@@ -218,7 +220,7 @@ def create_match(white_id: CfcId, black_id: CfcId, result) -> Match:
     tournament_rnd = get_tournament_round_number()
     chess_match = Match(
         white=white_player, black=black_player, result=result,
-        round_number=tournament_rnd)
+        round=tournament_rnd)
 
     if session.has_key("matches") and session["matches"] is not None:
         # update it
@@ -288,14 +290,12 @@ def finalize_round() -> None:
     """
 
     round_number = get_tournament_round_number()
-    matches = get_matches()
 
     logger.debug(
         "session.finalize_round() entered. Finalizing rnd: %s, matches: %s",
         round_number,
-        matches,
     )
-    rnd = Round(round_num=round_number, matches=matches )
+    rnd = Round(round_num=round_number)
     # save round
     rnd.save()
     logger.debug("Tournament round %s made and saved. round: %s",
@@ -441,7 +441,7 @@ def is_last_round() -> bool:
     return lr
 
 
-def set_tournament_info(info: "TournamentInfo") -> None:
+def set_tournament_info(info: dict) -> None:
     """set the tournament info for this session
 
     Parameters

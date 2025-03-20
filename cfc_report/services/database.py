@@ -14,12 +14,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import datetime
 
 from cfc_report import logger
 from cfc_report.models.person import (Player, TournamentDirector,
                                       TournamentOrganizer)
-from cfc_report.models.tournament import Match, Roster, Round
+from cfc_report.models.tournament import Match, Roster, Round, Tournament
 from cfc_report.models.cfc import CfcId
+from cfc_report.models.fields import PairingSystemField
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
 
@@ -97,43 +99,11 @@ def add_player(p: Player) -> None:
     p.save()
 
 
-def add_player_by_cfc(cfc_id: CfcId, name: str) -> None:
-    """Add a player to the database using name and cfcid
-    parameters:
-        cfc_id : CfcId
-            the cfc id of the player
-        name : str
-            the players name.
-    """
-
-    p = Player(name, cfc_id)
-
-    add_player(p)
-
-
-def add_match(white_id: CfcId, black_id: CfcId, result: str) -> Match:
-    """white : Player
-        the White player in the match
-    black : Player
-        the black player in the match
-    result : CharField -- "w,b,or d"
-        KEY: (b == black victory, w == white victory, d == no victory)
-    """
-
-    white_player = get_player_by_cfc(white_id)
-    black_player = get_player_by_cfc(black_id)
-
-    chess_match = Match(white=white_player, black=black_player, result=result)
-
-    logger.debug("chess_match %s added to the database", chess_match)
-    chess_match.save()
-    return chess_match
-
-
 def populate_database() -> None:
     """Populate the db with dumby data"""
-
     cfc_id = 111111
+    tournament = Tournament(name="Test Closed", num_rounds=1, date=datetime.now(), pairing_system=PairingSystemField.PAIRING_SYSTEMS["SW"])
+
     # players
     players = []
     for n in [
@@ -173,22 +143,24 @@ def populate_database() -> None:
     for p in tos:
         p.save()
 
+    first_round = Round(round_num=1, tournament=tournament)
     # Matches
     # create some filler data
-
-    r = "w"
+    r = Match.RESULT_WHITE
     matches = []
     for n in range(int(len(players) / 2)):
 
-        if r != "w":
-            if r == "b":
-                r = "d"
-            elif r == "d":
-                r = "w"
         matches.append(
             Match(white=players[n], black=players[n + 1],
-                  result=r, round_number=1)
+                  result=r, round=first_round)
         )
+        # convoluted
+        if r == Match.RESULT_WHITE:
+            r = Match.RESULT_BLACK
+        elif r == Match.RESULT_BLACK:
+            r = Match.RESULT_DRAW
+        elif r == Match.RESULT_DRAW:
+            r = Match.RESULT_WHITE
 
     for m in matches:
         m.save()

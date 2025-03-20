@@ -99,23 +99,27 @@ def chess_match(request):
     if request.method == "POST":
         match_info = request.POST
         logger.debug("POST request with value: %s", match_info)
-
+        breakpoint()
+        # I am debugging creation of chess match
         black_id = match_info["black"]
         white_id = match_info["white"]
         result = match_info["result"]
 
-        # RESULT_CHOICES = [("b", "0 - 1"), ("w", "1 - 0"), ("d", "0.5 - 0.5"),
-        # ... ("_", "_")]
         # set the winning player_id from the result
-        if result == Match.RESULT_CHOICES[0][1]:
+        if result == Match.RESULT_WHITE:
             winner = white_id
-        elif result == Match.RESULT_CHOICES[1][1]:
+        elif result == Match.RESULT_BLACK:
             winner = black_id
         # we are assuming match is done, :. draw
+        elif result == Match.RESULT_DRAW:
+            winner = Match.RESULT_DRAW
         else:
-            winner = Match.RESULT_CHOICES[2][1]
+            logger.error("match_info['result'] is not known. it is %s",
+                         match_info["result"])
+            raise RuntimeError("create.chess_match():  \
+                                match_info['result'] is not known.")
         # create the chess match model, and save it to the db
-        chess_match = session.create_match(white_id, black_id, winner)
+        chess_match = Match()
         logger.debug(
             "chess_match entered: black_id %s, white_id: %s, result: %s,  \
             winner: %s",
@@ -173,7 +177,7 @@ def confirm_round(request) -> HttpResponse:
     }
     logger.debug(
         "Create.confirm_round entered, confirming round completion.\n \
-            TournamentInfo: %s \n context: %s \n",
+         TournamentInfo: %s \n context: %s \n",
         tournament_info,
         context,
     )
@@ -252,7 +256,8 @@ def finalize_report(request) -> HttpResponse:
 
     logger.debug("Tournament Info got: %s", t_info)
     ctr = CTR_builder(t_info, session)
-    logger.debug("|CTR| created: %s", ctr)
+    ctr.save()
+    logger.debug("|CTR| created and saved: %s", ctr)
 
     ctr.write_file(t_info)
     context = {"ctr": str(ctr)}
