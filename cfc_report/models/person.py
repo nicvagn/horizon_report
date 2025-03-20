@@ -49,8 +49,8 @@ class PersonWithCfcId(models.Model):
         classmethod to decode a serialized player into a python object
     """
 
-    name = models.CharField(max_length=20)
-    cfc_id = models.ForeignKey(CfcId, on_delete=models.CASCADE)
+    name = models.CharField(max_length=40)
+    cfc_id = models.OneToOneField(CfcId, on_delete=models.CASCADE)
     slug = models.SlugField(default="", unique=True, null=False)
     # make sure slug exists for every person
 

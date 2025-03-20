@@ -324,7 +324,8 @@ def get_tournament() -> Tournament:
     """
 
     key = get_tournament_name()
-
+    logger.info("get_tournament_name() gave: %s", key)
+    breakpoint()
     return get_object_or_404(Tournament, pk=key)
 
 
@@ -419,8 +420,6 @@ def set_tournament_round_number(rnd: int) -> None:
     logger.debug("session keys: %s", session.keys())
 
     session["TournamentRound"] = rnd
-
-
 def is_last_round() -> bool:
     """Check to see if this is the last round of the tourniment we are building
     Uses

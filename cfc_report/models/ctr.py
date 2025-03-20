@@ -1,4 +1,4 @@
-"""report.py - models for CFC report file formats"""
+"""ctr.py - models for CFC CTR Tournament report file."""
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,22 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.db import models
 from cfc_report.models.tournament import Tournament
-
-
-class TMS(models.Model):
-    """model wrapping CFC TMS (Tournament Report) File format
-    Attrabutes
-    ---------
-
-    TBA
-    """
-
-    def __str__(self):
-        tms = ""
-        for line in self.tms:
-            tms = tms + line + "\n"
-        return tms
-
 
 class CTR(models.Model):
     """model wrapping CFC CTR (Tournament Report) File format

@@ -117,10 +117,10 @@ class Match(models.Model):
                       RESULT_DRAW: "0.5 - 0.5",
                       RESULT_UNKNOWN: "NOT SURE"}
 
-    white = models.ForeignKey(
+    white = models.OneToOneField(
         Player, on_delete=models.CASCADE, related_name="white_player"
     )
-    black = models.ForeignKey(
+    black = models.OneToOneField(
         Player, on_delete=models.CASCADE, related_name="black_player"
     )
     result = models.CharField(
