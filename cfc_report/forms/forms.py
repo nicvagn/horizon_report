@@ -45,17 +45,18 @@ class TournamentInfoForm(forms.Form):
         The CFC ID of the TournamentDirector
     """
 
-    name = forms.CharField(
-        label="Tournament Name", initial="Test Open", max_length=60)
-    num_rounds = forms.IntegerField(label="Number of Rounds", initial=1)
-    date = forms.DateField(required=True, attrs={"type": "date"}, input_formats=[
-                           "%Y-%m-%d"], widget=SelectDateWidget)
-    pairing_system = PairingSystemField(label="Pairing system used")
-    province = ProvinceField()
+    name = forms.CharField(required=True, label="Tournament Name", initial="Test Open", max_length=60)
+    num_rounds = forms.IntegerField(required=True, label="Number of Rounds", initial=1)
+    date = forms.DateField(
+        required=True,
+        widget=forms.DateInput(attrs={"type": "date"}),
+        input_formats=["%Y-%m-%d"],)
+    pairing_system = PairingSystemField(required=True, label="Pairing system used")
+    province = ProvinceField(required=True)
     # TournamentOrganizer CFC id
-    to_cfc = CfcIdField(label="Tournament Organizer CFC id", initial="000000")
+    to_cfc = CfcIdField(required=True, label="Tournament Organizer CFC id", initial="000000")
     # TournamentDirector CFC id
-    td_cfc = CfcIdField(label="Tournament Director CFC id", initial="000000")
+    td_cfc = CfcIdField(required=True, label="Tournament Director CFC id", initial="000000")
 
 
 class RoundForm(forms.Form):
