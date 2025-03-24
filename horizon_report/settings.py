@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from pathlib import Path
+
 from configurations import Configuration
 from dotenv import load_dotenv
 
@@ -27,7 +28,7 @@ ALLOWED_HOSTS = ["nrv773.pythonanywhere.com", "127.0.0.1"]
 class Dev(Configuration):
     DEBUG = os.getenv("DJANGO_DEBUG")
     SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
-    ALLOWED_HOSTS = ["nrv773.pythonanywhere.com", "127.0.0.1"]
+    ALLOWED_HOSTS = ["nrv773.pythonanywhere.com", "127.0.0.1", "localhost"]
 
     # Application definition
     INSTALLED_APPS = [
@@ -78,9 +79,13 @@ class Dev(Configuration):
 
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            "ENGINE": 'django.db.backends.mysql',
+            "PASSWORD": "password",
+            "USER": "root",
+            "NAME": "horizon_report",
+            "HOST": "/var/lib/mysql/mysql.sock",
             "OPTIONS": {
-                "read_default_file": "~/horizon_report/horizon_report/db.cnf",
+                "init_command": "SET default_storage_engine=INNODB",
             }
         }
     }
