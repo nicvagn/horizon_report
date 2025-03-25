@@ -20,7 +20,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
-from .fields import PairingSystemField, ProvinceField, CfcIdField
+from .fields import CfcIdField, PairingSystemField, ProvinceField
 from .person import Player, TournamentDirector, TournamentOrganizer
 
 """models relating to a CFC Rated chess tournament."""
@@ -47,7 +47,7 @@ class Tournament(models.Model):
         The TournamentDirector of the tournament
     """
 
-    name = models.CharField(help_text="Tournament Name.", primary_key=True,
+    name = models.CharField(help_text="Tournament Name.", primary_key=False,
                             max_length=40)
     num_rounds = models.IntegerField()
 
