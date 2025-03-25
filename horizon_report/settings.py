@@ -90,7 +90,8 @@ class Dev(Configuration):
             "NAME": database_name,
             "HOST": database_host,
             "OPTIONS": {
-                "init_command": "SET default_storage_engine=INNODB",
+                "init_command": "SET default_storage_engine=INNODB; \
+                SET sql_mode='STRICT_TRANS_TABLES'"
             }
         }
     }
