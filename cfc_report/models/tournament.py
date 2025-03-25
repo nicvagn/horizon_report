@@ -20,7 +20,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
-from .fields import PairingSystemField, ProvinceField
+from .fields import PairingSystemField, ProvinceField, CfcIdField
 from .person import Player, TournamentDirector, TournamentOrganizer
 
 """models relating to a CFC Rated chess tournament."""

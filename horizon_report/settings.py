@@ -77,13 +77,18 @@ class Dev(Configuration):
     # Database
     # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+    # get db info from env vars
+    database_pass = os.getenv("DJANGO_DB_PASS")
+    database_user = os.getenv("DJANGO_DB_USER")
+    database_name = os.getenv("DJANGO_DB_NAME")
+    database_host = os.getenv("DJANGO_DB_HOST")
     DATABASES = {
         'default': {
-            "ENGINE": 'django.db.backends.mysql',
-            "PASSWORD": "password",
-            "USER": "root",
-            "NAME": "horizon_report",
-            "HOST": "/var/lib/mysql/mysql.sock",
+            "ENGINE": "django.db.backends.mysql",
+            "PASSWORD": database_pass,
+            "USER": database_user,
+            "NAME": database_name,
+            "HOST": database_host,
             "OPTIONS": {
                 "init_command": "SET default_storage_engine=INNODB",
             }
