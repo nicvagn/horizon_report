@@ -22,8 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env_path = load_dotenv(str(BASE_DIR / '.env'))
 load_dotenv(env_path)
 
-ALLOWED_HOSTS = ["nrv773.pythonanywhere.com", "127.0.0.1"]
-
 
 class Dev(Configuration):
     DEBUG = os.getenv("DJANGO_DEBUG")
@@ -91,7 +89,7 @@ class Dev(Configuration):
             "HOST": database_host,
             "OPTIONS": {
                 "init_command": "SET default_storage_engine=INNODB; \
-                SET sql_mode='STRICT_TRANS_TABLES'"
+                SET sql_mode='STRICT_TRANS_TABLES';"
             }
         }
     }

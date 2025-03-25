@@ -45,8 +45,8 @@ def initial(request):
                                       num_rounds=tournament_info["num_rounds"],
                                       date=tournament_info["date"],
                                       province=tournament_info["province"],)
-                                    # to_cfc=tournament_info["to_cfc"],
-                                    # td_cfc=tournament_info["to_cfc"])
+        # to_cfc=tournament_info["to_cfc"],
+        # td_cfc=tournament_info["to_cfc"])
         logger.debug("Tournament object made: %s", T)
         T.save()
         # redirect to view to choose players

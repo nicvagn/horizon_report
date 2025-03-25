@@ -102,7 +102,10 @@ def add_player(p: Player) -> None:
 def populate_database() -> None:
     """Populate the db with dumby data"""
     cfc_id = 111111
-    tournament = Tournament(name="Test Closed", num_rounds=1, date=datetime.now(), pairing_system=PairingSystemField.PAIRING_SYSTEMS["SW"])
+    tournament = Tournament(name="Test Closed",
+                            num_rounds=1,
+                            date=datetime.now(),
+                            pairing_system=PairingSystemField.PAIRING_SYSTEMS["SW"])
 
     # players
     players = []
