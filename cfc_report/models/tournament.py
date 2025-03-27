@@ -20,8 +20,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
+from .. import logger
 from .fields import CfcIdField, PairingSystemField, ProvinceField
-from .person import Player, TournamentDirector, TournamentOrganizer
 
 """models relating to a CFC Rated chess tournament."""
 
@@ -48,20 +48,43 @@ class Tournament(models.Model):
     """
 
     name = models.CharField(help_text="Tournament Name.", primary_key=False,
-                            max_length=40)
+                            max_length=60)
     num_rounds = models.IntegerField()
 
     date = models.DateField()
     pairing_system = PairingSystemField()
     province = ProvinceField()
 
-    tournament_director = models.OneToOneField(TournamentDirector,
-                                               on_delete=models.CASCADE,
-                                               related_name="TD")
+    def save(self, *args, **kwargs):
+        """create slug url before saving
+        Override of save()
 
-    tournament_organizer = models.OneToOneField(TournamentOrganizer,
-                                                on_delete=models.CASCADE,
-                                                related_name="TO")
+        Arguments
+        ---------
+        *args and **kwargs - passed on to super().save(...)
+
+        Returns
+        -------
+        None
+        """
+
+        self.slug = slugify(self.name + f" {str(self.date)}")
+
+        logger.info(
+            "Tournament (%s) saved and slug (%s) created for it",
+            self,
+            self.slug
+        )
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        """get the absolute url of this model
+
+        Returns
+        -------
+        The absolute url to access this person
+        """
+        return reverse("player", args=[self.slug])
 
     def __str__(self):
         return f"""Tournament name: {self.name}
@@ -98,7 +121,7 @@ class Roster(models.Model):
 
     """
 
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    tournament = models.OneToOneField(Tournament, on_delete=models.CASCADE)
 
 
 class Match(models.Model):
@@ -125,12 +148,9 @@ class Match(models.Model):
                       RESULT_DRAW: "0.5 - 0.5",
                       RESULT_UNKNOWN: "NOT SURE"}
 
-    white = models.OneToOneField(
-        Player, on_delete=models.CASCADE, related_name="white_player"
-    )
-    black = models.OneToOneField(
-        Player, on_delete=models.CASCADE, related_name="black_player"
-    )
+    white = CfcIdField()
+    black = CfcIdField()
+
     result = models.CharField(
         max_length=1, choices=RESULT_CHOICES, default=RESULT_UNKNOWN
     )
@@ -145,9 +165,9 @@ class Match(models.Model):
 
     def __str__(self):
         return (
-            f"MATCH - [ "
+            f"MATCH - "
             f" white: ({self.white}),"
             f" black: ({self.black}),"
             f" result: ({self.result}),"
-            f" round number: ({self.round_number}) ]"
+            f" round number: ({self.round_number}) "
         )

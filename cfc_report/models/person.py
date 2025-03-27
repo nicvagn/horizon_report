@@ -21,7 +21,8 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 from .. import logger
-from .cfc import CfcId
+from .tournament import Tournament
+from .fields import CfcIdField
 
 # models relating to a CFC Rated chess tournament.
 
@@ -33,6 +34,8 @@ class PersonWithCfcId(models.Model):
     ----------
     name : models.CharField
         name of the person
+    tournament : tournament.Tournament
+        A tournament that the person is involved with. ManyToMany field
     cfc_id : CfCId
         CFC Id of the person
     slug : SlugField
@@ -50,7 +53,8 @@ class PersonWithCfcId(models.Model):
     """
 
     name = models.CharField(max_length=40)
-    cfc_id = models.OneToOneField(CfcId, on_delete=models.CASCADE)
+    cfc_id = CfcIdField()
+    tournaments = models.ManyToManyField(Tournament)
     slug = models.SlugField(default="", unique=True, null=False)
     # make sure slug exists for every person
 
@@ -67,14 +71,13 @@ class PersonWithCfcId(models.Model):
         None
         """
 
-        self.slug = slugify(self.name)
+        self.slug = slugify(self.name + "-" + str(self.cfc_id))
+
         logger.info(
             "PersonWithCfdId: (%s) saved and slug (%s) created for it",
             self,
             self.slug
         )
-        # ensure that the cfc id used is always saved too
-        self.cfc_id.save()
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

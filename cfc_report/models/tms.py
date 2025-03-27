@@ -16,6 +16,7 @@
 from django.db import models
 from cfc_report.models.tournament import Tournament
 
+
 class TMS(models.Model):
     """model wrapping CFC TMS (Tournament Report) File format
     Attrabutes
@@ -23,6 +24,7 @@ class TMS(models.Model):
 
     TBA
     """
+    tms = models.TextField(null=True)
 
     def __str__(self):
         tms = ""

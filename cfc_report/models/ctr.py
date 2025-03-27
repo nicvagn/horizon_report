@@ -16,6 +16,7 @@
 from django.db import models
 from cfc_report.models.tournament import Tournament
 
+
 class CTR(models.Model):
     """model wrapping CFC CTR (Tournament Report) File format
 
@@ -24,7 +25,7 @@ class CTR(models.Model):
 
     TBA
     """
-    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
 
     rounds = models.IntegerField()
 

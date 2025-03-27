@@ -18,7 +18,6 @@ from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
 from django.shortcuts import get_object_or_404
 
-from cfc_report.models.cfc import CfcId
 from cfc_report.models.person import Player
 from cfc_report.models.tournament import Match, Round, Tournament
 from cfc_report.services import database
@@ -71,7 +70,7 @@ def get_players_by_id():
 
     Returns
     -------
-    players : "dict{CfcId:Player}"
+    players : "dict{str(cfc id):Player}"
         A dict of the players in session by there id
     """
 
@@ -195,7 +194,7 @@ def get_matches() -> list("Match"):
     return session_matches
 
 
-def create_match(white_id: CfcId, black_id: CfcId, result) -> Match:
+def create_match(white_id, black_id, result) -> Match:
     """Create a chess match in this session
     Arguments
     ---------
