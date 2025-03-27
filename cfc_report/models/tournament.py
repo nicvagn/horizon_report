@@ -55,6 +55,14 @@ class Tournament(models.Model):
     pairing_system = PairingSystemField()
     province = ProvinceField()
 
+    tournament_director = models.OneToOneField(TournamentDirector,
+                                               on_delete=models.CASCADE,
+                                               related_name="TD")
+
+    tournament_organizer = models.OneToOneField(TournamentOrganizer,
+                                                on_delete=models.CASCADE,
+                                                related_name="TO")
+
     def __str__(self):
         return f"""Tournament name: {self.name}
         Number of rounds: {self.num_rounds}
