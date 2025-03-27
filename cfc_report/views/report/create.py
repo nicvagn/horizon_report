@@ -16,51 +16,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger
 from cfc_report.forms import TournamentInfoForm
-from cfc_report.models import CTR, CfcId, Player, Match, Round, Tournament
+from cfc_report.models import (CTR, CfcId, Player, Match, Round, Tournament,
+                               TournamentDirector, TournamentOrganizer,)
 from cfc_report.services import database as db
+from cfc_report.models.fields import CfcIdField
 from cfc_report.services import session
 from cfc_report.services.ctr_builder import CTR_builder
 from django.http import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
-
-
-def initial(request):
-    """Get initial tournament info
-    Arguments
-    ---------
-    request : HttpRequest from the view
-    """
-    logger.debug("Report.initial entered with request: %s", request)
-    # if is the form being submitted
-    if request.method == "POST":
-        # get the tournament info from the form submit
-        tournament_info = request.POST
-        logger.debug("POST request with value: %s", tournament_info)
-        # save tournament info to session
-        session.set_tournament_info(tournament_info)
-        logger.debug("TournamentInfoForm made from POST: %s", tournament_info)
-        # Make the tournament model for this tournament
-        T = Tournament.objects.create(name=tournament_info["name"],
-                                      num_rounds=tournament_info["num_rounds"],
-                                      date=tournament_info["date"],
-                                      province=tournament_info["province"],)
-        # to_cfc=tournament_info["to_cfc"],
-        # td_cfc=tournament_info["to_cfc"])
-        logger.debug("Tournament object made: %s", T)
-        T.save()
-        # redirect to view to choose players
-        return redirect("create-report-players")
-
-    form = TournamentInfoForm()
-
-    context = {
-        "title": "Enter tournament information",
-        "action_url": reverse("create-report-info"),
-        "submit_btn_txt": "Pick Players",
-        "form": form,
-    }
-    return render(request, "cfc_report/base/base-form.html", context)
 
 
 def players(request):
@@ -198,6 +162,40 @@ def confirm_round(request) -> HttpResponse:
     return render(request, "cfc_report/create/confirm-round.html", context)
 
 
+def tournament(t_info) -> Tournament:
+    """Create a models.Tournament from t_info.
+
+    Parameters
+    ----------
+    t_info : a POST request
+
+    Returns
+    -------
+    A tournament model
+    """
+
+    to_cfc_id_field = int(t_info["td_cfc"])
+    td_cfc_id_field = int(t_info["td_cfc"])
+
+    td_cfc_id = td_cfc_id_field
+    to_cfc_id = to_cfc_id_field
+
+    to = TournamentOrganizer.objects.get_or_create(
+        name=t_info["to_cfc"], cfc_id=to_cfc_id)
+
+    td = TournamentDirector.objects.get_or_create(
+        name=t_info["td_cfc"], cfc_id=td_cfc_id)
+
+    # Make the tournament model for this tournament
+    T = Tournament.objects.create(name=t_info["name"],
+                                  num_rounds=t_info["num_rounds"],
+                                  date=t_info["date"],
+                                  province=t_info["province"],
+                                  tournament_director=td,
+                                  tournament_organizer=to,)
+    return T
+
+
 def report(request) -> HttpResponse:
     """Create report"""
 
@@ -276,6 +274,38 @@ def finalize_report(request) -> HttpResponse:
     context = {"ctr": str(ctr)}
 
     return render(request, "cfc_report/show/ctr.html", context)
+
+
+def initial(request):
+    """Get initial tournament info
+    Arguments
+    ---------
+    request : HttpRequest from the view
+    """
+    logger.debug("Report.initial entered with request: %s", request)
+    # if is the form being submitted
+    if request.method == "POST":
+        # get the tournament info from the form submit
+        tournament_info = request.POST
+        logger.debug("POST request with value: %s", tournament_info)
+        # save tournament info to session
+        session.set_tournament_info(tournament_info)
+        logger.debug("TournamentInfoForm made from POST: %s", tournament_info)
+        # create tournament using info from the POST
+        T = tournament(tournament_info)
+        logger.debug("Tournament object made: %s", T)
+        # redirect to view to choose players
+        return redirect("create-report-players")
+
+    form = TournamentInfoForm()
+
+    context = {
+        "title": "Enter tournament information",
+        "action_url": reverse("create-report-info"),
+        "submit_btn_txt": "Pick Players",
+        "form": form,
+    }
+    return render(request, "cfc_report/base/base-form.html", context)
 
 
 def preview(request):
