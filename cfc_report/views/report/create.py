@@ -205,23 +205,14 @@ def tournament(t_info) -> Tournament:
     -------
     A tournament model
     """
-    # get Tournament Director and Tournament Organizer
-    to_cfc_id = int(t_info["td_cfc"])
-    td_cfc_id = int(t_info["td_cfc"])
-
-    to = TournamentOrganizer.objects.get_or_create(
-        name=t_info["to_cfc"], cfc_id=to_cfc_id)
-
-    td = TournamentDirector.objects.get_or_create(
-        name=t_info["td_cfc"], cfc_id=td_cfc_id)
 
     # Make the tournament model for this tournament
     T = Tournament.objects.create(name=t_info["name"],
                                   num_rounds=t_info["num_rounds"],
                                   date=t_info["date"],
-                                  province=t_info["province"],
-                                  tournament_director=td,
-                                  tournament_organizer=to,)
+                                  province=t_info["province"],)
+
+    logger.info("Tournament created: %s", T)
     return T
 
 

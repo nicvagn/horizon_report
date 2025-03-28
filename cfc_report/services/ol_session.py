@@ -216,9 +216,7 @@ def create_match(white_id, black_id, result) -> Match:
     # get match players from database
     white_player = database.get_player_by_cfc(white_id)
     black_player = database.get_player_by_cfc(black_id)
-
-    tournament_rnd = session.get("building_round")
-
+    tournament_rnd = get_tournament_round_number()
     chess_match = Match(
         white=white_player, black=black_player, result=result,
         round=tournament_rnd)
@@ -302,12 +300,9 @@ def finalize_round() -> None:
     logger.debug("Tournament round %s made and saved. round: %s",
                  round_number, rnd)
 
+    logger.debug("round made and saved. round: %s", rnd)
     # prepare for next round
-    logger.debug("set ['building_round'] to %s, session keys: %s",
-                 rnd,
-                 session.keys())
-
-    session["building_round"] = (rnd + 1)
+    set_tournament_round_number(round_number + 1)
     # reset the matches
     session["matches"] = None
 
@@ -326,9 +321,8 @@ def get_tournament() -> Tournament:
     -------
     models.Tournament being worked on in this session.
     """
-    key = session.get("TournamentPK")
-    logger.info("session.get('TournamentPK') gave: %s", key)
-
+    session.get
+    logger.info("get_tournament_name() gave: %s", key)
     return get_object_or_404(Tournament, pk=key)
 
 
@@ -400,17 +394,20 @@ def get_tournament_round_number() -> int:
     """
     logger.debug("session keys: %s", session.keys())
 
-    get = session.get("building_round")
+    get = session.get("TournamentRound")
 
     logger.debug("get_tournament_round: session get: %s", get)
 
+    # HACKY af
     if get is None:
-        raise ReferenceError("Tournament Number is None")
+        logger.error(
+            "ERROR: got Nothing for tournament round num. Setting as 1")
+        get = 1
 
     return int(get)
 
 
-def build_round_number(rnd: int) -> None:
+def set_tournament_round_number(rnd: int) -> None:
     """set the tournament round we are building from this session
 
     Parameters
@@ -423,6 +420,9 @@ def build_round_number(rnd: int) -> None:
     session : A Django session
         the session got from the session store
     """
+    logger.debug("session keys: %s", session.keys())
+
+    session["TournamentRound"] = rnd
 
 
 def is_last_round() -> bool:
@@ -472,4 +472,4 @@ def set_tournament_info(info: dict) -> None:
     session["TournamentInfo"] = info
 
     # start building at round 1
-    session["building_round"] = 1
+    session["TournamentRound"] = 1
