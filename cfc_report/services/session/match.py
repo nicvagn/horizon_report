@@ -15,20 +15,67 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger
-from django.contrib.sessions.backends.db import SessionStore
-from django.shortcuts import get_object_or_404
-
-from cfc_report.models.person import Player
-from cfc_report.models.tournament import Match, Round, Tournament
+from cfc_report.models.tournament import Match
 from cfc_report.services import database
-from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
-from django.shortcuts import get_object_or_404
 
-from cfc_report.models.person import Player
-from cfc_report.models.tournament import Match, Round, Tournament
-from cfc_report.services import database
 session = SessionStore()
+
+
+def get_matches() -> [Match]:
+    """Get the matches in the session
+    Uses
+    ----
+    session : A Django session
+        the active session
+
+    Returns
+    -------
+    A list of the matches
+    """
+    session_matches = session.get("matches")
+
+    logger.info("matches got from session: %s, of type: %s",
+                session_matches, type(session_matches))
+
+    return session_matches
+
+
+def create_match(white_id, black_id, result) -> Match:
+    """Create a chess match in this session
+    Arguments
+    ---------
+    result : one of Match.RESULT_CHOICES ie:
+        RESULT_CHOICES = [(RESULT_BLACK, "0 - 1"), (RESULT_WHITE, "1 - 0"),
+                        (RESULT_DRAW, "0.5 - 0.5"), (RESULT_UNKNOWN, "_")]
+    Uses
+    ----
+    session - the django session got from the session store
+
+    side-effects
+    ------------
+    modifies the session "matches"
+
+    Returns
+    -------
+    the created match
+    """
+    # get match players from database
+    white_player = database.get_player_by_cfc(white_id)
+    black_player = database.get_player_by_cfc(black_id)
+    tournament_rnd = session.tournament.building_round_number()
+    chess_match = Match(
+        white=white_player, black=black_player, result=result,
+        round=tournament_rnd)
+
+    if session.has_key("matches") and session["matches"] is not None:
+        # update it
+        session["matches"].append(chess_match)
+    else:
+        # create it
+        session["matches"] = [chess_match]
+
+    return chess_match
 
 
 def remove_match_by_pk(pk) -> None:
@@ -62,7 +109,8 @@ def remove_match_by_pk(pk) -> None:
 
     if match_found is False:
         raise RuntimeError(
-            "Could not find match %s in session matches %s", m, get_matches()
+            "Could not find match with pk: %s in session matches %s" % (
+                pk, get_matches())
         )
     logger.debug("match with pk %s removed. matches now %s", pk, new_matches)
     session["matches"] = new_matches

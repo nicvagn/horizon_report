@@ -18,9 +18,7 @@ from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
 from django.shortcuts import get_object_or_404
 
-from cfc_report.models.person import Player
-from cfc_report.models.tournament import Match, Round, Tournament
-from cfc_report.services import database
+from cfc_report.models.tournament import Round, Tournament
 
 # get the current session
 session = SessionStore()
@@ -34,40 +32,6 @@ def get_rounds():
     session : Django session
         the current session got from session store
     """
-
-
-def finalize_round() -> None:
-    """Save this round, and prepair to add another one
-
-    side-effects
-    ------------
-    - round_number++
-    - create and save a round model
-    - reset matches in round to None
-    """
-
-    round_number = get_tournament_round_number()
-
-    logger.debug(
-        "session.finalize_round() entered. Finalizing rnd: %s, matches: %s",
-        round_number,
-    )
-    rnd = Round(round_num=round_number)
-    # save round
-    rnd.save()
-    logger.debug("Tournament round %s made and saved. round: %s",
-                 round_number, rnd)
-
-    # prepare for next round
-    logger.debug("set ['building_round'] to %s, session keys: %s",
-                 rnd,
-                 session.keys())
-
-    session["building_round"] = (rnd + 1)
-    # reset the matches
-    session["matches"] = None
-
-    logger.debug("session prepaired for round %s", round_number)
 
 
 def get_tournament() -> Tournament:
@@ -143,7 +107,7 @@ def get_tournament_name() -> str:
     return tournament_name
 
 
-def get_tournament_round_number() -> int:
+def building_round_number() -> int:
     """get the number of the tournament round we are building from this session
 
     Uses
@@ -166,7 +130,7 @@ def get_tournament_round_number() -> int:
     return int(get)
 
 
-def build_round_number(rnd: int) -> None:
+def set_building_round_number(rnd: int) -> None:
     """set the tournament round we are building from this session
 
     Parameters
@@ -180,6 +144,42 @@ def build_round_number(rnd: int) -> None:
         the session got from the session store
     """
 
+    session["building_round"] = rnd
+
+
+def finalize_round() -> None:
+    """Save this round, and prepair to add another one
+
+    side-effects
+    ------------
+    - round_number++
+    - create and save a round model
+    - reset matches in round to None
+    """
+
+    round_number = building_round_number()
+
+    logger.debug(
+        "session.finalize_round() entered. Finalizing rnd: %s, matches: %s",
+        round_number,
+    )
+    rnd = Round(round_num=round_number)
+    # save round
+    rnd.save()
+    logger.debug("Tournament round %s made and saved. round: %s",
+                 round_number, rnd)
+
+    # prepare for next round
+    logger.debug("set ['building_round'] to %s, session keys: %s",
+                 rnd,
+                 session.keys())
+
+    set_building_round_number(round_number + 1)
+    # reset the matches
+    session["matches"] = None
+
+    logger.debug("session prepaired for round %s", round_number)
+
 
 def is_last_round() -> bool:
     """Check to see if this is the last round of the tourniment we are building
@@ -188,7 +188,7 @@ def is_last_round() -> bool:
     session : A Django session
         the session got from the session store
     """
-    cur_round = get_tournament_round_number()
+    cur_round = building_round_number()
 
     logger.debug("is_last_round entered on round %s", round)
 
