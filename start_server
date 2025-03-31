@@ -2,4 +2,5 @@
 
 cd $(dirname -- "$( readlink -f -- "$0"; )";);
 . ~/.venvs/horizon_report/bin/activate
+./mysqlup.sh
 python manage.py runserver

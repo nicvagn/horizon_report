@@ -14,9 +14,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
 
+from cfc_report import logger
 from cfc_report.models.person import Player
 from cfc_report.services import database
 

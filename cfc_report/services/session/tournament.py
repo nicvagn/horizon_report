@@ -14,10 +14,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from cfc_report import logger
 from django.contrib.sessions.backends.db import SessionStore
 from django.shortcuts import get_object_or_404
 
+from cfc_report import logger
 from cfc_report.models.tournament import Round, Tournament
 
 # get the current session
@@ -40,7 +40,8 @@ def get_tournament() -> Tournament:
     Uses
     ----
     session : A Django session
-        the session got from the session store
+        the session got from the store. Must include "TournamentPK"
+        The session key must be the primary key of a tournament or 404   
 
     Returns
     -------

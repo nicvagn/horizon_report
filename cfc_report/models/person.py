@@ -21,8 +21,8 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 from .. import logger
-from .tournament import Tournament
 from .fields import CfcIdField
+from .tournament import Tournament
 
 # models relating to a CFC Rated chess tournament.
 

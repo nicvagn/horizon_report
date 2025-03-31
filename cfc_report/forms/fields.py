@@ -13,8 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django import forms
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class CfcIdField(forms.IntegerField):

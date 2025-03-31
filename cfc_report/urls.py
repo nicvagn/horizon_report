@@ -20,7 +20,6 @@ from django.urls import path
 from .views import home, player
 from .views.report import create, view
 
-
 urlpatterns = [
     path('', home.index, name='index'),
 

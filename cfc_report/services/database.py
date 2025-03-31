@@ -16,13 +16,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 
+from django.db.models import QuerySet
+from django.shortcuts import get_object_or_404
+
 from cfc_report import logger
+from cfc_report.models.fields import PairingSystemField
 from cfc_report.models.person import (Player, TournamentDirector,
                                       TournamentOrganizer)
 from cfc_report.models.tournament import Match, Roster, Round, Tournament
-from cfc_report.models.fields import PairingSystemField
-from django.db.models import QuerySet
-from django.shortcuts import get_object_or_404
 
 
 # GET

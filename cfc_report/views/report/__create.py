@@ -14,17 +14,18 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+
 from cfc_report import logger
 from cfc_report.forms import TournamentInfoForm
-from cfc_report.models import (CTR, Player, Match, Round, Tournament,
-                               TournamentDirector, TournamentOrganizer,)
-from cfc_report.services import database as db
+from cfc_report.models import (CTR, Match, Player, Round, Tournament,
+                               TournamentDirector, TournamentOrganizer)
 from cfc_report.models.fields import CfcIdField
+from cfc_report.services import database as db
 from cfc_report.services import session
 from cfc_report.services.ctr_builder import CTR_builder
-from django.http import HttpResponse
-from django.shortcuts import redirect, render, get_object_or_404
-from django.urls import reverse
 
 
 def initial(request):
