@@ -14,6 +14,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+
 from cfc_report import logger
 from cfc_report.forms import TournamentInfoForm
 from cfc_report.models import (CTR, Match, Player, Round, Tournament,
@@ -22,9 +26,6 @@ from cfc_report.models.fields import CfcIdField
 from cfc_report.services import database as db
 from cfc_report.services import session
 from cfc_report.services.ctr_builder import CTR_builder
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 
 
 def initial(request):
@@ -125,7 +126,8 @@ def chess_match(request):
         chess_match = Match(white=white, black=black, result=result,
                             round=rnd)
         logger.debug(
-            "chess_match entered: black_id %s, white_id: %s, result: %s",
+            "chess_match entered: black_id %s, white_id: %s, result: %s,  \
+            winner: %s",
             black_id,
             white_id,
             result,
@@ -152,7 +154,7 @@ def round(request) -> HttpResponse:
 
     logger.debug("Create.round entered with request: %s", request)
     # round we are building
-    cur_round = session.tournament.get_tournament_round_number()
+    cur_round = session.toournament.get_tournament_round_number()
     # create Round model in dadabase
     new_round = Round(round_num=cur_round, tournament=session.get_tournament())
     new_round.save()
