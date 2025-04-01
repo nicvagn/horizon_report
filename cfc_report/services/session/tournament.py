@@ -41,7 +41,7 @@ def get_tournament() -> Tournament:
     ----
     session : A Django session
         the session got from the store. Must include "TournamentPK"
-        The session key must be the primary key of a tournament or 404   
+        The session key must be the primary key of a tournament or 404
 
     Returns
     -------
@@ -108,7 +108,7 @@ def get_tournament_name() -> str:
     return tournament_name
 
 
-def building_round_number() -> int:
+def get_building_round_number() -> int:
     """get the number of the tournament round we are building from this session
 
     Uses

@@ -14,15 +14,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
-
 from cfc_report import logger
 from cfc_report.models import Match, Player, Round
 from cfc_report.services import session
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
 
 
-def create_chess_match(request):
+def chess_match(request):
     """Enter information about a chess match
     Arguments
     ---------
@@ -53,13 +52,12 @@ def create_chess_match(request):
         black = get_object_or_404(Player, cfc_id=black_id)
         white = get_object_or_404(Player, cfc_id=white_id)
         rnd = get_object_or_404(
-            Round, round_num=session.tournament.building_round_number())
+            Round, round_num=session.tournament.get_building_round_number())
         # create the chess match model, and save it to the db
         match = Match(white=white, black=black, result=result,
                       round=rnd)
         logger.debug(
-            "chess_match entered: black_id %s, white_id: %s, result: %s,  \
-            winner: %s",
+            "chess_match entered: black_id %s, white_id: %s, result: %s",
             black_id,
             white_id,
             result,
@@ -70,8 +68,8 @@ def create_chess_match(request):
     # Continue letting user add more games
     context = {
         "tournament_players": session.player.get_players(),
-        "round_number": session.tournament.building_round_number(),
-        "entered_matches": session.tournament.get_matches(),
+        "round_number": session.tournament.get_building_round_number(),
+        "entered_matches": session.match.get_matches(),
     }
 
     return render(request, "cfc_report/create/match.html", context)

@@ -17,16 +17,16 @@
 from django.contrib import admin
 from django.urls import path
 
-from .views import home, player
-from .views.report import create, view
+from .views import create, home, player, view
 
 urlpatterns = [
     path('', home.index, name='index'),
 
     # create
-    path("create/", create.initial, name="create-report-info"),
-    path("create/players", create.players, name="create-report-players"),
-    path("create/report", create.report, name="create-report"),
+    path("create/", create.report.initial_form, name="create-report-info"),
+    path("create/report", create.report.cfc_report, name="create-report"),
+    path("create/players", create.player.tournament_players,
+         name="create-report-players"),
     path("create/report/round", create.round, name="create-report-round"),
     path("create/report/match",
          create.chess_match, name="create-report-match"),

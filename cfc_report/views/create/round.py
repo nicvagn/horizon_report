@@ -1,4 +1,3 @@
-
 """view for creating a cfc report"""
 
 # Copyright (C) 2024  Nicolas Vaagen
@@ -21,7 +20,6 @@ from django.urls import reverse
 
 from cfc_report import logger
 from cfc_report.models import Round
-from cfc_report.services import database as db
 from cfc_report.services import session
 
 
@@ -35,7 +33,7 @@ def build(request) -> HttpResponse:
 
     logger.debug("Create.round entered with request: %s", request)
     # round we are building
-    cur_round = session.tournament.get_tournament_round_number()
+    cur_round = session.tournament.get_building_round_number()
     # create Round model in dadabase
     new_round = Round(round_num=cur_round, tournament=session.get_tournament())
     new_round.save()
@@ -61,10 +59,9 @@ def confirm(request) -> HttpResponse:
     tournament_info = session.get_tournament_info()
     context = {
         "tournament_name": tournament_info["name"],
-        "round_number": session.get_tournament_round_number(),
-        # HACK: FIXME figgure out db sessions
-        "matches": db.get_matches(),
-        "players": db.get_players(),
+        "round_number": session.tournament.get_building_round_number(),
+        "matches": session.get_matches(),
+        "players": session.get_players(),
     }
     logger.debug(
         "Create.confirm_round entered, confirming round completion.\n \

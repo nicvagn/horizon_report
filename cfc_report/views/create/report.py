@@ -55,3 +55,16 @@ def initial_form(request) -> HttpResponse:
         "form": form,
     }
     return render(request, "cfc_report/base/base-form.html", context)
+
+
+def cfc_report(request) -> HttpResponse:
+    """Create report"""
+
+    tournament_info = session.get_tournament_info()
+    context = {
+        "tournament_name": tournament_info["name"],
+        "round_number": session.get_building_round_number(),
+        "matches": session.get_matches(),
+        "players": session.get_players(),
+    }
+    return render(request, "cfc_report/create/report.html", context)

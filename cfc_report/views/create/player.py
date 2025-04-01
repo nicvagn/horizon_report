@@ -17,6 +17,7 @@
 
 from django.shortcuts import render
 from django.urls import reverse
+from django.http import HttpRequest
 
 from cfc_report.models import Player
 from cfc_report import logger
@@ -25,7 +26,7 @@ from cfc_report.services import player as player_services
 from cfc_report.services import session
 
 
-def set_in_report(request):
+def set_in_report(request) -> HttpRequest:
     """set information about what players in a tournament"""
 
     # if the request is a POST it is the form submission not initial get
@@ -54,7 +55,7 @@ def set_in_report(request):
     return render(request, "cfc_report/create/toggle-players.html", context)
 
 
-def new_player(request):
+def new_player(request) -> HttpRequest:
     """view to add player to tournament players database
 
     Side-effects
