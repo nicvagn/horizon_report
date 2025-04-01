@@ -1,4 +1,4 @@
-"""view for creating a cfc report"""
+"""view for creating a tournament in a cfc report"""
 
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -14,60 +14,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 
 from cfc_report import logger
-from cfc_report.forms import TournamentInfoForm
-from cfc_report.models import (CTR, Match, Player, Round, Tournament,
-                               TournamentDirector, TournamentOrganizer)
-from cfc_report.models.fields import CfcIdField
-from cfc_report.services import database as db
+from cfc_report.models import Match, Player, Round
 from cfc_report.services import session
 from cfc_report.services.ctr_builder import CTR_builder
-
-
-def initial_form(request) -> HttpResponse:
-    """Prepaire and present initial tournament info form. Then
-    handle gettind the data from the form
-
-    Arguments
-    ---------
-    request : HttpRequest sent to the view
-    """
-    logger.debug("Report.initial entered with request: %s", request)
-    # if is the form being submitted
-    if request.method == "POST":
-        # get the tournament info from the form submit
-        tournament_info = request.POST
-        logger.info("request.POST containig tournament_info: %s"
-                    % tournament_info)
-        # next procede to get the player info
-        return redirect("create-report-players")
-
-    form = TournamentInfoForm()
-
-    context = {
-        "title": "Enter tournament information",
-        "action_url": reverse("create-report-info"),
-        "submit_btn_txt": "Pick Players",
-        "form": form,
-    }
-    return render(request, "cfc_report/base/base-form.html", context)
-
-
-def cfc_report(request) -> HttpResponse:
-    """Create report"""
-
-    tournament_info = session.get_tournament_info()
-    context = {
-        "tournament_name": tournament_info["name"],
-        "round_number": session.get_building_round_number(),
-        "matches": session.get_matches(),
-        "players": session.get_players(),
-    }
-    return render(request, "cfc_report/create/report.html", context)
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
 
 
 def preview_report(request) -> HttpResponse:
@@ -116,3 +69,24 @@ def finalize_report(request) -> HttpResponse:
     context = {"ctr": str(ctr)}
 
     return render(request, "cfc_report/show/ctr.html", context)
+
+
+def preview(request):
+    """Preview the tournament report"""
+    # get the tournament info set in Create.initial()
+    tournament_info = session.tournament.get_tournament_info()
+
+    # get information on tournament players from the session
+    players: list[Player] = session.player.get_players()
+
+    context = {
+        "name": tournament_info["name"],
+        "province": tournament_info["province"],
+        "time_format": "blitz",
+        "num_players": len(players),
+        "players": players,
+        "td_cfc": tournament_info["td_cfc"],
+        "to_cfc": tournament_info["to_cfc"],
+    }
+    logger.debug("context: %s", context)
+    return render(request, "cfc_report/show/index.html", context)

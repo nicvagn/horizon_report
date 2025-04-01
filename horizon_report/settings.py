@@ -91,6 +91,11 @@ class Dev(Configuration):
                 "init_command": "SET default_storage_engine=INNODB; \
                 SET sql_mode='STRICT_TRANS_TABLES';"
             }
+        },
+
+        "sqlight_default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 

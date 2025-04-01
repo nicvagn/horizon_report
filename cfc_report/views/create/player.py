@@ -27,7 +27,12 @@ from cfc_report.services import session
 
 
 def set_in_report(request) -> HttpRequest:
-    """set information about what players in a tournament"""
+    """set what players in the report. This is the entrypoint fror that.
+
+    Purpose
+    -------
+    display the template thaet lets you pick the players in the report
+    """
 
     # if the request is a POST it is the form submission not initial get
     # needed if no new players are choosen and you want to confirm players
@@ -53,6 +58,50 @@ def set_in_report(request) -> HttpRequest:
         context,
     )
     return render(request, "cfc_report/create/toggle-players.html", context)
+
+
+def toggle_player_session(request, cfc_id=None):
+    """Pick a player if it is not in the session, add it.
+    If it is in the session, remove it. This uses htmx under the hood
+    to replace on the DOM
+
+    Side-effects
+    ------------
+    changes the CfcId's in session.
+
+    Parameters
+    ----------
+    request : django request
+        Django request
+    cfc_id : "CfcId"
+        The Player to add/removed to the session
+    """
+
+    logger.debug(
+        "toggle_player_session entered with request: \
+        %s and  player CfcId: %s",
+        request,
+        cfc_id,
+    )
+    assert cfc_id
+
+    # if cfc id in session, remove it
+    if cfc_id in session.player.get_player_ids():
+        session.player.remove_player_by_id(cfc_id)
+    else:
+        # if not in session add to it
+        session.player.add_player_by_id(cfc_id)
+
+    db_players = db_services.get_players()
+    tournament_players = session.player.get_players()
+
+    context = {
+        "players": db_players,
+        "tournament_players": tournament_players,
+        "include_nav_bar": False,
+    }
+
+    return render(request, "cfc_report/create/player-form.html", context)
 
 
 def new_player(request) -> HttpRequest:
