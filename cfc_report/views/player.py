@@ -13,12 +13,41 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.shortcuts import render
+from django.shortcuts import render, reverse
 
 from .. import logger
 from ..models.person import Player
 from ..services import database as db_services
 from ..services import player as player_services
+
+
+def tournament_players(request):
+    """set information about what players in a tournament"""
+
+    db_players = db_services.get_players()
+    tournament_players = player_services.get_players()
+    context = {
+        "title": "choose tournament players",
+        "action_url": reverse("create-report-players"),
+        "players": db_players,
+        "tournament_players": tournament_players,
+        "include_nav_bar": False,
+    }
+
+    # if the request is a POST it is the form submission not initial get
+    # needed if no new players are choosen and you want to confirm players
+    if request.method == "POST":
+        player_info = request.POST
+        logger.debug("TournamentInfoForm made from POST: %s", player_info)
+        return render(request, "cfc_report/create/round.html", player_info)
+
+    logger.debug(
+        "db_players: %s \n tournament_players: %s \n context: %s",
+        db_players,
+        tournament_players,
+        context,
+    )
+    return render(request, "cfc_report/create/toggle-players.html", context)
 
 
 def add_player(request):

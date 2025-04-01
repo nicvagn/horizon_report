@@ -18,7 +18,7 @@ from django.db import models
 
 
 class CfcIdField(models.IntegerField):
-    """A CFC ID field
+    """A CFC ID field, for storing a cfc id number in a db.
     Attributes
     ----------
     validators :

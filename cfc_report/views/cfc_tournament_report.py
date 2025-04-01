@@ -1,4 +1,5 @@
-"""tms.py - models for CFC TMS Tournament report file."""
+"""view for creating a cfc report"""
+
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -13,22 +14,22 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.db import models
 
-from cfc_report.models.tournament import Tournament
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
 
+from cfc_report import logger
+from cfc_report.models import Match, Player, Round
+from cfc_report.services import session
 
-class TMS(models.Model):
-    """model wrapping CFC TMS (Tournament Report) File format
-    Attrabutes
-    ---------
+def report(request) -> HttpResponse:
+    """Create report"""
 
-    TBA
-    """
-    tms = models.TextField(null=True)
-
-    def __str__(self):
-        tms = ""
-        for line in self.tms:
-            tms = tms + line + "\n"
-        return tms
+    tournament_info = session.get_tournament_info()
+    context = {
+        "tournament_name": tournament_info["name"],
+        "round_number": session.get_tournament_round_number(),
+        "matches": session.get_matches(),
+        "players": session.get_players(),
+    }
+    return render(request, "cfc_report/create/report.html", context)

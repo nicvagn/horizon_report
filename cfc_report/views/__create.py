@@ -14,24 +14,57 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+
 from cfc_report import logger
 from cfc_report.forms import TournamentInfoForm
-from cfc_report.models import (CTR, CfcId, Player, Match, Round, Tournament,
-                               TournamentDirector, TournamentOrganizer,)
-from cfc_report.services import database as db
+from cfc_report.models import (CTR, Match, Player, Round, Tournament,
+                               TournamentDirector, TournamentOrganizer)
 from cfc_report.models.fields import CfcIdField
+from cfc_report.services import database as db
 from cfc_report.services import session
 from cfc_report.services.ctr_builder import CTR_builder
-from django.http import HttpResponse
-from django.shortcuts import redirect, render, get_object_or_404
-from django.urls import reverse
+
+
+def initial(request):
+    """Get initial tournament info
+    Arguments
+    ---------
+    request : HttpRequest from the view
+    """
+    logger.debug("Report.initial entered with request: %s", request)
+    # if is the form being submitted
+    if request.method == "POST":
+        # get the tournament info from the form submit
+        tournament_info = request.POST
+        logger.debug("POST request with value: %s", tournament_info)
+        # save tournament info to session
+        session.tournament.set_tournament_info(tournament_info)
+        logger.debug("TournamentInfoForm made from POST: %s", tournament_info)
+        # create tournament using info from the POST
+        T = tournament(tournament_info)
+        logger.debug("Tournament object made: %s", T)
+        # redirect to view to choose players
+        return redirect("create-report-players")
+
+    form = TournamentInfoForm()
+
+    context = {
+        "title": "Enter tournament information",
+        "action_url": reverse("create-report-info"),
+        "submit_btn_txt": "Pick Players",
+        "form": form,
+    }
+    return render(request, "cfc_report/base/base-form.html", context)
 
 
 def players(request):
     """set information about what players in a tournament"""
 
     db_players = db.get_players()
-    tournament_players = session.get_players()
+    tournament_players = session.player.get_players()
     context = {
         "title": "choose tournament players",
         "action_url": reverse("create-report-players"),
@@ -70,9 +103,6 @@ def chess_match(request):
     if request.method == "POST":
         match_info = request.POST
         logger.debug("POST request with value: %s", match_info)
-        # I am debugging creation of chess match
-        black_id = get_object_or_404(CfcId, number=match_info["black"])
-        white_id = get_object_or_404(CfcId, number=match_info["white"])
         result = match_info["result"]
         if result == Match.RESULT_CHOICES[Match.RESULT_BLACK]:
             result = Match.RESULT_BLACK
@@ -84,11 +114,14 @@ def chess_match(request):
             logger.error("Unknown Match Result: %s", result)
             result = Match.RESULT_UNKNOWN
 
+        # get the cfc ids
+        black_id = match_info["black"]
+        white_id = match_info["white"]
         # get the players
         black = get_object_or_404(Player, cfc_id=black_id)
         white = get_object_or_404(Player, cfc_id=white_id)
         rnd = get_object_or_404(
-            Round, round_num=session.get_tournament_round_number())
+            Round, round_num=session.tournament.get_tournament_round_number())
         # create the chess match model, and save it to the db
         chess_match = Match(white=white, black=black, result=result,
                             round=rnd)
@@ -103,9 +136,9 @@ def chess_match(request):
 
     # Continue letting user add more games
     context = {
-        "tournament_players": session.get_players(),
-        "round_number": session.get_tournament_round_number(),
-        "entered_matches": session.get_matches(),
+        "tournament_players": session.player.get_players(),
+        "round_number": session.tournament.building_round_number(),
+        "entered_matches": session.tournament.get_matches(),
     }
 
     return render(request, "cfc_report/create/match.html", context)
@@ -121,7 +154,7 @@ def round(request) -> HttpResponse:
 
     logger.debug("Create.round entered with request: %s", request)
     # round we are building
-    cur_round = session.get_tournament_round_number()
+    cur_round = session.toournament.get_tournament_round_number()
     # create Round model in dadabase
     new_round = Round(round_num=cur_round, tournament=session.get_tournament())
     new_round.save()
@@ -174,25 +207,13 @@ def tournament(t_info) -> Tournament:
     A tournament model
     """
 
-    to_cfc_id_field = int(t_info["td_cfc"])
-    td_cfc_id_field = int(t_info["td_cfc"])
-
-    td_cfc_id = td_cfc_id_field
-    to_cfc_id = to_cfc_id_field
-
-    to = TournamentOrganizer.objects.get_or_create(
-        name=t_info["to_cfc"], cfc_id=to_cfc_id)
-
-    td = TournamentDirector.objects.get_or_create(
-        name=t_info["td_cfc"], cfc_id=td_cfc_id)
-
     # Make the tournament model for this tournament
     T = Tournament.objects.create(name=t_info["name"],
                                   num_rounds=t_info["num_rounds"],
                                   date=t_info["date"],
-                                  province=t_info["province"],
-                                  tournament_director=td,
-                                  tournament_organizer=to,)
+                                  province=t_info["province"],)
+
+    logger.info("Tournament created: %s", T)
     return T
 
 
@@ -276,45 +297,13 @@ def finalize_report(request) -> HttpResponse:
     return render(request, "cfc_report/show/ctr.html", context)
 
 
-def initial(request):
-    """Get initial tournament info
-    Arguments
-    ---------
-    request : HttpRequest from the view
-    """
-    logger.debug("Report.initial entered with request: %s", request)
-    # if is the form being submitted
-    if request.method == "POST":
-        # get the tournament info from the form submit
-        tournament_info = request.POST
-        logger.debug("POST request with value: %s", tournament_info)
-        # save tournament info to session
-        session.set_tournament_info(tournament_info)
-        logger.debug("TournamentInfoForm made from POST: %s", tournament_info)
-        # create tournament using info from the POST
-        T = tournament(tournament_info)
-        logger.debug("Tournament object made: %s", T)
-        # redirect to view to choose players
-        return redirect("create-report-players")
-
-    form = TournamentInfoForm()
-
-    context = {
-        "title": "Enter tournament information",
-        "action_url": reverse("create-report-info"),
-        "submit_btn_txt": "Pick Players",
-        "form": form,
-    }
-    return render(request, "cfc_report/base/base-form.html", context)
-
-
 def preview(request):
     """Preview the tournament report"""
     # get the tournament info set in Create.initial()
-    tournament_info = session.get_tournament_info()
+    tournament_info = session.tournament.get_tournament_info()
 
     # get information on tournament players from the session
-    players: list[Player] = session.get_players()
+    players: list[Player] = session.player.get_players()
 
     context = {
         "name": tournament_info["name"],
@@ -355,14 +344,14 @@ def toggle_player_session(request, cfc_id=None):
     assert cfc_id
 
     # if cfc id in session, remove it
-    if cfc_id in session.get_player_ids():
+    if cfc_id in session.player.get_player_ids():
         session.remove_player_by_id(cfc_id)
     else:
         # if not in session add to it
-        session.add_player_by_id(cfc_id)
+        session.player.add_player_by_id(cfc_id)
 
     db_players = db.get_players()
-    tournament_players = session.get_players()
+    tournament_players = session.player.get_players()
 
     context = {
         "players": db_players,
@@ -395,7 +384,7 @@ def remove_match_session(request, pk=None) -> HttpResponse:
         pk,
     )
     # remove the match from the session by primary key
-    session.remove_match_by_pk(pk)
+    session.match.remove_match_by_pk(pk)
 
     # return an empty http response, because why not
     return HttpResponse("")

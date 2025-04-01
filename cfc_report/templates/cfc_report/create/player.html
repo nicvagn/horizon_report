@@ -23,7 +23,7 @@ Add Player
 {% block content %}
 <h1 class="title">Add Player to Database</h1>
 
-<form action={% url "add-player" %} method="post">
+<form action={% url "add-new-player" %} method="post">
   {% csrf_token %}
   <p>
     <label for="name">Name: </label>

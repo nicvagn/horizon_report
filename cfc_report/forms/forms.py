@@ -15,12 +15,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # set up logging
-import json
-
 from django import forms
-from django.forms import SelectDateWidget
 
-from .. import logger
 from .fields import CfcIdField, PairingSystemField, ProvinceField
 
 
@@ -45,18 +41,24 @@ class TournamentInfoForm(forms.Form):
         The CFC ID of the TournamentDirector
     """
 
-    name = forms.CharField(required=True, label="Tournament Name", initial="Test Open", max_length=60)
-    num_rounds = forms.IntegerField(required=True, label="Number of Rounds", initial=1)
+    name = forms.CharField(
+        required=True, label="Tournament Name",
+        initial="Test Open", max_length=60)
+    num_rounds = forms.IntegerField(
+        required=True, label="Number of Rounds", initial=1)
     date = forms.DateField(
         required=True,
         widget=forms.DateInput(attrs={"type": "date"}),
         input_formats=["%Y-%m-%d"],)
-    pairing_system = PairingSystemField(required=True, label="Pairing system used")
+    pairing_system = PairingSystemField(
+        required=True, label="Pairing system used")
     province = ProvinceField(required=True)
     # TournamentOrganizer CFC id
-    to_cfc = CfcIdField(required=True, label="Tournament Organizer CFC id", initial="000000")
+    to_cfc = CfcIdField(
+        required=True, label="Tournament Organizer CFC id", initial="111111")
     # TournamentDirector CFC id
-    td_cfc = CfcIdField(required=True, label="Tournament Director CFC id", initial="000000")
+    td_cfc = CfcIdField(
+        required=True, label="Tournament Director CFC id", initial="222222")
 
 
 class RoundForm(forms.Form):

@@ -13,7 +13,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import logging
 
 from .constants import DEBUG, FILE_HANDLER, LOGGER_NAME
 from .services.log import set_up_logger

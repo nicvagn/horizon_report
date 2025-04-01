@@ -16,14 +16,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 
+from django.db.models import QuerySet
+from django.shortcuts import get_object_or_404
+
 from cfc_report import logger
+from cfc_report.models.fields import PairingSystemField
 from cfc_report.models.person import (Player, TournamentDirector,
                                       TournamentOrganizer)
 from cfc_report.models.tournament import Match, Roster, Round, Tournament
-from cfc_report.models.cfc import CfcId
-from cfc_report.models.fields import PairingSystemField
-from django.db.models import QuerySet
-from django.shortcuts import get_object_or_404
 
 
 # GET
@@ -37,7 +37,7 @@ def get_players() -> QuerySet:
     return all_players
 
 
-def get_player_by_cfc(cfc_id: CfcId) -> Player:
+def get_player_by_cfc(cfc_id) -> Player:
     """Get a player by their cfc_id
 
     Returns
@@ -122,7 +122,7 @@ def populate_database() -> None:
         "Papa Vaagen",
         "Alex Charter"
     ]:
-        players.append(Player(name=n, cfc_id=CfcId(number=cfc_id)))
+        players.append(Player(name=n, cfc_id=cfc_id))
         cfc_id += 1
 
     for p in players:
@@ -131,7 +131,7 @@ def populate_database() -> None:
     # TournamentDirector
     td = []
     for n in ["Big Mommy", "Small Low"]:
-        td.append(TournamentDirector(name=n, cfc_id=CfcId(number=cfc_id)))
+        td.append(TournamentDirector(name=n, cfc_id=cfc_id))
         cfc_id += 1
 
     for p in td:
@@ -140,7 +140,7 @@ def populate_database() -> None:
     # TournamentOrganizer
     tos = []
     for n in ["Tonka Dump", "Great Leap"]:
-        tos.append(TournamentOrganizer(name=n, cfc_id=CfcId(number=cfc_id)))
+        tos.append(TournamentOrganizer(name=n, cfc_id=cfc_id))
         cfc_id += 1
 
     for p in tos:

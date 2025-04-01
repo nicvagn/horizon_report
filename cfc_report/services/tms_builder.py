@@ -32,9 +32,8 @@ class TMS:
     """TMS is a wrapper class for TMS (Tournament Report) File format"""
 
     def __init__(self, tournament: Tournament):
-        players: Player = session.get_players()
-
         """A way to represent a tms file. one line per index"""
+        players: Player = session.get_players()
         self.tms: List[str] = []
 
         for p in players:

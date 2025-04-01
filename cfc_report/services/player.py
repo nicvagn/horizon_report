@@ -14,12 +14,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from cfc_report.models.cfc import CfcId
-from cfc_report.models.person import Player
 from cfc_report import logger
+from cfc_report.models.person import Player
 
 
-def create_player(name: str, cfc_id: any) -> Player:
+def create_player(name: str, cfc_id) -> Player:
     """create a chess player with a cfc id
     parameters:
         name: the players name
@@ -29,19 +28,17 @@ def create_player(name: str, cfc_id: any) -> Player:
     """
     # make sure cfc id is valid form
     try:
-        c = int(cfc_id)
+        cfc_id = int(cfc_id)
         # ensure cfc id is 6 characters
-        if c < 100000 or c > 999999:
+        if cfc_id < 100000 or cfc_id > 999999:
             raise ValueError("CFC ID not 6 characters")
-        else:
-            newCfcId = CfcId(number=c)
 
     except ValueError as ex:
         logger.error("CFC ID not valid form, value: %s", cfc_id)
         raise ex
 
-    p = Player(name=name, cfc_id=newCfcId)
+    p = Player(name=name, cfc_id=cfc_id)
 
-    logger.info("Player: name=%s, cfc_id=%s made.", name, newCfcId)
+    logger.info("Player: name=%s, cfc_id=%s made.", name, cfc_id)
 
     return p

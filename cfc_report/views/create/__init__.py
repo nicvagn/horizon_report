@@ -1,4 +1,5 @@
-"""view a cfc report"""
+"""module for creating a cfc report"""
+
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -13,28 +14,18 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-from cfc_report import logger
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.http import HttpResponse
-from django.shortcuts import render
-from cfc_report.services import database
+from cfc_report import logger
+from cfc_report.forms import TournamentInfoForm
+from cfc_report.models import (CTR, Match, Player, Round, Tournament,
+                               TournamentDirector, TournamentOrganizer)
+from cfc_report.services import database as db
+from cfc_report.services import session
+from cfc_report.services.ctr_builder import CTR_builder
 
-
-def report(request) -> HttpResponse:
-    """display a CFC report"""
-
-    logger.debug("view.report entered with request: %s", request)
-
-    player_list = database.get_players()
-    num_players = player_list.count()
-    report = {
-        "name": "The Masters",
-        "province": "SK",
-        "time_format": "blitz",
-        "td_cfc": "111111",  # FIXME
-        "to_cfc": "222222",
-        "date": "06/06/87",
-        "players": player_list,
-        "num_players": num_players,
-    }
-    return render(request, "cfc_report/show/index.html", report)
+from . import player
+from . import match
+from . import round
+from . import report

@@ -17,41 +17,41 @@
 from django.contrib import admin
 from django.urls import path
 
-from .views import home, player
-from .views.report import create, view
-
+from .views import create, home, player, view
 
 urlpatterns = [
     path('', home.index, name='index'),
 
-    # create
-    path("create/", create.initial, name="create-report-info"),
-    path("create/players", create.players, name="create-report-players"),
-    path("create/report", create.report, name="create-report"),
-    path("create/report/round", create.round, name="create-report-round"),
+    # # CFC report # #
+    # create a new report interactively
+    path("create/", create.report.initial_form, name="create-report-info"),
+    # add what players are in the report
+    path("create/report-players", create.player.set_in_report,
+         name="create-report-players"),
+    # create a report skeleton from user info and ask for more
+    path("create/report",
+         create.report.cfc_report, name="create-report"),
+    # add a match to the report
     path("create/report/match",
-         create.chess_match, name="create-report-match"),
-    path("create/report/confirm-round",
-         create.confirm_round, name="create-round-confirm"),
-    path("create/finalize/round", create.finalize_round,
-         name="create-round-finalize"),
-    path("create/report/preview", create.preview_report,
-         name="create-report-preview"),
-    path("create/finalize/report", create.finalize_report,
-         name="create-report-finalize"),
-    path("add-player", player.add_player, name="add-player"),
+         create.match.chess_match, name="create-report-match"),
+    # create round
+    path("create/report/round",
+         create.round.build, name="create-report-round"),
 
-    # view
-    path("view/", view.report, name="view-report"),
+    # # Player urls # #
+    # add player to horizon report database
+    path("create/new-player", player.add_player, name="add-new-player"),
+
 ]
+
 
 # htmx url patterns, cleaner this way?
 htmx_urlpatterns = [
     path("create/select-player/<str:cfc_id>",
-         create.toggle_player_session, name="create-toggle-player"),
+         create.player.toggle_player_session, name="create-toggle-player"),
     path("create/select-match/<int:pk>",
-         create.remove_match_session, name="select-match-round"),
-    # path("create/select-round/<int:pk>", TODO
+         create.match.remove_match_session, name="select-match-round"),
+    #path("create/select-round/<int:pk>", TODO
 ]
 
 urlpatterns = urlpatterns + htmx_urlpatterns
