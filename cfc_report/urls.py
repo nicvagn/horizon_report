@@ -17,7 +17,7 @@
 from django.contrib import admin
 from django.urls import path
 
-from .views import create, home, player, view
+from .views import create, home, player
 
 urlpatterns = [
     path('', home.index, name='index'),
@@ -39,6 +39,7 @@ urlpatterns = [
          create.round.build, name="create-report-round"),
     path("create/report/round/confirm",
          create.round.build, name="create-round-build"),
+
     # # Player urls # #
     # add player to horizon report database
     path("create/new-player", player.add_player, name="add-new-player"),
@@ -52,7 +53,7 @@ htmx_urlpatterns = [
          create.player.toggle_player_session, name="create-toggle-player"),
     path("create/select-match/<int:pk>",
          create.match.remove_match_session, name="select-match-round"),
-    #path("create/select-round/<int:pk>", TODO
+    # path("create/select-round/<int:pk>", TODO
 ]
 
 urlpatterns = urlpatterns + htmx_urlpatterns

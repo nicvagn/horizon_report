@@ -2,9 +2,15 @@
   text-align: center;
 }
 
+.sub-title {
+  text-align: center;
+  text-decoration: underline;
+}
+
 .padded {
   padding: 0.2em 0.6em;
 }
+
 #content {
   margin: 0 3em;
 }
@@ -17,4 +23,9 @@
 .players-table {
   color: red;
   border: 4px;
+}
+
+/* for the game select/remove links */
+td>a {
+  cursor: pointer;
 }
