@@ -123,10 +123,10 @@ def get_building_round_number() -> int:
 
     get = session.get("building_round")
 
-    logger.debug("get_tournament_round: session get: %s", get)
+    logger.debug("get_building_round_number: session get: %s", get)
 
     if get is None:
-        raise ReferenceError("Tournament Number is None")
+        raise ReferenceError("'building_round' is None in session")
 
     return int(get)
 
@@ -158,7 +158,7 @@ def finalize_round() -> None:
     - reset matches in round to None
     """
 
-    round_number = building_round_number()
+    round_number = get_building_round_number()
 
     logger.debug(
         "session.finalize_round() entered. Finalizing rnd: %s, matches: %s",
@@ -189,7 +189,7 @@ def is_last_round() -> bool:
     session : A Django session
         the session got from the session store
     """
-    cur_round = building_round_number()
+    cur_round = get_building_round_number()
 
     logger.debug("is_last_round entered on round %s", round)
 

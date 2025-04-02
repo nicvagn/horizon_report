@@ -37,7 +37,8 @@ urlpatterns = [
     # create round
     path("create/report/round",
          create.round.build, name="create-report-round"),
-
+    path("create/report/round/confirm",
+         create.round.build, name="create-round-build"),
     # # Player urls # #
     # add player to horizon report database
     path("create/new-player", player.add_player, name="add-new-player"),

@@ -43,6 +43,8 @@ def initial_form(request) -> HttpResponse:
         tournament_info = request.POST
         logger.info("request.POST containig tournament_info: %s"
                     % tournament_info)
+        # Set session["building_round"]
+        session.tournament.set_building_round_number(1)
         # next procede to get the player info
         return redirect("create-report-players")
 
