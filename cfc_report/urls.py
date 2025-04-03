@@ -16,7 +16,7 @@
 
 from django.urls import path
 
-from .views import create, add_player_view
+from .views import add_player_view, create
 from .views.index import IndexView
 
 # Define reusable prefix constants
@@ -34,17 +34,17 @@ urlpatterns = [
     ],
 
     # Player-related URLs
-    path(CFC_REPORT_PATH_PREFIX + "new-player", add_player_view, name="add-new-player"),
+    path(CFC_REPORT_PATH_PREFIX + "new-player", add_player_view.add_player, name="add-new-player"),
 ]
 
 # htmx url patterns, cleaner this way?
-htmx_urlpatterns = [
-    path("create/select-player/<str:cfc_id>",
-         create.player.toggle_player_session, name="create-toggle-player"),
-    path("create/select-match/<int:pk>",
-         create.match.remove_match_session, name="select-match-round"),
-    path("create/select-round/<int:pk>",
-         create.round.select_round, name="create-select-round"),
-]
+# htmx_urlpatterns = [
+#    path("create/select-player/<str:cfc_id>",
+#         vie.player.toggle_player_session, name="create-toggle-player"),
+#    path("create/select-match/<int:pk>",
+#         create.match.remove_match_session, name="select-match-round"),
+#    path("create/select-round/<int:pk>",
+#         create.round.select_round, name="create-select-round"),
+# ]
 
-urlpatterns = urlpatterns + htmx_urlpatterns
+# urlpatterns = urlpatterns + htmx_urlpatterns

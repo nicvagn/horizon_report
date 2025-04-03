@@ -20,4 +20,3 @@ from django.views.generic import TemplateView
 class IndexView(TemplateView):
     """ index page for cfc_report """
     template_name = "cfc_report/index.html"
-
