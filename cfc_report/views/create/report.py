@@ -32,12 +32,12 @@ def initial_form(request) -> HttpResponse:
     ---------
     request : HttpRequest sent to the view
     """
-    logger.debug("Report.initial entered with request: %s", request)
+    logger.debug("Report.initial_form entered with request: %s", request)
     # if is the form being submitted
     if request.method == "POST":
         # get the tournament info from the form submit
         tournament_info = request.POST
-        logger.info("request.POST containig tournament_info: %s"
+        logger.info("request.POST containing tournament_info: %s"
                     % tournament_info)
         # set info in session_services
         session_services.tournament.set_tournament_info(tournament_info)

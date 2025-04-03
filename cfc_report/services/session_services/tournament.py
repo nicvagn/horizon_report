@@ -36,10 +36,8 @@ def get_tournament(session) -> Tournament:
 
     Uses
     ----
-    session_services : A Django session_services
-        the session_services got from the store. Must include "TournamentPK"
-        The session_services key must be the primary key of a tournament or 404
-
+    session : A Django session
+        The current Django session
     Returns
     -------
     models.Tournament being worked on in this session_services.
@@ -134,11 +132,8 @@ def set_building_round_number(session, rnd=1) -> None:
     ----------
     rnd : int
         the round number to set the round we are building to
-
-    Uses
-    ----
-    session : A Django session_services
-        the session_services got from the session_services store
+    session : A Django session
+        the current Django session
     """
 
     session["BuildingRound"] = rnd
@@ -147,8 +142,14 @@ def set_building_round_number(session, rnd=1) -> None:
 def finalize_round(session) -> None:
     """Save this round, and prepair to add another one
 
-    side-effects
-    ------------
+    Parameters
+    ----------
+    session : A Django session
+        the current Django session
+
+    Notes
+    -----
+    side effects:
     - round_number++
     - create and save a round model
     - reset matches in round to None
@@ -186,7 +187,7 @@ def set_tournament_info(session, info: TournamentInfo) -> None:
     session : A Django session_services
         the session_services got from the session_services store
 
-    info : "TournamentInfo"
+    info : TournamentInfo
         or {"name": self.name,
             "num_rounds": self.num_rounds,
             "date": str(self.date),
@@ -209,4 +210,4 @@ def set_tournament_info(session, info: TournamentInfo) -> None:
     # set the primary key for accessing the tournament fro
     session["TournamentPK"] = f"{info['name']}|{info['date']}"
     # start building at round 1
-    session["BuildingRound"] = 1
+    set_building_round_number(1)

@@ -64,15 +64,14 @@ def toggle_player_session(request, cfc_id=None):
     """Pick a player if it is not in the session_services, add it.
     If it is in the session_services, remove it. This uses htmx under the hood
     to replace on the DOM
-
-    Side-effects
-    ------------
-    changes the CfcId's in session_services.
+    Notes
+    -----
+    Side effects:
+        changes the CfcId's in session_services.
 
     Parameters
     ----------
     request : django request
-        Django request
     cfc_id : "CfcId"
         The Player to add/removed to the session_services
     """
@@ -106,10 +105,11 @@ def toggle_player_session(request, cfc_id=None):
 
 def new_player(request) -> HttpRequest:
     """view to add player to tournament players database
+    Notes
+    -----
 
-    Side-effects
-    ------------
-    modify's the datebase via services.db.add_player
+    Side effects:
+        modifies the database via services.db.add_player
     """
     logger.debug("add_player entered with request %s", request)
     # if is the form being submitted

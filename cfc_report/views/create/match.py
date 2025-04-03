@@ -79,17 +79,18 @@ def chess_match(request):
 def remove_match_session(request, pk=None) -> HttpResponse:
     """remove a match from the the session_services
 
-    Notes
-    -----
-    Side-affects:
-        changes match primary keys in session_services.
-
     Parameters
     ----------
     request : HttpRequest
         request sent to tell us to del match
     pk=None
         The primary key of the match to delete, must be supplied
+
+    Notes
+    -----
+    Side effects:
+        changes match primary keys in session_services.
+
     """
     assert pk
     logger.debug(

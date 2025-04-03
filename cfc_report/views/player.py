@@ -25,7 +25,7 @@ def tournament_players(request):
     """set information about what players in a tournament"""
 
     db_players = db_services.get_players()
-    tournament_players = player_services.get_players()
+    tournament_players: dict = player_services.get_players()
     context = {
         "title": "choose tournament players",
         "action_url": reverse("create-report-players"),
@@ -52,10 +52,10 @@ def tournament_players(request):
 
 def add_player(request):
     """view to add player to tournament players database
-
-    Side-effects
-    ------------
-    modify's the datebase via services.db.add_player
+    Notes
+    -----
+    Side effects:
+        modifies the database via services.db.add_player
     """
     logger.debug("add_player entered with request %s", request)
     # if is the form being submitted

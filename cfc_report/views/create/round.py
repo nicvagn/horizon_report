@@ -70,3 +70,15 @@ def confirm(request) -> HttpResponse:
     )
 
     return render(request, "cfc_report/create/confirm-round.html", context)
+
+
+def select_round(request) -> HttpResponse:
+    """Select a round for submission. If confirmed, finalize the round,
+    else return to editing it
+
+    Arguments
+    ---------
+    request : HttpRequest
+    """
+
+    raise NotImplementedError()
