@@ -1,5 +1,4 @@
-"""create cfc reports"""
-# horizon_pair
+""" index page for cfc_report """
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,24 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from cfc_report import logger
-from cfc_report.models import Player, Tournament
+from django.views.generic import TemplateView
 
 
-def create(t: Tournament):
-    """create a report given a Tournament
-    todo
-    """
-    report = {
-        "title": t.name,
-        "province": t.province,
-        "time_format": "blitz",
-        "td_cfc": t.td_cfc,
-        "to_cfc": t.to_cfc,
-        "tournament_date": t.date,
-        "players": t.players,
-        "num_players": len(t.players),
-    }
-
-    logger.debug("report created: %s", report)
-    return report
+class IndexView(TemplateView):
+    """ index page for cfc_report """
+    template_name = "cfc_report/index.html"
