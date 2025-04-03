@@ -25,8 +25,8 @@ from cfc_report.services.ctr_builder import CTR_builder
 
 
 def initial_form(request) -> HttpResponse:
-    """Prepaire and present initial tournament info form. Then
-    handle gettind the data from the form
+    """Prepare and present initial tournament info form. Then
+    handle getting the data from the form
 
     Arguments
     ---------

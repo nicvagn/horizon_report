@@ -18,6 +18,12 @@ import logging
 import sys
 
 
+def log_except_hook(exc_type, exc_value, traceback):
+    """catch all the thrown exceptions and log them with level ERROR"""
+    logging.error("Uncaught exception",
+                  exc_info=(exc_type, exc_value, traceback))
+
+
 def set_up_logger(logger_name=None,
                   debug=False, file_handler=False) -> logging.Logger:
     """set up logger, including:
@@ -64,14 +70,9 @@ def set_up_logger(logger_name=None,
 
     return logger
 
+
 #  === exception logging ===
 # log unhandled exceptions to the log
-
-
-def log_except_hook(exc_type, exc_value, traceback):
-    """catch all the thrown exceptions and log them with level ERROR"""
-    logging.error("Uncaught exception",
-                  exc_info=(exc_type, exc_value, traceback))
 
 
 def log_handled_exception(logger, exception: Exception) -> None:

@@ -13,39 +13,35 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import os
 
-from django.contrib import admin
 from django.urls import path
 
 from .views import create, home, player
 
+# Define reusable prefix constants
+CFC_REPORT_PATH_PREFIX = "create/"
+CREATE_REPORT_PATH_PREFIX = "create/report/"
+CREATE_ROUND_PATH_PREFIX = os.path.join(CREATE_REPORT_PATH_PREFIX, "round/")
+
+# Organized urlpatterns
 urlpatterns = [
+    # Home index
     path('', home.index, name='index'),
 
-    # # CFC report # #
-    # create a new report interactively
-    path("create/", create.report.initial_form, name="create-report-info"),
-    # add what players are in the report
-    path("create/report-players", create.player.set_in_report,
-         name="create-report-players"),
-    # create a report skeleton from user info and ask for more
-    path("create/report",
-         create.report.cfc_report, name="create-report"),
-    # add a match to the report
-    path("create/report/match",
-         create.match.chess_match, name="create-report-match"),
-    # create round
-    path("create/report/round",
-         create.round.build, name="create-report-round"),
-    path("create/report/round/confirm",
-         create.round.build, name="create-round-build"),
+    # CFC report URLs
+    *[
+        path(CFC_REPORT_PATH_PREFIX + "create/", create.report.initial_form, name="create-report-info"),
+        path(CFC_REPORT_PATH_PREFIX + "report-players", create.player.set_in_report, name="create-report-players"),
+        path(CREATE_REPORT_PATH_PREFIX, create.report.cfc_report, name="create-tournament-report"),
+        path(CREATE_REPORT_PATH_PREFIX + "match", create.match.chess_match, name="create-report-match"),
+        path(CREATE_ROUND_PATH_PREFIX, create.round.build, name="create-report-round"),
+        path(CREATE_ROUND_PATH_PREFIX + "confirm", create.round.build, name="create-round-build"),
+    ],
 
-    # # Player urls # #
-    # add player to horizon report database
-    path("create/new-player", player.add_player, name="add-new-player"),
-
+    # Player-related URLs
+    path(CFC_REPORT_PATH_PREFIX + "new-player", player.add_player, name="add-new-player"),
 ]
-
 
 # htmx url patterns, cleaner this way?
 htmx_urlpatterns = [
@@ -53,7 +49,8 @@ htmx_urlpatterns = [
          create.player.toggle_player_session, name="create-toggle-player"),
     path("create/select-match/<int:pk>",
          create.match.remove_match_session, name="select-match-round"),
-    # path("create/select-round/<int:pk>", TODO
+    path("create/select-round/<int:pk>",
+         create.round.select_round, name="create-select-round"),
 ]
 
 urlpatterns = urlpatterns + htmx_urlpatterns

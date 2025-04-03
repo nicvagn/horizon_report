@@ -79,9 +79,10 @@ def chess_match(request):
 def remove_match_session(request, pk=None) -> HttpResponse:
     """remove a match from the the session_services
 
-    Side-effects
-    ------------
-    changes match pk's in session_services.
+    Notes
+    -----
+    Side-affects:
+        changes match primary keys in session_services.
 
     Parameters
     ----------
