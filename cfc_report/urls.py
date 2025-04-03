@@ -13,34 +13,28 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os
 
 from django.urls import path
 
-from .views import create, home, player
+from .views import create, add_player_view
+from .views.index import IndexView
 
 # Define reusable prefix constants
-CFC_REPORT_PATH_PREFIX = "create/"
-CREATE_REPORT_PATH_PREFIX = "create/report/"
-CREATE_ROUND_PATH_PREFIX = os.path.join(CREATE_REPORT_PATH_PREFIX, "round/")
+CFC_REPORT_PATH_PREFIX = ""
 
 # Organized urlpatterns
 urlpatterns = [
-    # Home index
-    path('', home.index, name='index'),
+    # cfc index
+    path(CFC_REPORT_PATH_PREFIX, IndexView.as_view(), name='index'),
 
     # CFC report URLs
     *[
         path(CFC_REPORT_PATH_PREFIX + "create/", create.report.initial_form, name="create-report-info"),
         path(CFC_REPORT_PATH_PREFIX + "report-players", create.player.set_in_report, name="create-report-players"),
-        path(CREATE_REPORT_PATH_PREFIX, create.report.cfc_report, name="create-tournament-report"),
-        path(CREATE_REPORT_PATH_PREFIX + "match", create.match.chess_match, name="create-report-match"),
-        path(CREATE_ROUND_PATH_PREFIX, create.round.build, name="create-report-round"),
-        path(CREATE_ROUND_PATH_PREFIX + "confirm", create.round.build, name="create-round-build"),
     ],
 
     # Player-related URLs
-    path(CFC_REPORT_PATH_PREFIX + "new-player", player.add_player, name="add-new-player"),
+    path(CFC_REPORT_PATH_PREFIX + "new-player", add_player_view, name="add-new-player"),
 ]
 
 # htmx url patterns, cleaner this way?

@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.contrib import admin
 
-from .models.person import Player, TournamentDirector, TournamentOrganizer
+from .models.person_with_cfc_id_models import Player, TournamentDirector, TournamentOrganizer
 from .models.tournament import Match, Roster
 
 # Register your models here.

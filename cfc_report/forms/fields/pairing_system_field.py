@@ -1,4 +1,4 @@
-""" index page for cfc_report """
+"""form_fields.py: Form field's for CFC report builder"""
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,10 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.views.generic import TemplateView
+from django import forms
 
 
-class IndexView(TemplateView):
-    """ index page for cfc_report """
-    template_name = "cfc_report/index.html"
+class PairingSystemField(forms.ChoiceField):
+    """A tournament pairing system field for a chess tournament.
 
+    Attributes
+    ----------
+    PAIRING_SYSTEM_CHOICES : dict[str, str]
+        Defines the available pairing system codes and their corresponding names.
+    """
+    PAIRING_SYSTEM_CHOICES = {
+        "SW": "Swiss",
+        "RR": "Round Robin",
+        "DR": "Double Round Robin",
+    }
+
+    def __init__(self, *args, **kwargs):
+        kwargs["choices"] = self.PAIRING_SYSTEM_CHOICES.items()
+        super().__init__(*args, **kwargs)

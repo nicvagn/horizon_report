@@ -37,7 +37,7 @@ class PairingSystemField(forms.ChoiceField):
 
     Attributes
     ----------
-    PAIRING_SYSTEM : dict{str:str}
+    PAIRING_SYSTEMS : dict{str:str}
         Pairing system for the tournament
     """
     PAIRING_SYSTEMS = {
