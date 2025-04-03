@@ -14,52 +14,48 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.contrib.sessions.backends.db import SessionStore
 from django.shortcuts import get_object_or_404
 
 from cfc_report import logger
 from cfc_report.models.tournament import Round, Tournament
-
-# get the current session
-session = SessionStore()
+from cfc_report.types import TournamentInfo
 
 
 def get_rounds():
-    """Get the rounds from this session
+    """Get the rounds from this session_services
 
     Uses
     ----
-    session : Django session
-        the current session got from session store
+    session_services : Django session_services
+        the current session_services got from session_services store
     """
 
 
-def get_tournament() -> Tournament:
-    """get the tournament worked on in this session
+def get_tournament(session) -> Tournament:
+    """get the tournament worked on in this session_services
 
     Uses
     ----
-    session : A Django session
-        the session got from the store. Must include "TournamentPK"
-        The session key must be the primary key of a tournament or 404
+    session_services : A Django session_services
+        the session_services got from the store. Must include "TournamentPK"
+        The session_services key must be the primary key of a tournament or 404
 
     Returns
     -------
-    models.Tournament being worked on in this session.
+    models.Tournament being worked on in this session_services.
     """
     key = session.get("TournamentPK")
-    logger.info("session.get('TournamentPK') gave: %s", key)
+    logger.info("session_services.get('TournamentPK') gave: %s", key)
+    return get_object_or_404(Tournament, slug=key)
 
-    return get_object_or_404(Tournament, pk=key)
 
-
-def get_tournament_info():  # -> "TournamentInfo":
-    """get the TournamentInfo from this session
+def get_tournament_info(session) -> TournamentInfo:
+    """get the TournamentInfo from this session_services
 
     Uses
     ----
-    session : A Django session
-        the session got from the session store
+    session_services : A Django session_services
+        the session_services got from the session_services store
 
     Returns
     -------
@@ -76,22 +72,22 @@ def get_tournament_info():  # -> "TournamentInfo":
         }
         from tournament info form
     """
-    logger.debug("session keys: %s", session.keys())
+    logger.debug("session_services keys: %s", session.keys())
 
     get = session.get("TournamentInfo")
 
-    logger.debug("session get: %s", get)
+    logger.debug("session_services get: %s", get)
 
     return get
 
 
-def get_tournament_name() -> str:
+def get_tournament_name(session) -> str:
     """get the name of the tournament we are building
 
     Uses
     ----
-    session : A Django session
-        the session got from the session store
+    session_services : A Django session_services
+        the session_services got from the session_services store
     Returns
     -------
     str : the tournament name
@@ -102,37 +98,37 @@ def get_tournament_name() -> str:
     tournament_name = info["name"]
 
     logger.info(
-        "get_tournament_name() got %s from session['tournamentInfo'] %s",
+        "get_tournament_name() got %s from session_services['tournamentInfo'] %s",
         tournament_name,
-        info,)
+        info, )
     return tournament_name
 
 
-def get_building_round_number() -> int:
-    """get the number of the tournament round we are building from this session
+def get_building_round_number(session) -> int:
+    """get the number of the tournament round we are building from this session_services
 
     Uses
     ----
-    session : A Django session
-        the session got from the session store
+    session_services : A Django session_services
+        the session_services got from the session_services store
     Returns
     -------
     int : the round number
     """
-    logger.debug("session keys: %s", session.keys())
+    logger.debug("session_services keys: %s", session.keys())
 
-    get = session.get("building_round")
+    get = session.get("BuildingRound")
 
-    logger.debug("get_building_round_number: session get: %s", get)
+    logger.debug("get_building_round_number: session_services get: %s", get)
 
     if get is None:
-        raise ReferenceError("'building_round' is None in session")
+        raise ReferenceError("'building_round' is None in session_services")
 
     return int(get)
 
 
-def set_building_round_number(rnd: int) -> None:
-    """set the tournament round we are building from this session
+def set_building_round_number(session, rnd=1) -> None:
+    """set the tournament round we are building from this session_services
 
     Parameters
     ----------
@@ -141,14 +137,14 @@ def set_building_round_number(rnd: int) -> None:
 
     Uses
     ----
-    session : A Django session
-        the session got from the session store
+    session : A Django session_services
+        the session_services got from the session_services store
     """
 
-    session["building_round"] = rnd
+    session["BuildingRound"] = rnd
 
 
-def finalize_round() -> None:
+def finalize_round(session) -> None:
     """Save this round, and prepair to add another one
 
     side-effects
@@ -161,7 +157,7 @@ def finalize_round() -> None:
     round_number = get_building_round_number()
 
     logger.debug(
-        "session.finalize_round() entered. Finalizing rnd: %s, matches: %s",
+        "session_services.finalize_round() entered. Finalizing rnd: %s, matches: %s",
         round_number,
     )
     rnd = Round(round_num=round_number)
@@ -171,7 +167,7 @@ def finalize_round() -> None:
                  round_number, rnd)
 
     # prepare for next round
-    logger.debug("set ['building_round'] to %s, session keys: %s",
+    logger.debug("set ['building_round'] to %s, session_services keys: %s",
                  rnd,
                  session.keys())
 
@@ -179,34 +175,17 @@ def finalize_round() -> None:
     # reset the matches
     session["matches"] = None
 
-    logger.debug("session prepaired for round %s", round_number)
+    logger.debug("session_services prepared for round %s", round_number)
 
 
-def is_last_round() -> bool:
-    """Check to see if this is the last round of the tourniment we are building
-    Uses
-    ----
-    session : A Django session
-        the session got from the session store
-    """
-    cur_round = get_building_round_number()
-
-    logger.debug("is_last_round entered on round %s", round)
-
-    info = get_tournament_info()
-
-    # check if number of rounds < cur_round.
-    lr = int(info["num_rounds"]) < cur_round
-
-    logger.debug("is_last_round() found: %s", lr)
-    return lr
-
-
-def set_tournament_info(info: dict) -> None:
-    """set the tournament info for this session
+def set_tournament_info(session, info: TournamentInfo) -> None:
+    """set the tournament info for this session_services
 
     Parameters
     ----------
+    session : A Django session_services
+        the session_services got from the session_services store
+
     info : "TournamentInfo"
         or {"name": self.name,
             "num_rounds": self.num_rounds,
@@ -220,13 +199,14 @@ def set_tournament_info(info: dict) -> None:
 
         from tournament info from form
 
-    Uses
-    ----
-    session : A Django session
-        the session got from the session store
+    Notes
+    -----
+    sets TournamentInfo, TournamentPK, and BuildingRound in the session_services
     """
-    logger.debug("session key TournamentInfo set to %s", info)
+    logger.debug("session_services key TournamentInfo set to %s", info)
     session["TournamentInfo"] = info
 
+    # set the primary key for accessing the tournament fro
+    session["TournamentPK"] = f"{info['name']}|{info['date']}"
     # start building at round 1
-    session["building_round"] = 1
+    session["BuildingRound"] = 1

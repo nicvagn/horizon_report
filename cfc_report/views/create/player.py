@@ -15,15 +15,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.http import HttpRequest
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import HttpRequest
 
-from cfc_report.models import Player
 from cfc_report import logger
+from cfc_report.models import Player
 from cfc_report.services import database as db_services
 from cfc_report.services import player as player_services
-from cfc_report.services import session
+from cfc_report.services import session_services
 
 
 def set_in_report(request) -> HttpRequest:
@@ -42,7 +42,7 @@ def set_in_report(request) -> HttpRequest:
         return render(request, "cfc_report/create/round.html", player_info)
 
     db_players = db_services.get_players()
-    tournament_players = session.player.get_players()
+    tournament_players = session_services.player.get_players()
     context = {
         "title": "choose tournament players",
         "action_url": reverse("create-report-players"),
@@ -61,20 +61,20 @@ def set_in_report(request) -> HttpRequest:
 
 
 def toggle_player_session(request, cfc_id=None):
-    """Pick a player if it is not in the session, add it.
-    If it is in the session, remove it. This uses htmx under the hood
+    """Pick a player if it is not in the session_services, add it.
+    If it is in the session_services, remove it. This uses htmx under the hood
     to replace on the DOM
 
     Side-effects
     ------------
-    changes the CfcId's in session.
+    changes the CfcId's in session_services.
 
     Parameters
     ----------
     request : django request
         Django request
     cfc_id : "CfcId"
-        The Player to add/removed to the session
+        The Player to add/removed to the session_services
     """
 
     logger.debug(
@@ -85,15 +85,15 @@ def toggle_player_session(request, cfc_id=None):
     )
     assert cfc_id
 
-    # if cfc id in session, remove it
-    if cfc_id in session.player.get_player_ids():
-        session.player.remove_player_by_id(cfc_id)
+    # if cfc id in session_services, remove it
+    if cfc_id in session_services.player.get_player_ids():
+        session_services.player.remove_player_by_id(cfc_id)
     else:
-        # if not in session add to it
-        session.player.add_player_by_id(cfc_id)
+        # if not in session_services add to it
+        session_services.player.add_player_by_id(cfc_id)
 
     db_players = db_services.get_players()
-    tournament_players = session.player.get_players()
+    tournament_players = session_services.player.get_players()
 
     context = {
         "players": db_players,

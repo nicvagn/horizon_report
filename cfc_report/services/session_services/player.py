@@ -20,60 +20,59 @@ from cfc_report import logger
 from cfc_report.models.person import Player
 from cfc_report.services import database
 
-# get the current session
+# get the current session_services
 session = SessionStore()
 
 
 def get_players() -> list[Player]:
-    """get the players in current session
+    """get the players in current session_services
 
     Uses
     ----
-    session : A Django session
-        the session got from the session store
+    session_services : A Django session_services
+        the session_services got from the session_services store
 
     Returns
     -------
     players : list(Player)
-        A list of the players in session
+        A list of the players in session_services
     """
 
     session_ids = session.get("players_by_cfc")
-    logger.debug("cfc id's got from session: %s", session_ids)
+    logger.debug("cfc id's got from session_services: %s", session_ids)
     players: list[Player] = []
 
-    # go through the session player id's and fetch players from db
+    # go through the session_services player id's and fetch players from db
     if session_ids:
         for cfc_id in session_ids:
-
             p = database.get_player_by_cfc(cfc_id)
             players.append(p)
 
             logger.debug("session_id: %s got %s", cfc_id, p)
 
-        logger.debug("Players in session: %s", players)
+        logger.debug("Players in session_services: %s", players)
     else:
-        logger.warning("No players gotten from session")
+        logger.warning("No players gotten from session_services")
 
     return players
 
 
 def get_players_by_id():
-    """get the players in current session
+    """get the players in current session_services
 
     Uses
     ----
-    session : A Django session
-        the session got from the session store
+    session_services : A Django session_services
+        the session_services got from the session_services store
 
     Returns
     -------
     players : "dict{str(cfc id):Player}"
-        A dict of the players in session by there id
+        A dict of the players in session_services by there id
     """
 
     session_players = session.get("players_by_cfc")
-    logger.debug("players got from session: %s", session_players)
+    logger.debug("players got from session_services: %s", session_players)
     players = {}
 
     if session_players:
@@ -84,25 +83,25 @@ def get_players_by_id():
 
             players[cfc_id] = p
 
-        logger.debug("Players in session: %s", players)
+        logger.debug("Players in session_services: %s", players)
     else:
-        logger.warning("No players gotten from session")
+        logger.warning("No players gotten from session_services")
 
     return players
 
 
 def get_player_ids() -> list[str]:
-    """get the cfc id's of players in current session
+    """get the cfc id's of players in current session_services
 
     Uses
     ----
-    session : A Django session
-        the session got from the session store
+    session_services : A Django session_services
+        the session_services got from the session_services store
 
     Returns
     -------
     list(str)
-        A list of the cfc id's in session.
+        A list of the cfc id's in session_services.
         A cfc id is a 6 character numeric str
     """
 
@@ -112,20 +111,20 @@ def get_player_ids() -> list[str]:
     if session_players is None:
         session_players = []
 
-    logger.debug("session players id's gotten: %s", session_players)
+    logger.debug("session_services players id's gotten: %s", session_players)
     return session_players
 
 
 def update_players(players: list[Player]) -> None:
-    """update players in current session
+    """update players in current session_services
 
     Parameters
     ----------
     players : list(Players)
-        The new list of players to set the session players too
+        The new list of players to set the session_services players too
     """
 
-    logger.debug("updating session Players to be: %s", players)
+    logger.debug("updating session_services Players to be: %s", players)
     session_players_cfc_id = []
     for p in players:
         session_players_cfc_id.append(p.cfc_id)
@@ -134,11 +133,11 @@ def update_players(players: list[Player]) -> None:
 
 
 def add_player_by_id(cfc_id: str) -> None:
-    """add a player to the current session
+    """add a player to the current session_services
 
     Side-effects
     ------------
-    creates session["players_by_cfc"] if it does not exist.
+    creates session_services["players_by_cfc"] if it does not exist.
     If it does adds cfc_id
 
     Parameters
@@ -153,20 +152,20 @@ def add_player_by_id(cfc_id: str) -> None:
 
 
 def remove_player_by_id(cfc_id: str) -> None:
-    """remove a player from session by id
+    """remove a player from session_services by id
 
     Side-effects
     ------------
-    removes player with cfc id given from session
+    removes player with cfc id given from session_services
 
     Parameters
     ----------
     cfc_id : str
-        some player's cfc id to remove from the session list
+        some player's cfc id to remove from the session_services list
     """
     session_players = session.get("players_by_cfc")
 
-    logger.debug("players in session by cfc i: %s", session_players)
+    logger.debug("players in session_services by cfc i: %s", session_players)
 
     session_players.remove(cfc_id)
 

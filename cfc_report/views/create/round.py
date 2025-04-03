@@ -16,11 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse
 
 from cfc_report import logger
 from cfc_report.models import Round
-from cfc_report.services import session
+from cfc_report.services import session_services
 
 
 def build(request) -> HttpResponse:
@@ -33,16 +32,16 @@ def build(request) -> HttpResponse:
 
     logger.debug("Create.round entered with request: %s", request)
     # round we are building
-    cur_round = session.tournament.get_building_round_number()
+    cur_round = session_services.tournament.get_building_round_number()
     # create Round model in dadabase
-    new_round = Round(round_num=cur_round, tournament=session.get_tournament())
+    new_round = Round(round_num=cur_round, tournament=session_services.get_tournament())
     new_round.save()
     logger.debug("new round created. Round: %s", new_round)
 
     context = {
-        "entered_matches": session.get_matches(),
+        "entered_matches": session_services.get_matches(),
         "round_number": cur_round,
-        "rounds": session.get_rounds(),
+        "rounds": session_services.get_rounds(),
     }
     return render(request, "cfc_report/create/round.html", context)
 
@@ -56,12 +55,12 @@ def confirm(request) -> HttpResponse:
     request : HttpRequest
     """
 
-    tournament_info = session.get_tournament_info()
+    tournament_info = session_services.get_tournament_info()
     context = {
         "tournament_name": tournament_info["name"],
-        "round_number": session.tournament.get_building_round_number(),
-        "matches": session.get_matches(),
-        "players": session.get_players(),
+        "round_number": session_services.tournament.get_building_round_number(),
+        "matches": session_services.get_matches(),
+        "players": session_services.get_players(),
     }
     logger.debug(
         "Create.confirm_round entered, confirming round completion.\n \

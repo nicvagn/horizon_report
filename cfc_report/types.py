@@ -1,4 +1,4 @@
-"""module for creating a cfc report"""
+"""Types used the cfc_report module """
 
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -15,7 +15,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from . import match
-from . import player
-from . import report
-from . import round
+from typing import TypedDict
+
+
+class TournamentInfo(TypedDict):
+    """TournamentInfo is the standard way A tournament is described"""
+    name: str
+    num_rounds: int
+    date: str
+    pairing_system: str
+    province: str
+    to_cfc: str
+    td_cfc: str

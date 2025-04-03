@@ -20,11 +20,9 @@ from django.urls import reverse
 
 from cfc_report import logger
 from cfc_report.forms import TournamentInfoForm
-from cfc_report.models import (CTR, Match, Player, Round, Tournament,
-                               TournamentDirector, TournamentOrganizer)
-from cfc_report.models.fields import CfcIdField
+from cfc_report.models import (Match, Player, Round, Tournament)
 from cfc_report.services import database as db
-from cfc_report.services import session
+from cfc_report.services import session_services
 from cfc_report.services.ctr_builder import CTR_builder
 
 
@@ -40,8 +38,8 @@ def initial(request):
         # get the tournament info from the form submit
         tournament_info = request.POST
         logger.debug("POST request with value: %s", tournament_info)
-        # save tournament info to session
-        session.tournament.set_tournament_info(tournament_info)
+        # save tournament info to session_services
+        session_services.tournament.set_tournament_info(tournament_info)
         logger.debug("TournamentInfoForm made from POST: %s", tournament_info)
         # create tournament using info from the POST
         T = tournament(tournament_info)
@@ -64,7 +62,7 @@ def players(request):
     """set information about what players in a tournament"""
 
     db_players = db.get_players()
-    tournament_players = session.player.get_players()
+    tournament_players = session_services.player.get_players()
     context = {
         "title": "choose tournament players",
         "action_url": reverse("create-report-players"),
@@ -121,7 +119,7 @@ def chess_match(request):
         black = get_object_or_404(Player, cfc_id=black_id)
         white = get_object_or_404(Player, cfc_id=white_id)
         rnd = get_object_or_404(
-            Round, round_num=session.tournament.get_tournament_round_number())
+            Round, round_num=session_services.tournament.get_tournament_round_number())
         # create the chess match model, and save it to the db
         chess_match = Match(white=white, black=black, result=result,
                             round=rnd)
@@ -136,9 +134,9 @@ def chess_match(request):
 
     # Continue letting user add more games
     context = {
-        "tournament_players": session.player.get_players(),
-        "round_number": session.tournament.building_round_number(),
-        "entered_matches": session.tournament.get_matches(),
+        "tournament_players": session_services.player.get_players(),
+        "round_number": session_services.tournament.building_round_number(),
+        "entered_matches": session_services.tournament.get_matches(),
     }
 
     return render(request, "cfc_report/create/match.html", context)
@@ -154,16 +152,16 @@ def round(request) -> HttpResponse:
 
     logger.debug("Create.round entered with request: %s", request)
     # round we are building
-    cur_round = session.toournament.get_tournament_round_number()
+    cur_round = session_services.toournament.get_tournament_round_number()
     # create Round model in dadabase
-    new_round = Round(round_num=cur_round, tournament=session.get_tournament())
+    new_round = Round(round_num=cur_round, tournament=session_services.get_tournament())
     new_round.save()
     logger.debug("new round created. Round: %s", new_round)
 
     context = {
-        "entered_matches": session.get_matches(),
+        "entered_matches": session_services.get_matches(),
         "round_number": cur_round,
-        "rounds": session.get_rounds(),
+        "rounds": session_services.get_rounds(),
     }
     return render(request, "cfc_report/create/round.html", context)
 
@@ -177,10 +175,10 @@ def confirm_round(request) -> HttpResponse:
     request : HttpRequest
     """
 
-    tournament_info = session.get_tournament_info()
+    tournament_info = session_services.get_tournament_info()
     context = {
         "tournament_name": tournament_info["name"],
-        "round_number": session.get_tournament_round_number(),
+        "round_number": session_services.get_tournament_round_number(),
         # HACK: FIXME figgure out db sessions
         "matches": db.get_matches(),
         "players": db.get_players(),
@@ -211,7 +209,7 @@ def tournament(t_info) -> Tournament:
     T = Tournament.objects.create(name=t_info["name"],
                                   num_rounds=t_info["num_rounds"],
                                   date=t_info["date"],
-                                  province=t_info["province"],)
+                                  province=t_info["province"], )
 
     logger.info("Tournament created: %s", T)
     return T
@@ -220,12 +218,12 @@ def tournament(t_info) -> Tournament:
 def report(request) -> HttpResponse:
     """Create report"""
 
-    tournament_info = session.get_tournament_info()
+    tournament_info = session_services.get_tournament_info()
     context = {
         "tournament_name": tournament_info["name"],
-        "round_number": session.get_tournament_round_number(),
-        "matches": session.get_matches(),
-        "players": session.get_players(),
+        "round_number": session_services.get_tournament_round_number(),
+        "matches": session_services.get_matches(),
+        "players": session_services.get_players(),
     }
     return render(request, "cfc_report/create/report.html", context)
 
@@ -239,10 +237,10 @@ def finalize_round(request) -> HttpResponse:
     """
     logger.debug("Create.finalize_round entered with request: %s", request)
     # finalize the round, and prep for new one
-    session.finalize_round()
+    session_services.finalize_round()
 
     # check if rounds are over. IE this is the last round
-    if session.is_last_round():
+    if session_services.is_last_round():
         return redirect("create-report-preview")
 
     # start creation of next round
@@ -260,14 +258,14 @@ def preview_report(request) -> HttpResponse:
 
     logger.debug("create.preview_report entered with request: %s", request)
     # get tournament information
-    t_info = session.get_tournament_info()
+    t_info = session_services.get_tournament_info()
 
     logger.debug("Tournament Info got: %s", t_info)
-    ctr = CTR_builder(t_info, session)
+    ctr = CTR_builder(t_info, session_services)
     logger.debug("|CTR| created: %s", ctr)
 
     context = {
-        "tournament_name": session.get_tournament_name(),
+        "tournament_name": session_services.get_tournament_name(),
         "ctr": str(ctr),
         "tms": "TMS NOT DONE",
     }
@@ -284,10 +282,10 @@ def finalize_report(request) -> HttpResponse:
     """
     logger.debug("Create.finalize_report entered with request: %s", request)
     # get tournament information
-    t_info = session.get_tournament_info()
+    t_info = session_services.get_tournament_info()
 
     logger.debug("Tournament Info got: %s", t_info)
-    ctr = CTR_builder(t_info, session)
+    ctr = CTR_builder(t_info, session_services)
     ctr.save()
     logger.debug("|CTR| created and saved: %s", ctr)
 
@@ -300,10 +298,10 @@ def finalize_report(request) -> HttpResponse:
 def preview(request):
     """Preview the tournament report"""
     # get the tournament info set in Create.initial()
-    tournament_info = session.tournament.get_tournament_info()
+    tournament_info = session_services.tournament.get_tournament_info()
 
-    # get information on tournament players from the session
-    players: list[Player] = session.player.get_players()
+    # get information on tournament players from the session_services
+    players: list[Player] = session_services.player.get_players()
 
     context = {
         "name": tournament_info["name"],
@@ -319,20 +317,20 @@ def preview(request):
 
 
 def toggle_player_session(request, cfc_id=None):
-    """Pick a player if it is not in the session, add it.
-    If it is in the session, remove it. This uses htmx under the hood
+    """Pick a player if it is not in the session_services, add it.
+    If it is in the session_services, remove it. This uses htmx under the hood
     to replace on the DOM
 
     Side-effects
     ------------
-    changes the CfcId's in session.
+    changes the CfcId's in session_services.
 
     Parameters
     ----------
     request : django request
         Django request
     cfc_id : "CfcId"
-        The Player to add/removed to the session
+        The Player to add/removed to the session_services
     """
 
     logger.debug(
@@ -343,15 +341,15 @@ def toggle_player_session(request, cfc_id=None):
     )
     assert cfc_id
 
-    # if cfc id in session, remove it
-    if cfc_id in session.player.get_player_ids():
-        session.remove_player_by_id(cfc_id)
+    # if cfc id in session_services, remove it
+    if cfc_id in session_services.player.get_player_ids():
+        session_services.remove_player_by_id(cfc_id)
     else:
-        # if not in session add to it
-        session.player.add_player_by_id(cfc_id)
+        # if not in session_services add to it
+        session_services.player.add_player_by_id(cfc_id)
 
     db_players = db.get_players()
-    tournament_players = session.player.get_players()
+    tournament_players = session_services.player.get_players()
 
     context = {
         "players": db_players,
@@ -363,11 +361,11 @@ def toggle_player_session(request, cfc_id=None):
 
 
 def remove_match_session(request, pk=None) -> HttpResponse:
-    """toggle a match from the db into the session and visa versa
+    """toggle a match from the db into the session_services and visa versa
 
     Side-effects
     ------------
-    changes match pk's in session.
+    changes match pk's in session_services.
 
     Parameters
     ----------
@@ -383,8 +381,8 @@ def remove_match_session(request, pk=None) -> HttpResponse:
         request,
         pk,
     )
-    # remove the match from the session by primary key
-    session.match.remove_match_by_pk(pk)
+    # remove the match from the session_services by primary key
+    session_services.match.remove_match_by_pk(pk)
 
     # return an empty http response, because why not
     return HttpResponse("")

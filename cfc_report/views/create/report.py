@@ -20,7 +20,7 @@ from django.urls import reverse
 
 from cfc_report import logger
 from cfc_report.forms import TournamentInfoForm
-from cfc_report.services import session
+from cfc_report.services import session_services
 from cfc_report.services.ctr_builder import CTR_builder
 
 
@@ -39,8 +39,9 @@ def initial_form(request) -> HttpResponse:
         tournament_info = request.POST
         logger.info("request.POST containig tournament_info: %s"
                     % tournament_info)
-        # Set session["building_round"]
-        session.tournament.set_building_round_number(1)
+        # set info in session_services
+        session_services.tournament.set_tournament_info(tournament_info)
+
         # next procede to get the player info
         return redirect("create-report-players")
 
@@ -56,14 +57,22 @@ def initial_form(request) -> HttpResponse:
 
 
 def cfc_report(request) -> HttpResponse:
-    """Create report"""
+    """Create report interactively.
 
-    tournament_info = session.get_tournament_info()
+    Uses
+    ----
+    TournamentInfo in the session_services
+    session_services.get_matches
+    session_services.get_players
+    Basically the session_services info
+    """
+
+    tournament_info = session_services.get_tournament_info()
     context = {
         "tournament_name": tournament_info["name"],
-        "round_number": session.get_building_round_number(),
-        "matches": session.get_matches(),
-        "players": session.get_players(),
+        "round_number": session_services.get_building_round_number(),
+        "matches": session_services.get_matches(),
+        "players": session_services.get_players(),
     }
     return render(request, "cfc_report/create/report.html", context)
 
@@ -79,14 +88,14 @@ def preview_report(request) -> HttpResponse:
 
     logger.debug("create.preview_report entered with request: %s", request)
     # get tournament information
-    t_info = session.get_tournament_info()
+    t_info = session_services.get_tournament_info()
 
     logger.debug("Tournament Info got: %s", t_info)
-    ctr = CTR_builder(t_info, session)
+    ctr = CTR_builder(t_info, session_services)
     logger.debug("|CTR| created: %s", ctr)
 
     context = {
-        "tournament_name": session.get_tournament_name(),
+        "tournament_name": session_services.get_tournament_name(),
         "ctr": str(ctr),
         "tms": "TMS NOT DONE",
     }
@@ -103,10 +112,10 @@ def finalize_report(request) -> HttpResponse:
     """
     logger.debug("Create.finalize_report entered with request: %s", request)
     # get tournament information
-    t_info = session.get_tournament_info()
+    t_info = session_services.get_tournament_info()
 
     logger.debug("Tournament Info got: %s", t_info)
-    ctr = CTR_builder(t_info, session)
+    ctr = CTR_builder(t_info, session_services)
     ctr.save()
     logger.debug("|CTR| created and saved: %s", ctr)
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd $(dirname -- "$( readlink -f -- "$0"; )";);
+cd $(dirname -- "$( readlink -f -- "$0"; )";)|| exit;
 . ~/.venvs/horizon_report/bin/activate
 ./mysqlup.sh
 python manage.py runserver

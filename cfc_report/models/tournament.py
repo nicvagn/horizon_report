@@ -20,40 +20,67 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
-from .. import logger
 from .fields import CfcIdField, PairingSystemField, ProvinceField
+from .. import logger
 
 """models relating to a CFC Rated chess tournament."""
 
 
 class Tournament(models.Model):
-    """A cfc rated chess tournament
+    """A CFC-rated chess tournament.
 
     Attributes
     ----------
-    name : models.CharField
-        name of the tournament
-    num_rounds : models.IntegerField
-        number of rounds
-    date : models.DateField
-        The date of the tournament
+    tournament_name : models.CharField
+        The name of the tournament.
+    number_of_rounds : models.IntegerField
+        The number of rounds in the tournament.
+    tournament_date : models.DateField
+        The date the tournament was held.
     pairing_system : PairingSystem
         The pairing system used in this tournament.
     province : Province
-        The canadian province this tournament was held
-    tournament_organizer : TournamentOrganizer
-        The TournamentOrganizer of the tournament
-    tournament_director : TournamentDirector
-        The TournamentDirector of the tournament
+        The Canadian province where this tournament was held.
+    slug : models.SlugField
+        A unique slug for the tournament.
     """
 
-    name = models.CharField(help_text="Tournament Name.", primary_key=False,
-                            max_length=60)
-    num_rounds = models.IntegerField()
+    SLUG_FORMAT = "{name}|{date}"
 
-    date = models.DateField()
+    tournament_name = models.CharField(
+        help_text="Name of the tournament.",
+        max_length=60
+    )
+    number_of_rounds = models.IntegerField()
+    tournament_date = models.DateField()
     pairing_system = PairingSystemField()
     province = ProvinceField()
+    slug = models.SlugField(null=True, unique=True)
+
+    def _generate_slug(self):
+        """Generate a slug using the tournament name and date."""
+        return self.SLUG_FORMAT.format(
+            name=self.tournament_name,
+            date=self.tournament_date
+        )
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = self._generate_slug()
+        logger.info(
+            "Tournament (%s) saved with slug (%s)",
+            self,
+            self.slug
+        )
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        """Return the absolute URL for the tournament."""
+        return f"/tournaments/{self.slug}/"
+
+    def __str__(self):
+        """String representation of the Tournament."""
+        return self.tournament_name
 
     def save(self, *args, **kwargs):
         """create slug url before saving
@@ -67,8 +94,7 @@ class Tournament(models.Model):
         -------
         None
         """
-
-        self.slug = slugify(self.name + f" {str(self.date)}")
+        self.slug = slugify(str(self.name) + f"|{str(self.date)}")
 
         logger.info(
             "Tournament (%s) saved and slug (%s) created for it",
@@ -77,23 +103,6 @@ class Tournament(models.Model):
         )
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
-        """get the absolute url of this model
-
-        Returns
-        -------
-        The absolute url to access this person
-        """
-        return reverse("player", args=[self.slug])
-
-    def __str__(self):
-        return f"""Tournament name: {self.name}
-        Number of rounds: {self.num_rounds}
-        date: {self.date}
-        Pairing System: {self.pairing_system}
-        province: {self.province}
-        """
-
 
 class Round(models.Model):
     """A Round in a cfc rated tournament
@@ -101,7 +110,7 @@ class Round(models.Model):
     Attributes
     ----------
     round_num : IntegerField
-        the round of it's tournament this is
+        the round of its tournament this is
     """
 
     round_num = models.IntegerField(
@@ -116,9 +125,8 @@ class Roster(models.Model):
 
     Attributes
     ----------
-    players : ForeignKey
-        players in roster
-
+    tournament : OneToOneField
+        the tournament this roster is for
     """
 
     tournament = models.OneToOneField(Tournament, on_delete=models.CASCADE)
@@ -135,7 +143,7 @@ class Match(models.Model):
         the black player in the match
     result : CharField
         KEY: (b == black victory, w == white victory, d == no victory)
-    round : ForignKey
+    round : ForeignKey
         The round of the tournament this game is for
     """
     RESULT_BLACK = "B"
@@ -169,5 +177,4 @@ class Match(models.Model):
             f" white: ({self.white}),"
             f" black: ({self.black}),"
             f" result: ({self.result}),"
-            f" round number: ({self.round_number}) "
         )

@@ -18,9 +18,8 @@
 from typing import List
 
 # make a ctr tournament report file
-from cfc_report import logger
-from cfc_report.models import Match, Player, Tournament
-from cfc_report.services import session
+from cfc_report.models import Player, Tournament
+from cfc_report.services import session_services
 
 
 class TmsCreationException(Exception):
@@ -33,7 +32,7 @@ class TMS:
 
     def __init__(self, tournament: Tournament):
         """A way to represent a tms file. one line per index"""
-        players: Player = session.get_players()
+        players: Player = session_services.get_players()
         self.tms: List[str] = []
 
         for p in players:

@@ -67,7 +67,7 @@ def CTR_builder(session, name=None, rounds=None,
 
     Parameters
     ----------
-    session : the active Django session
+    session : the active Django session_services
         used to get player and match info
     name : str
         Tournament Name
@@ -90,7 +90,7 @@ def CTR_builder(session, name=None, rounds=None,
         A CTR model
     """
     logger.info(
-        "CTR_builder entered w -- session: %s, name: %s,  \
+        "CTR_builder entered w -- session_services: %s, name: %s,  \
         rounds: %s, pairing_system: %s, TO CFC: %s, TD CFC: %s, \
         date: %s",
         session, name, rounds, pairing_system, to_cfc_id, td_cfc_id,
@@ -124,7 +124,7 @@ def CTR_builder(session, name=None, rounds=None,
     # start by building the 1st line of the ctr
     ctr.append(
         f'''"{name}","{province}","0","{pairing_abriviation}","{
-            date}","{num_players}","{td_cfc_id}","{to_cfc_id}"'''
+        date}","{num_players}","{td_cfc_id}","{to_cfc_id}"'''
     )
 
     logger.info("CTR_builder(...) made: ctr: %s", ctr)

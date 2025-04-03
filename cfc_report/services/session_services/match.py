@@ -24,11 +24,11 @@ session = SessionStore()
 
 
 def get_matches() -> [Match]:
-    """Get the matches in the session
+    """Get the matches in the session_services
     Uses
     ----
-    session : A Django session
-        the active session
+    session_services : A Django session_services
+        the active session_services
 
     Returns
     -------
@@ -36,14 +36,14 @@ def get_matches() -> [Match]:
     """
     session_matches = session.get("matches")
 
-    logger.info("matches got from session: %s, of type: %s",
+    logger.info("matches got from session_services: %s, of type: %s",
                 session_matches, type(session_matches))
 
     return session_matches
 
 
 def create_match(white_id, black_id, result) -> Match:
-    """Create a chess match in this session
+    """Create a chess match in this session_services
     Arguments
     ---------
     result : one of Match.RESULT_CHOICES ie:
@@ -51,11 +51,11 @@ def create_match(white_id, black_id, result) -> Match:
                         (RESULT_DRAW, "0.5 - 0.5"), (RESULT_UNKNOWN, "_")]
     Uses
     ----
-    session - the django session got from the session store
+    session_services - the django session_services got from the session_services store
 
     side-effects
     ------------
-    modifies the session "matches"
+    modifies the session_services "matches"
 
     Returns
     -------
@@ -80,7 +80,7 @@ def create_match(white_id, black_id, result) -> Match:
 
 
 def remove_match_by_pk(pk) -> None:
-    """remove a match from this session by it's primarry key
+    """remove a match from this session_services by it's primarry key
 
     Parameters
     ----------
@@ -88,12 +88,12 @@ def remove_match_by_pk(pk) -> None:
 
     Uses
     ----
-    session : Django session
-        the current session got from session store
+    session_services : Django session_services
+        the current session_services got from session_services store
 
     Side Effects
     ------------
-    removes the match from this session
+    removes the match from this session_services
     """
     old_matches = get_matches()
     logger.debug("removing match with pk: %s\n all matches: %s",
@@ -110,7 +110,7 @@ def remove_match_by_pk(pk) -> None:
 
     if match_found is False:
         raise RuntimeError(
-            "Could not find match with pk: %s in session matches %s" % (
+            "Could not find match with pk: %s in session_services matches %s" % (
                 pk, get_matches())
         )
     logger.debug("match with pk %s removed. matches now %s", pk, new_matches)
