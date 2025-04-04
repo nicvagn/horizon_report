@@ -37,7 +37,7 @@ class PairingSystemField(models.CharField):
     """A tournament pairing system for a chess tournament
     Attributes
     ----------
-    PAIRING_SYSTEM : dict{str:str}
+    PAIRING_SYSTEMS : dict{str:str}
         Pairing system for the tournament
     """
     PAIRING_SYSTEMS = {
@@ -62,7 +62,7 @@ class ProvinceField(models.CharField):
     PROVINCES : dict[str : str]
         province acronym key to province name
     PROVINCES{key} : str
-        The key to the PROVINCES dict
+        The key to the PROVINCES dict are canadian province acronyms.
         must be:
             max_length: 2
             must be in form 'SK'

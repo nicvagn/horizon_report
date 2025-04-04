@@ -1,4 +1,5 @@
-"""views for cfc_report players"""
+# """views for cfc_report players"""
+from django.http import HttpRequest, HttpResponse
 # Copyright (C) 2024 Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -13,16 +14,42 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.shortcuts import render
-from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render, reverse
 
 from .. import logger
 from ..models.person_with_cfc_id_models import Player
 
 
+def _get_session_players(request) -> list[Player]:
+    """get the players in current session
+
+    Parameters
+    ----------
+    request : django http request
+        Django request
+
+    Notes
+    -----
+    Uses:
+        the current session
+
+    Returns
+    -------
+    players : list(Player)
+        A list of the players in session
+    """
+    players = request.session["players"]
+
+    return players
+
+
 def _create_player(name: str, cfc_id: int) -> Player:
     """
     Helper function to create a player and save it to the database.
+
+    Notes
+    -----
+    Adds player to db
 
     Parameters
     ----------
@@ -44,7 +71,7 @@ def _create_player(name: str, cfc_id: int) -> Player:
     return player
 
 
-def add_player(request: HttpRequest) -> HttpResponse:
+def add_player_database(request: HttpRequest) -> HttpResponse:
     """
     View to add a player to the tournament players database.
 
@@ -95,7 +122,7 @@ def add_player(request: HttpRequest) -> HttpResponse:
     return render(request, "cfc_report/create/player.html")
 
 
-def set_tournament_players(request):
+def set_tournament_players(request: HttpRequest) -> HttpResponse:
     """
     set information about what players in a tournament
 
@@ -115,8 +142,8 @@ def set_tournament_players(request):
         The rendered response from the page.
     """
 
-    db_players = db.get_players()
-    tournament_players = session.get_players()
+    db_players = Player.objects.all()
+    tournament_players = _get_session_players()
     context = {
         "title": "choose tournament players",
         "action_url": reverse("create-report-players"),
@@ -126,7 +153,7 @@ def set_tournament_players(request):
     }
 
     # if the request is a POST it is the form submission not initial get
-    # needed if no new players are choosen and you want to confirm players
+    # needed if no new players are chosen, and you want to confirm players
     if request.method == "POST":
         player_info = request.POST
         logger.debug("TournamentInfoForm made from POST: %s", player_info)
@@ -141,22 +168,23 @@ def set_tournament_players(request):
     return render(request, "cfc_report/create/toggle-players.html", context)
 
 
-def toggle_player_session(request, cfc_id=None):
+def toggle_player_session(request: HttpRequest, cfc_id=None) -> HttpResponse:
     """
-    Pick a player if it is not in the session, add it.
-    If it is in the session, remove it. This uses htmx under the hood
-    to replace on the DOM
+    If a player with the cfc_id is in the session, remove it. If it is not found
+     add it
 
-    Side-effects
-    ------------
-    changes the CfcId's in session.
+    Notes
+    -----
+    -This uses htmx under the hood to replace on the DOM
+    Side effects:
+        - changes Players in session.
 
     Parameters
     ----------
-    request : django request
-        Django request
+    request : HttpRequest
+        http request from the view, used to get the session
     cfc_id : "CfcId"
-        The Player to add/removed to the session
+        The cfc id of the Player to add/removed to the session
     """
 
     logger.debug(
@@ -167,43 +195,28 @@ def toggle_player_session(request, cfc_id=None):
     )
     assert cfc_id
 
-    # if cfc id in session, remove it
-    if cfc_id in session.get_player_ids():
-        session.remove_player_by_id(cfc_id)
-    else:
-        # if not in session add to it
-        session.add_player_by_id(cfc_id)
+    session_players = _get_session_players(request)
 
-    db_players = db.get_players()
-    tournament_players = session.get_players()
+    for player in session_players:
+        if player.cfc_id == int(cfc_id):
+            session_players.remove(player)
+            logger.info("Removed player with CFC ID: %s from session.", cfc_id)
+            break
+    else:
+        # If not present, add player to session
+        new_player = Player.objects.get(cfc_id=int(cfc_id))
+        session_players.append(new_player)
+        logger.info("Added player with CFC ID: %s to session.", cfc_id)
+
+    # set players in session to changed value
+    request.session["players"] = session_players
+
+    db_players = Player.objects.all()
 
     context = {
         "players": db_players,
-        "tournament_players": tournament_players,
+        "tournament_players": session_players,
         "include_nav_bar": False,
     }
 
     return render(request, "cfc_report/create/player-form.html", context)
-
-
-def get_players(request) -> list[Player]:
-    """get the players in current session
-
-    Parameters
-    ----------
-    request : django http request
-        Django request
-
-    Notes
-    -----
-    Uses:
-        the current session
-
-    Returns
-    -------
-    players : list(Player)
-        A list of the players in session
-    """
-    players = request.session["players"]
-
-    return players
