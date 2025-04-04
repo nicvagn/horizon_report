@@ -14,5 +14,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 DEBUG = True
-FILE_HANDLER = "CFC_REPORT_FileHandler"
+FILE_HANDLER = "CFC_REPORT_FileHandler.log"
 LOGGER_NAME = "CFC_REPORT"
+
+# URL constants to aid in portability
+# Base URL prefix for this app (defined for clarity and reuse)
+BASE_URL_PREFIX = ""
+# Path prefixes for specific subsections
+PLAYER_URL_PREFIX = f"{BASE_URL_PREFIX}/player"
+# Report URL prefix
+REPORT_URL_PREFIX = f"{BASE_URL_PREFIX}/report"

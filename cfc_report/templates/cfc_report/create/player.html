@@ -23,6 +23,11 @@ Add Player
 {% block content %}
 <h1 class="title">Add Player to Database</h1>
 
+{% if error != None %}
+  <h3>Error: {{error}}</h3>
+  <p>Try again</p>
+{% endif %}
+
 <form action={% url "add-new-player" %} method="post">
   {% csrf_token %}
   <p>

@@ -14,10 +14,14 @@ from django.http import HttpRequest, HttpResponse
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, redirect
 
 from .. import logger
 from ..models.person_with_cfc_id_models import Player
+
+# file constant
+NEW_PLAYER_TEMPLATE = "cfc_report/create/player.html"
+TOURNAMENT_PLAYER_FORM = "cfc_report/create/player-form.html"
 
 
 def _get_session_players(request) -> list[Player]:
@@ -43,9 +47,47 @@ def _get_session_players(request) -> list[Player]:
     return players
 
 
-def _create_player(name: str, cfc_id: int) -> Player:
+def _is_cfc_id_valid(cfc_id: str) -> bool:
+    """Validates whether the provided CFC ID is a 6-digit numeric identifier.
+
+    Parameters
+    ----------
+    cfc_id : str
+        The CFC ID string.
+
+    Returns
+    -------
+    bool
+        True if valid, False otherwise.
     """
-    Helper function to create a player and save it to the database.
+    return cfc_id.isdigit() and len(cfc_id) == 6
+
+
+def _validate_player_data(data: dict) -> str | None:
+    """Validates player data from submitted form.
+
+    Parameters
+    ----------
+    data : dict
+        The submitted player data.
+
+    Returns
+    -------
+    str | None
+        An error message if validation fails, otherwise None.
+    """
+    player_name = data.get("player_name")
+    player_cfc_id = data.get("player_cfc_id")
+
+    if not player_name or not player_cfc_id:
+        return "Both Player Name and CFC ID are required."
+    if not _is_cfc_id_valid(player_cfc_id):
+        return "CFC ID is invalid. Please provide a valid 6-digit number."
+    return None
+
+
+def _create_player(name: str, cfc_id: int) -> Player:
+    """Helper function to create a player and save it to the database.
 
     Notes
     -----
@@ -58,27 +100,39 @@ def _create_player(name: str, cfc_id: int) -> Player:
     cfc_id : int
         The CFC ID of the player to be created.
 
+    Raises
+    ------
+    valueError if name or cfc_id is invalid
+
     Returns
     -------
     Player
         The created Player instance.
     """
+    if not name or not cfc_id:
+        raise ValueError("Both Player Name and CFC ID are required.")
+    # validate cfc id
+    if not _is_cfc_id_valid(cfc_id):
+        raise ValueError("CFC ID is invalid. Please provide a valid 6-digit number.")
+
     player = Player.create(name, cfc_id)
+
     logger.debug("Created Player: %s with CFC ID: %s",
-                 player.name, player.cfc_id)
+                 player, player.cfc_id)
+
     player.save()
     logger.info("Player %s saved to database.", player)
+
     return player
 
 
 def add_player_database(request: HttpRequest) -> HttpResponse:
-    """
-    View to add a player to the tournament players database.
+    """View to add a player to the tournament players' database.
 
     Notes
     -----
     Side effects:
-        - Modifies the database via `_create_player`.
+    - Modifies the database via `_create_player`.
 
     Parameters
     ----------
@@ -90,41 +144,33 @@ def add_player_database(request: HttpRequest) -> HttpResponse:
     HttpResponse
         The rendered response for the player add page.
     """
-    logger.debug("add_player view invoked with request: %s", request)
+    logger.debug("Processing add_player_database for request method: %s",
+                 request.method)
 
-    if request.method == "POST":
-        player_data = request.POST
-        logger.debug("Received POST data: %s", player_data)
+    if request.method != "POST":
+        return render(request, NEW_PLAYER_TEMPLATE)
 
-        # Ensure necessary data exists in form submission
-        player_name = player_data.get("player_name")
-        player_cfc_id = player_data.get("player_cfc_id")
+    player_data = request.POST
+    logger.debug("Received POST data: %s", player_data)
 
-        if not player_name or not player_cfc_id:
-            logger.warning(
-                "Missing player_name or player_cfc_id in POST data.")
-            return render(request, "cfc_report/create/player.html", {
-                "method": request.method,
-                "error": "Player Name and CFC ID are required."
-            })
+    try:
+        player_name = player_data["player_name"]
+        player_cfc_id = int(player_data["player_cfc_id"])
+        player = _create_player(player_name, player_cfc_id)
+        logger.info("Successfully added player: %s", player)
+    except ValueError as exc:
+        logger.error("Failed to add player with CFC ID '%s': %s",
+                     player_cfc_id, exc)
+        return render(request, NEW_PLAYER_TEMPLATE, {
+            "method": request.method,
+            "error": "Invalid CFC ID format. Please use a 6-digit number."
+        })
 
-        try:
-            player = _create_player(player_name, int(player_cfc_id))
-            logger.info("Player %s successfully added.", player)
-        except ValueError as exc:
-            logger.error("Invalid CFC ID: %s. Exception: %s",
-                         player_cfc_id, exc)
-            return render(request, "cfc_report/create/player.html", {
-                "method": request.method,
-                "error": "Invalid CFC ID format. Please use a 6 char number."
-            })
-
-    return render(request, "cfc_report/create/player.html")
+    return redirect("index")
 
 
 def set_tournament_players(request: HttpRequest) -> HttpResponse:
-    """
-    set information about what players in a tournament
+    """set information about what players in the tournament in session
 
     Notes
     -----
@@ -135,11 +181,6 @@ def set_tournament_players(request: HttpRequest) -> HttpResponse:
     ----------
     request : HttpRequest
         The HTTP request object.
-
-    Returns
-    -------
-    HttpResponse
-        The rendered response from the page.
     """
 
     db_players = Player.objects.all()
@@ -219,4 +260,4 @@ def toggle_player_session(request: HttpRequest, cfc_id=None) -> HttpResponse:
         "include_nav_bar": False,
     }
 
-    return render(request, "cfc_report/create/player-form.html", context)
+    return render(request, TOURNAMENT_PLAYER_FORM, context)

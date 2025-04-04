@@ -16,6 +16,7 @@
 
 from django.views.generic.edit import FormView
 
+from cfc_report.constants import REPORT_URL_PREFIX
 from cfc_report.forms.tournament_info_form import TournamentInfoForm
 
 
@@ -23,4 +24,4 @@ class ReportFormView(FormView):
     """A form view for generating reports for the cfc models."""
     template_name = "cfc_report/base/base-form.html"
     form_class = TournamentInfoForm
-    success_url = "/report/"
+    success_url = f"{REPORT_URL_PREFIX}/players"
