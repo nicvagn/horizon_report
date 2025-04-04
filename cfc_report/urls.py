@@ -16,7 +16,7 @@
 
 from django.urls import path
 
-from .views import add_player_view, create
+from .views import player_views, create
 from .views.index import IndexView
 
 # Define constants to avoid repetition
@@ -29,19 +29,19 @@ urlpatterns = [
 
     # Report creation URLs
     path(CFC_REPORT_BASE_PATH + "report/",
-         create.report.ReportFormView.as_view(),  # Assuming correction to `.as_view()`
+         create.report.ReportFormView.as_view(),
          name="create-report-info"
          )
 ]
 
 # htmx url patterns, cleaner this way?
 htmx_urlpatterns = [
-   path("create/select-player/<str:cfc_id>",
-        .player.toggle_player_session, name="create-toggle-player"),
-   path("create/select-match/<int:pk>",
-        create.match.remove_match_session, name="select-match-round"),
-   path("create/select-round/<int:pk>",
-        create.round.select_round, name="create-select-round"),
+    path("create/select-player/<str:cfc_id>",
+         player_views.toggle_player_session, name="create-toggle-player"),
+    # path("create/select-match/<int:pk>",
+    # create.match.remove_match_session, name="select-match-round"),
+    # path("create/select-round/<int:pk>",
+    # create.round.select_round, name="create-select-round"),
 ]
 
 urlpatterns = urlpatterns + htmx_urlpatterns

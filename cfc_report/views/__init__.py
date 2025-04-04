@@ -1,1 +1,1 @@
-from .add_player_view import add_player
+from .player_views import add_player
