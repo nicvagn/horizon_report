@@ -12,7 +12,7 @@ LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 def setup_logger() -> logging.Logger:
     """Set up and return configured logger for the package."""
-    logger = logging.getLogger(LOGGER_NAME)
+    logger: logging.Logger = logging.getLogger(LOGGER_NAME)
     logger.setLevel(logging.DEBUG if DEBUG else logging.INFO)
 
     # Configure logging format

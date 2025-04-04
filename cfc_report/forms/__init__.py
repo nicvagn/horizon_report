@@ -1,2 +1,2 @@
 from .fields import CfcIdField, PairingSystemField, ProvinceField
-from .forms import MatchForm, RoundForm, TournamentInfoForm
+from .tournament_info_form import TournamentInfoForm

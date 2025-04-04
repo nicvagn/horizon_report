@@ -16,7 +16,11 @@
 
 from django.views.generic.edit import FormView
 
+from cfc_report.forms.tournament_info_form import TournamentInfoForm
 
-class ReportForm(FormView):
+
+class ReportFormView(FormView):
     """A form view for generating reports for the cfc models."""
-    template_name = "base/base-form.html"
+    template_name = "cfc_report/base/base-form.html"
+    form_class = TournamentInfoForm
+    success_url = "/report/"

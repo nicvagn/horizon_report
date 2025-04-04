@@ -19,32 +19,29 @@ from django.urls import path
 from .views import add_player_view, create
 from .views.index import IndexView
 
-# Define reusable prefix constants
-CFC_REPORT_PATH_PREFIX = ""
+# Define constants to avoid repetition
+CFC_REPORT_BASE_PATH = ""  # Replace with the actual prefix value
 
-# Organized urlpatterns
+# Define urlpatterns with better readability and structure
 urlpatterns = [
-    # cfc index
-    path(CFC_REPORT_PATH_PREFIX, IndexView.as_view(), name='index'),
+    # Index page for cfc_report
+    path(CFC_REPORT_BASE_PATH, IndexView.as_view(), name='index'),
 
-    # CFC report URLs
-    *[
-        path(CFC_REPORT_PATH_PREFIX + "create/", create.report.initial_form, name="create-report-info"),
-        path(CFC_REPORT_PATH_PREFIX + "report-players", create.player.set_in_report, name="create-report-players"),
-    ],
-
-    # Player-related URLs
-    path(CFC_REPORT_PATH_PREFIX + "new-player", add_player_view.add_player, name="add-new-player"),
+    # Report creation URLs
+    path(CFC_REPORT_BASE_PATH + "report/",
+         create.report.ReportFormView.as_view(),  # Assuming correction to `.as_view()`
+         name="create-report-info"
+         )
 ]
 
 # htmx url patterns, cleaner this way?
-# htmx_urlpatterns = [
-#    path("create/select-player/<str:cfc_id>",
-#         vie.player.toggle_player_session, name="create-toggle-player"),
-#    path("create/select-match/<int:pk>",
-#         create.match.remove_match_session, name="select-match-round"),
-#    path("create/select-round/<int:pk>",
-#         create.round.select_round, name="create-select-round"),
-# ]
+htmx_urlpatterns = [
+   path("create/select-player/<str:cfc_id>",
+        .player.toggle_player_session, name="create-toggle-player"),
+   path("create/select-match/<int:pk>",
+        create.match.remove_match_session, name="select-match-round"),
+   path("create/select-round/<int:pk>",
+        create.round.select_round, name="create-select-round"),
+]
 
-# urlpatterns = urlpatterns + htmx_urlpatterns
+urlpatterns = urlpatterns + htmx_urlpatterns
