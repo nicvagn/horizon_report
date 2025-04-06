@@ -29,7 +29,7 @@ TOURNAMENT_PLAYER_FORM = "cfc_report/create/player-form.html"
 
 
 def add_player_database(request: HttpRequest) -> HttpResponse:
-    """View to add a player to the tournament players' database.
+    """View to add a player to the tournament player's database.
 
     Notes
     -----
@@ -91,10 +91,10 @@ def set_tournament_players(request: HttpRequest) -> HttpResponse:
     """
 
     db_players = Player.objects.all()
-    tournament_players = get_session_players()
+    tournament_players = get_session_players(request)
     context = {
         "title": "choose tournament players",
-        "action_url": reverse("create-report-players"),
+        "action_url": reverse("report-tournament-players"),
         "players": db_players,
         "tournament_players": tournament_players,
         "include_nav_bar": False,
@@ -116,14 +116,13 @@ def set_tournament_players(request: HttpRequest) -> HttpResponse:
     return render(request, "cfc_report/create/toggle-players.html", context)
 
 
-def toggle_player_session_view(request: HttpRequest, cfc_id=None) -> HttpResponse:
-    """
-    If a player with the cfc_id is in the session, remove it. If it is not found
-     add it
+def toggle_player_session_view(request: HttpRequest,
+                               cfc_id=None) -> HttpResponse:
+    """If a player with the cfc_id is in the session, remove it. Else add it
 
     Notes
     -----
-    -This uses htmx under the hood to replace on the DOM
+    - This uses htmx under the hood to replace on the DOM
     Side effects:
         - changes Players in session.
 

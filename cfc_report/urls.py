@@ -3,7 +3,7 @@ urls for cfc_report
 """
 from django.urls import path
 
-from .constants import BASE_URL_PREFIX, PLAYER_URL_PREFIX, REPORT_URL_PREFIX
+from .constants import BASE_URL_PREFIX, PLAYER_URL_PREFIX, REPORT_URL_PREFIX, ROUND_URL_PREFIX
 from .views.create import ReportFormView
 from .views.index import IndexView
 from .views.player_views import (toggle_player_session_view,
@@ -22,11 +22,13 @@ urlpatterns = [
          add_player_database, name="add-new-player"),
 
     # Report-related operations
-    path(f"{REPORT_URL_PREFIX}", ReportFormView.as_view(), name="report-info"),
+    path(f"{REPORT_URL_PREFIX}", ReportFormView.as_view(),
+         name="create-report"),
     path(f"{REPORT_URL_PREFIX}{TOURNAMENT_PLAYERS_PATH}",
          set_tournament_players, name="report-tournament-players"),
-
-    # HTMX-related URLs
-    path(f"{PLAYER_URL_PREFIX}select/<str:cfc_id>",
+    # HTMX
+    path(f"{REPORT_URL_PREFIX}select-player/<str:cfc_id>",
          toggle_player_session_view, name="report-toggle-player"),
+
+    path(f"{ROUND_URL_PREFIX}", )
 ]

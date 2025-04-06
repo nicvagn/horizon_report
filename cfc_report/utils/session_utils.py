@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .. import logger
+from django.http import HttpRequest
 from ..models.person_with_cfc_id_models import Player
 
 # constant for session players key
@@ -24,7 +25,7 @@ NEW_PLAYER_TEMPLATE = "cfc_report/create/player.html"
 TOURNAMENT_PLAYER_FORM = "cfc_report/create/player-form.html"
 
 
-def get_session_players(request) -> list[Player]:
+def get_session_players(request: HttpRequest) -> list[Player]:
     """get the players in current session
 
     Parameters
@@ -42,7 +43,13 @@ def get_session_players(request) -> list[Player]:
     players : list(Player)
         A list of the players in session
     """
-    players = request.session["players"]
+    try:
+        players = request.session["players"]
+
+    # could be start of picking players
+    except KeyError:
+        logger.warn("No session players got from request: %s", request)
+        players = []
 
     return players
 
