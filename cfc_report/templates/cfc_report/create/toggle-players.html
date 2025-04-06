@@ -2,9 +2,9 @@
 
 {% if include_nav_bar == True %}
 {% block nav_bar %}
-  <a href="/" class="padded">
-    <input id="home_btn" type="button" value="Exit" />
-  </a>
+<a href="/" class="padded">
+    <input id="home_btn" type="button" value="Exit"/>
+</a>
 {% endblock %}
 {% endif %}
 
@@ -15,58 +15,58 @@
   <h1>Choose players in report:</h1>
 </span>
 <form id="players_section" method="post">
-  {% csrf_token %}
-  <aside id="tournament_players">
-    <h4>In Tournament:</h4>
-    <table id="tournament-players" class="players-table">
-      <tr>
-        <th>Name</th>
-        <th>CFC ID:</th>
-      </tr>
-      {% for player in tournament_players %}
-      <tr>
-        <td>{{player.name}}</td>
-        <td>{{player.cfc_id}}</td>
-        <td>
-          <!-- the url is defined in urls.py -->
-          <a
-            data-hx-target="#players_section"
-            data-hx-swap="outerHTML"
-            data-hx-post="select-player/{{ player.cfc_id }}"
-          >Remove</a>
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
-  </aside>
+    {% csrf_token %}
+    <aside id="tournament_players">
+        <h4>In Tournament:</h4>
+        <table id="tournament-players" class="players-table">
+            <tr>
+                <th>Name</th>
+                <th>CFC ID:</th>
+            </tr>
+            {% for player in tournament_players %}
+            <tr>
+                <td>{{player.name}}</td>
+                <td>{{player.cfc_id}}</td>
+                <td>
+                    <!-- the url is defined in urls.py -->
+                    <a
+                            data-hx-target="#players_section"
+                            data-hx-swap="outerHTML"
+                            data-hx-post="select/{{ player.cfc_id }}"
+                    >Remove</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </aside>
 
-  <aside id="database_players">
-    <h4>Player Database:</h4>
-    <table class="players-table">
-      <tr>
-        <th>Name</th>
-        <th>CFC ID:</th>
-      </tr>
+    <aside id="database_players">
+        <h4>Player Database:</h4>
+        <table class="players-table">
+            <tr>
+                <th>Name</th>
+                <th>CFC ID:</th>
+            </tr>
 
-      {% for player in players %}
-      <tr>
-        <td>{{ player.name }}</td>
-        <td>{{ player.cfc_id }}</td>
-        <td>
-          <a
-            data-hx-target="#players_section"
-            data-hx-swap="outerHTML"
-            data-hx-post="select-player/{{ player.cfc_id }}"
-          >Select</a>
+            {% for player in players %}
+            <tr>
+                <td>{{ player.name }}</td>
+                <td>{{ player.cfc_id }}</td>
+                <td>
+                    <a
+                            data-hx-target="#players_section"
+                            data-hx-swap="outerHTML"
+                            data-hx-post="select-player/{{ player.cfc_id }}"
+                    >Select</a>
 
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
-  </aside>
-  <span>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </aside>
+    <span>
     <a href="{% url 'create-report' %}">
-      <input id="submit_btn" type="submit" value="Continue" />
+      <input id="submit_btn" type="submit" value="Continue"/>
     </a>
   </span>
 </form>

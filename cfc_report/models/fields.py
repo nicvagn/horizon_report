@@ -27,7 +27,7 @@ class CfcIdField(models.IntegerField):
     validators = [MinValueValidator(100000), MaxValueValidator(999999)]
 
     def __str__(self):
-        return "CFC ID: " + str(super())
+        return str(super())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

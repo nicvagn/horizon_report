@@ -21,6 +21,6 @@ LOGGER_NAME = "CFC_REPORT"
 # Base URL prefix for this app (defined for clarity and reuse)
 BASE_URL_PREFIX = ""
 # Path prefixes for specific subsections
-PLAYER_URL_PREFIX = f"{BASE_URL_PREFIX}/player"
+PLAYER_URL_PREFIX = f"{BASE_URL_PREFIX}player/"
 # Report URL prefix
-REPORT_URL_PREFIX = f"{BASE_URL_PREFIX}/report"
+REPORT_URL_PREFIX = f"{BASE_URL_PREFIX}report/"

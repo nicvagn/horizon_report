@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # set up logging
+
+import datetime
+
 from django import forms
 
 from .fields import CfcIdField, PairingSystemField, ProvinceField
@@ -50,12 +53,14 @@ class TournamentInfoForm(forms.Form):
     start_date = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}),
         label="Start Date",
-        required=True
+        required=True,
+        initial=datetime.date.today,
     )
     end_date = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}),
         label="End Date",
-        required=True
+        required=True,
+        initial=datetime.date.today,
     )
     pairing_system = PairingSystemField(
         required=True, label="Pairing system used")
