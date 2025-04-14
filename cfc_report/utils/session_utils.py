@@ -18,6 +18,7 @@ from django.http import HttpRequest
 
 from .. import logger
 from ..models.person_with_cfc_id_models import Player
+from ..serialize import PlayerSerializer
 
 # constant for session players key
 SESSION_PLAYERS_KEY = "players"
@@ -51,6 +52,10 @@ def get_session_players(request: HttpRequest) -> list[Player]:
     except KeyError:
         logger.info("No session players got from request: %s", request)
         players = []
+
+    players = PlayerSerializer.deserialize_list(players, Player)
+
+    logger.debug("Players in session: %s", players)
 
     return players
 

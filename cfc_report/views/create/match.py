@@ -28,6 +28,8 @@ def chess_match(request):
         if POST a request containing a chess match
     """
 
+    session = request.session
+    breakpoint()
     # The form for creating matches is in match.html
     logger.debug("Create.match entered with request: %s", request)
     # if is the form being submitted

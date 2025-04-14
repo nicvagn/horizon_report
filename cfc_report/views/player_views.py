@@ -1,4 +1,4 @@
-# """views for cfc_report players"""
+"""views for cfc_report players"""
 # Copyright (C) 2024 Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,7 @@ from django.shortcuts import render, reverse, redirect
 
 from .. import logger
 from ..models.person_with_cfc_id_models import Player
+from ..serialize import PlayerSerializer
 from ..utils.session_utils import get_session_players, create_player
 
 # constant for session players key
@@ -155,10 +156,10 @@ def toggle_player_session_view(request: HttpRequest,
         added_player: Player = Player.objects.get(cfc_id=int(cfc_id))
         session_players.append(added_player)
         logger.info("Added player with CFC ID: %s to session.", cfc_id)
-    breakpoint()
-    # set players in session to changed value
-    request.session["players"] = session_players
-    breakpoint()
+
+    # Serialize and set players in session to changed value
+    """uses custom serializer found in serialize.py"""
+    request.session["players"] = PlayerSerializer.serialize_list(session_players)
 
     db_players = Player.objects.all()
 
