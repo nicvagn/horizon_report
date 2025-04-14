@@ -32,7 +32,7 @@ Add Match to Round
     <label for="white">White: </label>
 
     <select
-      id="name"
+      id="white_name"
       name="white"
       type="text"
       value=""
@@ -48,7 +48,7 @@ Add Match to Round
     <label for="black">Black: </label>
 
     <select
-      id="name"
+      id="black_name"
       name="black"
       type="text"
       value=""
@@ -74,7 +74,7 @@ Add Match to Round
 
   <span>
     <input id="add_match_btn" type="submit" value="add game" />
-    <a href="{% url 'create-report-round' %}">
+    <a href="{% url 'report-create-round' %}">
       <input type="button" value="done adding games to round" />
     </a>
   </span>

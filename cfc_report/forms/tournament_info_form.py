@@ -1,4 +1,4 @@
-"""tournament_info_form.py: Forms for CFC rated tournament"""
+"""tournament_info_form.py: info Form for CFC rated tournament"""
 # Copyright (C) 2024 Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify

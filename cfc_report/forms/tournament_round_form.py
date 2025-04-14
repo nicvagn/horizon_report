@@ -1,6 +1,5 @@
-"""module for creating a cfc report"""
-
-# Copyright (C) 2024  Nicolas Vaagen
+"""tournament_round_form.py: Round Form for CFC rated tournament"""
+# Copyright (C) 2024 Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -14,7 +13,19 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# set up logging
 
-from .match import chess_match
-from .report import ReportFormView
-from .round import TournamentRoundFormView
+from django import forms
+
+
+class TournamentRoundForm(forms.Form):
+    """for getting info on a CFC rated tournament
+
+    Attributes
+    ----------
+
+    """
+
+    round_number = forms.IntegerField(
+        required=True, label="Round Number", initial=1)
+

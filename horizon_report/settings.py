@@ -71,6 +71,10 @@ class Dev(Configuration):
     ]
 
     WSGI_APPLICATION = "horizon_report.wsgi.application"
+    # serialization (models to session is the idea)
+    SERIALIZATION_MODULES = {
+        "json": "django.core.serializers.json",
+    }
 
     # Database
     # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

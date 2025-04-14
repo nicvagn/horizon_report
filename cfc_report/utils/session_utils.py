@@ -14,8 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .. import logger
 from django.http import HttpRequest
+
+from .. import logger
 from ..models.person_with_cfc_id_models import Player
 
 # constant for session players key
@@ -48,7 +49,7 @@ def get_session_players(request: HttpRequest) -> list[Player]:
 
     # could be start of picking players
     except KeyError:
-        logger.warn("No session players got from request: %s", request)
+        logger.info("No session players got from request: %s", request)
         players = []
 
     return players
@@ -168,3 +169,19 @@ def toggle_player_in_session(session_players: list[Player], cfc_id: int) -> list
             logger.warning("Player with CFC ID: %s does not exist.", cfc_id)
 
     return session_players
+
+
+def get_session(request: HttpRequest):
+    """Get the session from the request
+
+    Parameters
+    ----------
+    request : HttpRequest
+        The HTTP request object.
+
+    Returns
+    -------
+    dict
+        The session data for the request.
+    """
+    return request.session

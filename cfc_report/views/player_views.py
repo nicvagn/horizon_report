@@ -155,9 +155,10 @@ def toggle_player_session_view(request: HttpRequest,
         added_player: Player = Player.objects.get(cfc_id=int(cfc_id))
         session_players.append(added_player)
         logger.info("Added player with CFC ID: %s to session.", cfc_id)
-
+    breakpoint()
     # set players in session to changed value
     request.session["players"] = session_players
+    breakpoint()
 
     db_players = Player.objects.all()
 
