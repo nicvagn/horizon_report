@@ -174,19 +174,3 @@ def toggle_player_in_session(session_players: list[Player], cfc_id: int) -> list
             logger.warning("Player with CFC ID: %s does not exist.", cfc_id)
 
     return session_players
-
-
-def get_session(request: HttpRequest):
-    """Get the session from the request
-
-    Parameters
-    ----------
-    request : HttpRequest
-        The HTTP request object.
-
-    Returns
-    -------
-    dict
-        The session data for the request.
-    """
-    return request.session

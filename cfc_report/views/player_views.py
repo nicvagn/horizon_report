@@ -61,7 +61,7 @@ def add_player_database(request: HttpRequest) -> HttpResponse:
         player_cfc_id = int(player_data["player_cfc_id"])
         player = create_player(player_name, player_cfc_id)
         logger.info("Successfully added player: %s", player)
-    except ValueError as exc:
+    except (ValueError, UnboundLocalError) as exc:
         logger.error("Failed to add player with CFC ID '%s': %s",
                      player_cfc_id, exc)
         return render(request, NEW_PLAYER_TEMPLATE, {

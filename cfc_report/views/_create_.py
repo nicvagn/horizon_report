@@ -1,5 +1,12 @@
 """view for creating a cfc report"""
 
+from cfc_report.services import database as db
+from cfc_report.services import session
+from cfc_report.services.ctr_builder import CTR_builder
+from django.http import HttpResponse
+from django.shortcuts import redirect, render, get_object_or_404
+from django.urls import reverse
+
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,15 +23,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from cfc_report import logger
 from cfc_report.forms import TournamentInfoForm
-from cfc_report.models import (CTR, Player, Match, Round, Tournament,
-                               TournamentDirector, TournamentOrganizer,)
-from cfc_report.services import database as db
-from cfc_report.models.fields import CfcIdField
-from cfc_report.services import session
-from cfc_report.services.ctr_builder import CTR_builder
-from django.http import HttpResponse
-from django.shortcuts import redirect, render, get_object_or_404
-from django.urls import reverse
+from cfc_report.models import (Player, Match, Round, Tournament,
+                               TournamentDirector, TournamentOrganizer, )
 
 
 def initial(request):
@@ -221,7 +221,7 @@ def tournament(t_info) -> Tournament:
                                   date=t_info["date"],
                                   province=t_info["province"],
                                   tournament_director=td,
-                                  tournament_organizer=to,)
+                                  tournament_organizer=to, )
     return T
 
 
@@ -371,7 +371,7 @@ def toggle_player_session(request, cfc_id=None):
 
 
 def remove_match_session(request, pk=None) -> HttpResponse:
-    """toggle a match from the db into the session and visa versa
+    """toggle a match from the db into the session and vice versa
 
     Side-effects
     ------------
