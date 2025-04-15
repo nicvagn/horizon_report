@@ -174,3 +174,30 @@ def toggle_player_in_session(session_players: list[Player], cfc_id: int) -> list
             logger.warning("Player with CFC ID: %s does not exist.", cfc_id)
 
     return session_players
+
+
+def get_tournament_info(request: HttpRequest) -> dict | None:
+    """Get the tournament currently being built in this session.
+
+    Parameters
+    ----------
+    request : HttpRequest
+        Django request object.
+
+    Returns
+    -------
+    dict | None
+        The tournament information if present in the session, otherwise None.
+
+    Notes
+    -----
+    Logs appropriate warning if no tournament information is found in the session.
+    """
+    try:
+        tournament = request.session.get("tournament_info", None)
+        if not tournament:
+            logger.warning("No tournament found in session for request: %s", request)
+        return tournament
+    except KeyError:
+        logger.error("Error accessing tournament information from session for request: %s", request)
+        return None

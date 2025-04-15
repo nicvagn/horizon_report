@@ -17,4 +17,3 @@
 
 from .match import chess_match
 from .report import ReportFormView
-from .round import TournamentRoundFormView

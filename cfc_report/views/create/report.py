@@ -18,6 +18,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 
 from cfc_report.forms.tournament_info_form import TournamentInfoForm
+from cfc_report.models import Tournament
 from cfc_report.types import TournamentInfo
 
 
@@ -25,7 +26,7 @@ class ReportFormView(FormView):
     """A form view for generating reports for the CFC models."""
     template_name = "cfc_report/base/base-form.html"
     form_class = TournamentInfoForm
-    success_url = reverse_lazy("report-tournament-players")
+    success_url = reverse_lazy("report-tournament-initial")
     extra_context = {
         "title": "Enter tournament information",
         "submit_btn_txt": "Pick Players",
@@ -37,6 +38,18 @@ class ReportFormView(FormView):
         This method sets the session tournament details and completes the form processing.
         """
         self.set_session_tournament_info(form)
+        t = Tournament(
+            name=form.cleaned_data.get("name"),
+            num_rounds=form.cleaned_data.get("num_rounds"),
+            start_date=form.cleaned_data.get("start_date"),
+            end_date=form.cleaned_data.get("end_date"),
+            pairing_system=form.cleaned_data.get("pairing_system"),
+            province=form.cleaned_data.get("province"),
+            to_cfc=form.cleaned_data.get("to_cfc"),
+            td_cfc=form.cleaned_data.get("td_cfc"), )
+
+        t.save()
+
         return super().form_valid(form)
 
     def set_session_tournament_info(self, form: TournamentInfoForm):
@@ -55,4 +68,5 @@ class ReportFormView(FormView):
             "to_cfc": form.cleaned_data.get("to_cfc"),
             "td_cfc": form.cleaned_data.get("td_cfc"),
         }
+        self.request.session["round_number"] = 1
         self.request.session["tournament_info"] = session_data
