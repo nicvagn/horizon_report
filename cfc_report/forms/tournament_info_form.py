@@ -96,13 +96,29 @@ class TournamentInfoForm(forms.Form):
         """Ensure the end date is after the start date."""
         start_date = self.cleaned_data.get('start_date')
         end_date = self.cleaned_data['end_date']
-        if start_date and end_date <= start_date:
-            raise ValidationError('End date must be after the start date.')
+        if start_date and end_date < start_date:
+            raise ValidationError('End date must be <= the start date.')
         return end_date
 
     pairing_system = PairingSystemField(
         required=True, label="Pairing system used")
+
+    def clean_pairing_system(self):
+        """ensure pairing system is valid"""
+        pairing_system = self.cleaned_data['pairing_system']
+        if pairing_system not in PairingSystemField.PAIRING_SYSTEM_CHOICES.keys():
+            raise ValidationError('Invalid pairing system.')
+        return pairing_system
+
     province = ProvinceField(required=True)
+
+    def clean_province(self):
+        """ensure province system is valid"""
+        province = self.cleaned_data['province']
+        if province not in ProvinceField.PROVINCES.keys():
+            raise ValidationError('Invalid province.')
+        return province
+
     # TournamentOrganizer CFC id
     to_cfc = CfcIdField(
         required=True, label="Tournament Organizer CFC id", initial="111111")
@@ -110,7 +126,7 @@ class TournamentInfoForm(forms.Form):
     def clean_to_cfc(self):
         """Validate the CFC ID format for the Tournament Organizer."""
         to_cfc = self.cleaned_data['to_cfc']
-        if not to_cfc.isdigit() or len(to_cfc) != 6:
+        if to_cfc < 100000 or to_cfc > 999999:
             raise ValidationError('Tournament Organizer CFC ID must be a 6-digit number.')
         return to_cfc
 
@@ -121,6 +137,6 @@ class TournamentInfoForm(forms.Form):
     def clean_td_cfc(self):
         """Validate the CFC ID format for the Tournament Director."""
         td_cfc = self.cleaned_data['td_cfc']
-        if not td_cfc.isdigit() or len(td_cfc) != 6:
+        if td_cfc < 100000 or td_cfc > 999999:
             raise ValidationError('Tournament Director CFC ID must be a 6-digit number.')
         return td_cfc

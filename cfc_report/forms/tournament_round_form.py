@@ -23,9 +23,8 @@ class TournamentRoundForm(forms.Form):
 
     Attributes
     ----------
-
+    round_number : int
     """
 
     round_number = forms.IntegerField(
         required=True, label="Round Number", initial=1)
-

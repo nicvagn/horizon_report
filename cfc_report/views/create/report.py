@@ -25,8 +25,14 @@ class ReportFormView(FormView):
     template_name = "cfc_report/base/base-form.html"
     form_class = TournamentInfoForm
     # reverse_lazy is needed, or produces a circular input
-    success_url = reverse_lazy("report-tournament-players")
+    success_url = reverse_lazy("")
     extra_context = {
         "title": "Enter tournament information",
         "submit_btn_txt": "Pick Players",
     }
+
+    def form_valid(self, form):
+        """Called when Tournament Info Form is valid."""
+        breakpoint()
+        # Set session tournament info
+        return super().form_valid(form)

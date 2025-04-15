@@ -13,8 +13,8 @@
     </li>
     {% endfor %}
 </ul>
-
-{% include "cfc_report/show/players.html" %}
+<hr>
+{% include "cfc_report/show/partials/players.html" with players_heading="Players in system:" %}
 
 <a href="{% url 'create-report' %}">
     <input id="create_report_btn" type="button" value="create report"/>
