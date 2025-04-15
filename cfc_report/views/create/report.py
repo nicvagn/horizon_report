@@ -18,21 +18,41 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 
 from cfc_report.forms.tournament_info_form import TournamentInfoForm
+from cfc_report.types import TournamentInfo
 
 
 class ReportFormView(FormView):
-    """A form view for generating reports for the cfc models."""
+    """A form view for generating reports for the CFC models."""
     template_name = "cfc_report/base/base-form.html"
     form_class = TournamentInfoForm
-    # reverse_lazy is needed, or produces a circular input
-    success_url = reverse_lazy("")
+    success_url = reverse_lazy("report-tournament-players")
     extra_context = {
         "title": "Enter tournament information",
         "submit_btn_txt": "Pick Players",
     }
 
-    def form_valid(self, form):
-        """Called when Tournament Info Form is valid."""
-        breakpoint()
-        # Set session tournament info
+    def form_valid(self, form: TournamentInfoForm):
+        """Called when the Tournament Info Form is valid.
+
+        This method sets the session tournament details and completes the form processing.
+        """
+        self.set_session_tournament_info(form)
         return super().form_valid(form)
+
+    def set_session_tournament_info(self, form: TournamentInfoForm):
+        """Sets tournament information in the user's session for later use.
+
+        Args:
+            form (TournamentInfoForm): The form containing valid tournament data.
+        """
+        session_data: TournamentInfo = {
+            "name": form.cleaned_data.get("name"),
+            "num_rounds": form.cleaned_data.get("num_rounds"),
+            "start_date": form.cleaned_data.get("start_date"),
+            "end_date": form.cleaned_data.get("end_date"),
+            "pairing_system": form.cleaned_data.get("pairing_system"),
+            "province": form.cleaned_data.get("province"),
+            "to_cfc": form.cleaned_data.get("to_cfc"),
+            "td_cfc": form.cleaned_data.get("td_cfc"),
+        }
+        self.request.session["tournament_info"] = session_data

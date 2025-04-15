@@ -72,33 +72,39 @@ class TournamentInfoForm(forms.Form):
         return num_rounds
 
     start_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date'}),
+        widget=forms.DateInput(attrs={'type': 'date'}, format='%d-%m-%Y'),
         label="Start Date",
         required=True,
         initial=datetime.date.today,
     )
 
     def clean_start_date(self):
-        """Ensure the start date is not in the past."""
+        """Ensure the start date is not in the past, and format it into an
+        ISO 8601 string."""
         start_date = self.cleaned_data['start_date']
+
         if start_date < datetime.date.today():
             raise ValidationError('Start date cannot be in the past.')
-        return start_date
+
+        # DateTime obj are not json serializable
+        return start_date.isoformat()
 
     end_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date'}),
+        widget=forms.DateInput(attrs={'type': 'date'}, format='%d-%m-%Y'),
         label="End Date",
         required=True,
         initial=datetime.date.today,
     )
 
     def clean_end_date(self):
-        """Ensure the end date is after the start date."""
-        start_date = self.cleaned_data.get('start_date')
+        """Validate that the end date occurs after the start date, and format it
+            into an ISO 8601 string.
+        """
+        start_date = self.cleaned_data['start_date']
         end_date = self.cleaned_data['end_date']
-        if start_date and end_date < start_date:
+        if start_date and datetime.date.fromisoformat(start_date) > end_date:
             raise ValidationError('End date must be <= the start date.')
-        return end_date
+        return end_date.isoformat()
 
     pairing_system = PairingSystemField(
         required=True, label="Pairing system used")

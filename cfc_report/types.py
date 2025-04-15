@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 from typing import TypedDict
 
 
@@ -22,8 +23,9 @@ class TournamentInfo(TypedDict):
     """TournamentInfo is the standard way A tournament is described"""
     name: str
     num_rounds: int
-    date: str
+    start_date: datetime.date
+    end_date: datetime.date
     pairing_system: str
     province: str
-    to_cfc: str
-    td_cfc: str
+    to_cfc: int
+    td_cfc: int
