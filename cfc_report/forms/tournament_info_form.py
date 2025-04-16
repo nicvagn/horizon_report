@@ -100,7 +100,7 @@ class TournamentInfoForm(forms.Form):
         """Validate that the end date occurs after the start date, and format it
             into an ISO 8601 string.
         """
-        start_date = self.cleaned_data['start_date']
+        start_date = self.cleaned_data.get('start_date')
         end_date = self.cleaned_data['end_date']
         if start_date and datetime.date.fromisoformat(start_date) > end_date:
             raise ValidationError('End date must be <= the start date.')

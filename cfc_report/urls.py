@@ -3,8 +3,9 @@ urls for cfc_report
 """
 from django.urls import path
 
-from .constants import BASE_URL_PREFIX, PLAYER_URL_PREFIX, REPORT_URL_PREFIX, ROUND_URL_PREFIX
-from .views.create import ReportFormView, chess_match
+from .constants import (BASE_URL_PREFIX, PLAYER_URL_PREFIX, REPORT_URL_PREFIX,
+                        ROUND_URL_PREFIX)
+from .views.create import ReportInfoFormView, chess_match, report
 from .views.create.round import create_round
 from .views.index import IndexView
 from .views.player_views import (toggle_player_session_view,
@@ -24,14 +25,15 @@ urlpatterns = [
 
     # Report-related operations
 
-    ## initial and players
-    path(f"{REPORT_URL_PREFIX}", ReportFormView.as_view(),
+    # # initial and players
+    path(f"{REPORT_URL_PREFIX}", ReportInfoFormView.as_view(),
          name="create-report"),
+    path(f"{REPORT_URL_PREFIX}initial", report.initial,
+         name="report-tournament-initial"),
     path(f"{REPORT_URL_PREFIX}{TOURNAMENT_PLAYERS_PATH}",
          set_tournament_players, name="report-tournament-players"),
 
-    ## Round
-
+    # # Round
     path(f"{ROUND_URL_PREFIX}", create_round, name="report-create-round"),
     path(f"{ROUND_URL_PREFIX}match", chess_match, name="report-create-match"),
 

@@ -16,14 +16,16 @@
 
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
+from django.shortcuts import redirect
 
 from cfc_report.forms.tournament_info_form import TournamentInfoForm
 from cfc_report.models import Tournament
 from cfc_report.types import TournamentInfo
 
 
-class ReportFormView(FormView):
-    """A form view for generating reports for the CFC models."""
+class ReportInfoFormView(FormView):
+    """A form view for generating initial report info for CFC rated
+    tournament."""
     template_name = "cfc_report/base/base-form.html"
     form_class = TournamentInfoForm
     success_url = reverse_lazy("report-tournament-initial")
@@ -35,20 +37,10 @@ class ReportFormView(FormView):
     def form_valid(self, form: TournamentInfoForm):
         """Called when the Tournament Info Form is valid.
 
-        This method sets the session tournament details and completes the form processing.
+        This method sets the session tournament details and completes the
+        form processing.
         """
         self.set_session_tournament_info(form)
-        t = Tournament(
-            name=form.cleaned_data.get("name"),
-            num_rounds=form.cleaned_data.get("num_rounds"),
-            start_date=form.cleaned_data.get("start_date"),
-            end_date=form.cleaned_data.get("end_date"),
-            pairing_system=form.cleaned_data.get("pairing_system"),
-            province=form.cleaned_data.get("province"),
-            to_cfc=form.cleaned_data.get("to_cfc"),
-            td_cfc=form.cleaned_data.get("td_cfc"), )
-
-        t.save()
 
         return super().form_valid(form)
 
@@ -70,3 +62,20 @@ class ReportFormView(FormView):
         }
         self.request.session["round_number"] = 1
         self.request.session["tournament_info"] = session_data
+
+
+def initial(request):
+    """Create database models from TournamentReportInfoFormView info"""
+
+    info = request.session["tournament_info"]
+    tournament = Tournament(
+        tournament_name=info["name"],
+        num_rounds=info["num_rounds"],
+        start_date=info["start_date"],
+        end_date=info["end_date"],
+        pairing_system=info["pairing_system"],
+        province=info["province"],)
+
+    tournament.save()
+
+    return redirect("report-tournament-players")

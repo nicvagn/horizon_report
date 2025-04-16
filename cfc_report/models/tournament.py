@@ -18,7 +18,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
-from django.utils.text import slugify
 
 from .fields import CfcIdField, PairingSystemField, ProvinceField
 from .. import logger
@@ -33,10 +32,12 @@ class Tournament(models.Model):
     ----------
     tournament_name : models.CharField
         The name of the tournament.
-    number_of_rounds : models.IntegerField
+    num_rounds : models.IntegerField
         The number of rounds in the tournament.
-    tournament_date : models.DateField
-        The date the tournament was held.
+    start_date : models.DateField
+        The date the tournament was started.
+    end_date : models.DateField
+        The date the tournament was ended.
     pairing_system : PairingSystem
         The pairing system used in this tournament.
     province : Province
@@ -51,20 +52,32 @@ class Tournament(models.Model):
         help_text="Name of the tournament.",
         max_length=60
     )
-    number_of_rounds = models.IntegerField()
-    tournament_date = models.DateField()
+    num_rounds = models.IntegerField()
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
     pairing_system = PairingSystemField()
     province = ProvinceField()
     slug = models.SlugField(null=True, unique=True)
 
     def _generate_slug(self):
-        """Generate a slug using the tournament name and date."""
+        """Generate a slug using the tournament name and start date."""
         return self.SLUG_FORMAT.format(
             name=self.tournament_name,
-            date=self.tournament_date
+            date=self.start_date,
         )
 
     def save(self, *args, **kwargs):
+        """create slug url before saving
+        Override of save()
+
+        Arguments
+        ---------
+        *args and **kwargs - passed on to super().save(...)
+
+        Returns
+        -------
+        None
+        """
         if not self.slug:
             self.slug = self._generate_slug()
         logger.info(
@@ -81,27 +94,6 @@ class Tournament(models.Model):
     def __str__(self):
         """String representation of the Tournament."""
         return self.tournament_name
-
-    def save(self, *args, **kwargs):
-        """create slug url before saving
-        Override of save()
-
-        Arguments
-        ---------
-        *args and **kwargs - passed on to super().save(...)
-
-        Returns
-        -------
-        None
-        """
-        self.slug = slugify(str(self.name) + f"|{str(self.date)}")
-
-        logger.info(
-            "Tournament (%s) saved and slug (%s) created for it",
-            self,
-            self.slug
-        )
-        super().save(*args, **kwargs)
 
 
 class Round(models.Model):
