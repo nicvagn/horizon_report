@@ -17,14 +17,31 @@
 
 from django import forms
 
+from cfc_report.models import Round, Tournament
 
-class TournamentRoundForm(forms.Form):
-    """for getting info on a CFC rated tournament
 
-    Attributes
-    ----------
-    round_number : int
+class RoundForm(forms.ModelForm):
+    """
+    A form for creating or updating a Round instance.
     """
 
-    round_number = forms.IntegerField(
-        required=True, label="Round Number", initial=1)
+    class Meta:
+        model = Round
+        fields = ["tournament", "round_num"]
+        labels = {
+            "tournament": "Tournament",
+            "round_num": "Round Number",
+        }
+        widgets = {
+            "tournament": forms.Select(attrs={"class": "form-control"}),
+            "round_num": forms.NumberInput(attrs={
+                "class": "form-control",
+                "placeholder": "Enter round number",
+                "min": 1
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Dynamically populate tournament options
+        self.fields["tournament"].queryset = Tournament.objects.all()

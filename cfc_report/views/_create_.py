@@ -96,7 +96,7 @@ def chess_match(request):
         if POST a request containing a chess match
     """
 
-    # The form for creating matches is in match.html
+    # The form for creating matches is in match-form.html
     logger.debug("Create.match entered with request: %s", request)
     # if is the form being submitted
     if request.method == "POST":
@@ -140,7 +140,7 @@ def chess_match(request):
         "entered_matches": session.get_matches(),
     }
 
-    return render(request, "cfc_report/create/match.html", context)
+    return render(request, "cfc_report/create/match-form.html", context)
 
 
 def round(request) -> HttpResponse:

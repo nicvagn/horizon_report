@@ -3,22 +3,22 @@
 {% block page_title %}Enter Tournament Rounds{% endblock %}
 
 {% block nav_bar %}
-  <a href="/" class="padded">
-    <input id="home_btn" type="button" value="Exit" />
-  </a>
+<a href="/" class="padded">
+    <input id="home_btn" type="button" value="Exit"/>
+</a>
 {% endblock %}
 
 {% block content %}
 
 <section id="round-builder">
-  <h1>Building round number {{ round_number }} </h1>
+    <h1>Building round number {{ round_number }} </h1>
 
-  <a href="{% url 'create-report-match' %}">
-    <button>Enter matches</button>
-  </a>
+    <a href="{% url 'report-create-match' %}">
+        <button>Enter matches</button>
+    </a>
 
-  <h4>Entered Matches:</h4>
-  {% include "cfc_report/create/partials/match-list.html" %}
+    <h4>Entered Matches:</h4>
+    {% include "cfc_report/create/partials/match-list.html" %}
 </section>
 
 <span>
@@ -28,40 +28,40 @@
 
 {% for round in rounds %}
 <div class="tournament-round">
-  <h3>Round: {{ round.number }}</h3>
+    <h3>Round: {{ round.number }}</h3>
 
-  <h4>Matches:</h4>
-  <div id="round-matches">
-    <table>
-      <tr>
-        <th>White</th>
-        <th>Black</th>
-        <th>Result</th>
-      </tr>
-      {% for match in round.matches %}
+    <h4>Matches:</h4>
+    <div id="round-matches">
+        <table>
+            <tr>
+                <th>White</th>
+                <th>Black</th>
+                <th>Result</th>
+            </tr>
+            {% for match in round.matches %}
 
-      <div id="{{match.pk}}">
-      <tr>
-        <td>{{ match.white }}</td>
-        <td>{{ match.black }}</td>
-        <td>{{ match.winner }}</td>
-      </tr>
-        <a
-         data-hx-target="#{{match.pk}}"
-         data-hx-swap="outerHTML"
-         data-hx-post="{{ match.get_absolute_url }}"
-        >Select</a>
-       </div>
-      {% endfor %}
-    </table>
+            <div id="{{match.pk}}">
+                <tr>
+                    <td>{{ match.white }}</td>
+                    <td>{{ match.black }}</td>
+                    <td>{{ match.winner }}</td>
+                </tr>
+                <a
+                        data-hx-target="#{{match.pk}}"
+                        data-hx-swap="outerHTML"
+                        data-hx-post="{{ match.get_absolute_url }}"
+                >Select</a>
+            </div>
+            {% endfor %}
+        </table>
 
-  </div>
+    </div>
 </div>
 {% endfor %}
 
 <span>
-  <a href="{% url 'create-round-build' %}">
-    <input id="confirm_round_btn" type="button" value="finish round" />
+  <a href="{% url 'report-create-round' %}">
+    <input id="confirm_round_btn" type="button" value="finish round"/>
   </a>
 </span>
 {% endblock %}

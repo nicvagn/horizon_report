@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>{{ tournament.name }}</h1>
+<p><strong>Date:</strong> {{ tournament.date }}</p>
+<p><strong>Location:</strong> {{ tournament.location }}</p>
+<p><strong>Organizer:</strong> {{ tournament.organizer }}</p>
+<p><strong>Total Players:</strong> {{ tournament.players.count }}</p>
+<p><strong>Total Rounds:</strong> {{ tournament.rounds.count }}</p>
+
+<hr>
+
+<h2>Rounds</h2>
+{% if tournament.rounds.exists %}
+  <ul>
+    {% for round in tournament.rounds.all %}
+      <li>
+        <a href="{% url 'round-detail' round.id %}">Round {{ round.number }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No rounds have been created yet.</p>
+{% endif %}
+
+<a href="{% url 'round-form' %}" class="btn btn-primary">Add New Round</a>
+
+<hr>
+
+<h2>Players</h2>
+{% if tournament.players.exists %}
+  <ul>
+    {% for player in tournament.players.all %}
+      <li>{{ player.name }} (CFC ID: {{ player.cfc_id }})</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No players are listed for this tournament.</p>
+{% endif %}
+
+{% endblock %}

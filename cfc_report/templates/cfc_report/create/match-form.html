@@ -26,7 +26,7 @@ Add Match to Round
 {% block content %}
 <h1 class="title"></h1>
 
-<form action={% url "create-report-match" %} method="post">
+<form action='{% url "report-create-match" %}' method="post">
   {% csrf_token %}
   <p>
     <label for="white">White: </label>

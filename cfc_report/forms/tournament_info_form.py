@@ -72,10 +72,10 @@ class TournamentInfoForm(forms.Form):
         return num_rounds
 
     start_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date'}, format='%d-%m-%Y'),
+        widget=forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         label="Start Date",
         required=True,
-        initial=datetime.date.today(),
+        initial=datetime.date.today().strftime('%Y-%m-%d'),
     )
 
     def clean_start_date(self):
@@ -90,10 +90,10 @@ class TournamentInfoForm(forms.Form):
         return start_date.isoformat()
 
     end_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date'}, format='%d-%m-%Y'),
+        widget=forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         label="End Date",
         required=True,
-        initial=datetime.date.today(),
+        initial=datetime.date.today().strftime("%Y-%m-%d"),
     )
 
     def clean_end_date(self):

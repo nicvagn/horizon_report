@@ -1,5 +1,4 @@
 """Data models related to putting on a CFC rated tournament"""
-
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -67,8 +66,9 @@ class Tournament(models.Model):
             date=self.start_date,
         )
 
-        t = Tournament.objects.filter(slug=slug)
-        # if a tournament exists with that slug, make slug unique
+        t = Tournament.objects.filter(start_date=self.start_date)
+        # if a tournament exists with that slug, make slug unique by getting all
+        # tournaments with that start date, and adding that number +1 to slug
         if t:
             slug = f"{slug}-{t.count()}"
 

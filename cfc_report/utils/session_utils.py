@@ -23,41 +23,8 @@ from ..serialize import PlayerSerializer
 # constant for session players key
 SESSION_PLAYERS_KEY = "players"
 # file constant
-NEW_PLAYER_TEMPLATE = "cfc_report/create/player.html"
+NEW_PLAYER_TEMPLATE = "cfc_report/create/add-player-system-form.html"
 TOURNAMENT_PLAYER_FORM = "cfc_report/create/player-form.html"
-
-
-def get_session_players(request: HttpRequest) -> list[Player]:
-    """get the players in current session
-
-    Parameters
-    ----------
-    request : django http request
-        Django request
-
-    Notes
-    -----
-    Uses:
-        the current session
-
-    Returns
-    -------
-    players : list(Player)
-        A list of the players in session
-    """
-    try:
-        players = request.session["players"]
-
-    # could be start of picking players
-    except KeyError:
-        logger.info("No session players got from request: %s", request)
-        players = []
-
-    players = PlayerSerializer.deserialize_list(players, Player)
-
-    logger.debug("Players in session: %s", players)
-
-    return players
 
 
 def _is_cfc_id_valid(cfc_id: str | int) -> bool:
@@ -99,6 +66,39 @@ def _validate_player_data(data: dict) -> str | None:
     if not _is_cfc_id_valid(player_cfc_id):
         return "CFC ID is invalid. Please provide a valid 6-digit number."
     return None
+
+
+def get_session_players(request: HttpRequest) -> list[Player]:
+    """get the players in current session
+
+    Parameters
+    ----------
+    request : django http request
+        Django request
+
+    Notes
+    -----
+    Uses:
+        the current session
+
+    Returns
+    -------
+    players : list(Player)
+        A list of the players in session
+    """
+    try:
+        players = request.session["players"]
+
+    # could be start of picking players
+    except KeyError:
+        logger.info("No session players got from request: %s", request)
+        players = []
+
+    players = PlayerSerializer.deserialize_list(players, Player)
+
+    logger.debug("Players in session: %s", players)
+
+    return players
 
 
 def create_player(name: str, cfc_id: int) -> Player:
@@ -201,3 +201,8 @@ def get_tournament_info(request: HttpRequest) -> dict | None:
     except KeyError:
         logger.error("Error accessing tournament information from session for request: %s", request)
         return None
+
+
+def get_session_matches(request):
+    """TODO"""
+    pass

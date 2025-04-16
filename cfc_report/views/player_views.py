@@ -25,7 +25,7 @@ from ..utils.session_utils import get_session_players, create_player
 # constant for session players key
 SESSION_PLAYERS_KEY = "players"
 # file constant
-NEW_PLAYER_TEMPLATE = "cfc_report/create/player.html"
+NEW_PLAYER_TEMPLATE = "cfc_report/create/add-player-system-form.html"
 TOURNAMENT_PLAYER_FORM = "cfc_report/create/player-form.html"
 
 
