@@ -14,8 +14,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render, redirect
+
 from cfc_report import logger
+from cfc_report.forms import RoundForm
 from cfc_report.models import Round
+from cfc_report.models import Tournament
 
 
 def _create_round(tournament, round_number):
@@ -65,10 +70,6 @@ def create_round(request):
     # If GET request, display an empty form
     form = RoundForm()
     return render(request, "cfc_report/create_round.html", {"form": form})
-
-
-from django.shortcuts import render, redirect
-from cfc_report.forms import RoundForm
 
 
 def round_form_view(request):

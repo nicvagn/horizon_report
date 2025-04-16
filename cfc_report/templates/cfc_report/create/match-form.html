@@ -29,7 +29,7 @@ Add Match to Round
 <form action='{% url "report-create-match" %}' method="post">
   {% csrf_token %}
   <p>
-    <label for="white">White: </label>
+    <label for="white_name">White: </label>
 
     <select
       id="white_name"
@@ -45,7 +45,7 @@ Add Match to Round
   </p>
 
   <p>
-    <label for="black">Black: </label>
+    <label for="black_name">Black: </label>
 
     <select
       id="black_name"
