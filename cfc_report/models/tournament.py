@@ -74,6 +74,8 @@ class Tournament(models.Model):
 
         logger.info("tournament Slug generated: %s", slug)
 
+        return slug
+
     def save(self, *args, **kwargs):
         """create slug url before saving
         Override of save()
