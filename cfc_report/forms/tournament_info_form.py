@@ -75,7 +75,7 @@ class TournamentInfoForm(forms.Form):
         widget=forms.DateInput(attrs={'type': 'date'}, format='%d-%m-%Y'),
         label="Start Date",
         required=True,
-        initial=datetime.date.today,
+        initial=datetime.date.today(),
     )
 
     def clean_start_date(self):
@@ -93,7 +93,7 @@ class TournamentInfoForm(forms.Form):
         widget=forms.DateInput(attrs={'type': 'date'}, format='%d-%m-%Y'),
         label="End Date",
         required=True,
-        initial=datetime.date.today,
+        initial=datetime.date.today(),
     )
 
     def clean_end_date(self):

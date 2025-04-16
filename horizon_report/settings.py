@@ -98,6 +98,7 @@ class Dev(Configuration):
         },
 
         "sqlite_default": {
+            # for easy fallback
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
         }

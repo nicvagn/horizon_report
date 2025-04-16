@@ -61,10 +61,18 @@ class Tournament(models.Model):
 
     def _generate_slug(self):
         """Generate a slug using the tournament name and start date."""
-        return self.SLUG_FORMAT.format(
+
+        slug = self.SLUG_FORMAT.format(
             name=self.tournament_name,
             date=self.start_date,
         )
+
+        t = Tournament.objects.filter(slug=slug)
+        # if a tournament exists with that slug, make slug unique
+        if t:
+            slug = f"{slug}-{t.count()}"
+
+        logger.info("tournament Slug generated: %s", slug)
 
     def save(self, *args, **kwargs):
         """create slug url before saving
