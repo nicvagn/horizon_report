@@ -40,7 +40,7 @@ urlpatterns = [
     path(f"{ROUND_URL_PREFIX}match", chess_match, name="report-create-match"),
 
     # Details
-    path(f"{BASE_URL_PREFIX}details/tournament/<int:tournament_id>/", tournament_detail, name="report-details"),
+    path(f"{BASE_URL_PREFIX}details/tournament/<int:pk>/", tournament_detail, name="tournament-detail"),
 
     # HTMX
     path(f"{REPORT_URL_PREFIX}select-player/<str:cfc_id>",

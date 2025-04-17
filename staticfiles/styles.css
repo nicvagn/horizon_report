@@ -29,3 +29,8 @@
 td>a {
   cursor: pointer;
 }
+
+/* for the main chess club logo */
+.shcc_logo {
+  height: 9rem;
+}

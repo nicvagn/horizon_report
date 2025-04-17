@@ -105,7 +105,7 @@ def set_tournament_players(request: HttpRequest) -> HttpResponse:
     # needed if no new players are chosen, and you want to confirm players
     if request.method == "POST":
         # redirect request to build round url
-        return redirect("report-build-round")
+        return redirect("report-create-round")
 
     logger.debug(
         "db_players: %s \n tournament_players: %s \n context: %s",
