@@ -19,8 +19,7 @@ from django.shortcuts import render, redirect
 
 from cfc_report import logger
 from cfc_report.forms import RoundForm
-from cfc_report.models import Round
-from cfc_report.models import Tournament
+from cfc_report.models import Round, Tournament, Match
 
 
 def _create_round(tournament, round_number):
@@ -49,6 +48,7 @@ def create_round(request):
     Handle the creation of a new round in a tournament.
     """
     if request.method == "POST":
+        breakpoint()
         form = RoundForm(request.POST)
         if form.is_valid():
             # Extract cleaned data from the form
@@ -61,33 +61,17 @@ def create_round(request):
             # Use the helper function to create the round
             new_round = _create_round(tournament, round_number)
 
+            logger.info("Created Round #%d for tournament: %s", round_number, tournament)
+
             # Redirect to round list or a success page
             return redirect("tournament-detail", pk=tournament.id)
         else:
             # If the form is invalid, return errors
-            return render(request, "cfc_report/create_round.html", {"form": form})
+            return render(request, "cfc_report/create/round.html", {"form": form})
 
     # If GET request, display an empty form
     form = RoundForm()
-    return render(request, "cfc_report/create_round.html", {"form": form})
 
-
-def round_form_view(request):
-    """
-    View for displaying and submitting the Round form.
-    """
-    if request.method == "POST":
-        form = RoundForm(request.POST)
-        if form.is_valid():
-            # Save the valid form data to create a new Round
-            form.save()
-            # Redirect to a success page (e.g., tournament detail or round list)
-            return redirect("tournament-detail", pk=form.cleaned_data["tournament"].id)
-        else:
-            # Redisplay form with errors
-            return render(request, "cfc_report/round_form.html", {"form": form})
-
-    # For a GET request, render an empty form
-    form = RoundForm()
-    return render(request, "cfc_report/base/base-form.html",
-                  {"form": form, "title": "Create Round"})
+    context = {"form": form, "round_number": request.session.get("round_number"),
+               "matches": Match.objects.all()}
+    return render(request, "cfc_report/create/round.html", context)

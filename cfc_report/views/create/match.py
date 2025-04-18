@@ -14,10 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 
 from cfc_report import logger
-from cfc_report.models import (Player, Match, Round, )
+from cfc_report.models import (Match, Round, )
 from cfc_report.utils.session_utils import (get_session_players,
                                             get_session_matches)
 
@@ -48,21 +48,18 @@ def chess_match(request):
             result = Match.RESULT_UNKNOWN
 
         # get the cfc ids
-        black_id = match_info["black"]
-        white_id = match_info["white"]
-        # get the players
-        black = get_object_or_404(Player, cfc_id=black_id)
-        white = get_object_or_404(Player, cfc_id=white_id)
-        rnd = get_object_or_404(
-            Round, round_num=request.session["round_number"])
+        black = match_info["black"]
+        white = match_info["white"]
+        logger.debug("CFC ids(black: %s, white: %s)", black, white)
+        rnd = Round.objects.get(pk=request.session["round_pk"])
         # create the chess match model, and save it to the db
         match = Match(white=white, black=black, result=result,
                       round=rnd)
         logger.debug(
             "chess_match entered and saved: black_id %s, white_id: %s, \
             result: %s, round: %s",
-            black_id,
-            white_id,
+            black,
+            white,
             result,
             rnd
         )

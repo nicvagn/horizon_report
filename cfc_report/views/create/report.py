@@ -14,12 +14,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
-from django.shortcuts import redirect
 
+from cfc_report import logger
 from cfc_report.forms.tournament_info_form import TournamentInfoForm
-from cfc_report.models import Tournament
+from cfc_report.models import Tournament, Round
 from cfc_report.types import TournamentInfo
 
 
@@ -74,8 +75,18 @@ def initial(request):
         start_date=info["start_date"],
         end_date=info["end_date"],
         pairing_system=info["pairing_system"],
-        province=info["province"],)
+        province=info["province"], )
 
     tournament.save()
 
+    logger.info("report.initial: tournament with pk %s saved. session['tournament_id'] set to pk", tournament.pk)
+
+    request.session["tournament_id"] = tournament.pk
+
+    # create model for the first round
+    round1 = Round(tournament=tournament, round_num=1)
+    round1.save()
+    request.session["round_pk"] = round1.pk
+
+    logger.info("report.initial: round with pk %s saved. session['round_pk'] set to pk", round1.pk)
     return redirect("report-tournament-players")
