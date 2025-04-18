@@ -39,6 +39,8 @@ urlpatterns = [
     # # # Match creation
     path(f"{ROUND_URL_PREFIX}match", chess_match, name="report-create-match"),
 
+    path(f"{REPORT_URL_PREFIX}in-progress", ReportBuildingView.as_view(), name="report-create-progress"),
+
     # Details
     path(f"{BASE_URL_PREFIX}details/tournament/<int:pk>/", tournament_detail, name="tournament-detail"),
 

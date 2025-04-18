@@ -1,4 +1,14 @@
-# Create a standard way to represent tournament rounds
+# find out how to create a request using finish round to submit the data.
 
-finish in creation.py
-def finalize_round(request) -> HttpResponse:
+Right now it just submits a GET request to /report/round.
+
+
+# Round POST has:
+
+Tournament it is in via tournament PK
+
+Round number
+
+Byes
+
+list of matches via PK

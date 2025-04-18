@@ -47,6 +47,7 @@ def create_round(request):
     """
     Handle the creation of a new round in a tournament.
     """
+    logger.info("round.create_round entered, with request: %s", request)
     if request.method == "POST":
         breakpoint()
         form = RoundForm(request.POST)
