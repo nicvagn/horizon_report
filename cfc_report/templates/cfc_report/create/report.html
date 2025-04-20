@@ -15,13 +15,13 @@
 <section id="report_rounds">
     {% for round in rounds %}
     {% include "cfc_report/show/partials/round.html" %}
-    <input id="edit_round_btn_1" type="button" value="Edit">
+    <input class="edit_round_btn" type="button" value="Edit">
     {% endfor %}
 </section>
 
 <section id="report_players">
-    {% include "cfc_report/show/partials/player-list.html" %}
-    <input id="edit_round_btn_2" type="button" value="Edit">
+    {% include "cfc_report/show/partials/players.html" %}
+    <input id="edit_players_btn" type="button" value="Edit">
 </section>
 
 {% endblock %}

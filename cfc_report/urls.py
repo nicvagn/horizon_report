@@ -5,7 +5,8 @@ from django.urls import path
 
 from .constants import (BASE_URL_PREFIX, PLAYER_URL_PREFIX, REPORT_URL_PREFIX,
                         ROUND_URL_PREFIX)
-from .views.create import ReportInfoFormView, chess_match, report
+from .views.create import chess_match, report
+from .views.create.report import ReportInfoFormView, CreateReportView
 from .views.create.round import create_round
 from .views.index import IndexView
 from .views.player_views import (toggle_player_session_view,
@@ -39,7 +40,7 @@ urlpatterns = [
     # # # Match creation
     path(f"{ROUND_URL_PREFIX}match", chess_match, name="report-create-match"),
 
-    path(f"{REPORT_URL_PREFIX}in-progress", ReportBuildingView.as_view(), name="report-create-progress"),
+    path(f"{REPORT_URL_PREFIX}in-progress", CreateReportView.as_view(), name="report-create-overview"),
 
     # Details
     path(f"{BASE_URL_PREFIX}details/tournament/<int:pk>/", tournament_detail, name="tournament-detail"),
