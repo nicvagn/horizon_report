@@ -26,7 +26,7 @@ load_dotenv(env_path)
 class Dev(Configuration):
     DEBUG = os.getenv("DJANGO_DEBUG")
     SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
-    ALLOWED_HOSTS = ["nrv773.pythonanywhere.com", "127.0.0.1", "localhost"]
+    ALLOWED_HOSTS = ["nrv773.pythonanywhere.com", "127.0.0.1", "localhost", "old-desk"]
 
     # Application definition
     INSTALLED_APPS = [
