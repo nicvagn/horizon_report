@@ -49,6 +49,7 @@ def create_round(request):
     """
     logger.info("round.create_round entered, with request: %s", request)
     if request.method == "POST":
+        # TODO: never sends post request
         breakpoint()
         form = RoundForm(request.POST)
         if form.is_valid():
