@@ -86,7 +86,7 @@ def initial(request):
     # create model for the first round
     round1 = Round(tournament=tournament, round_num=1)
     round1.save()
-    request.session["round_pk"] = round1.pk
+    request.session["round_pk_list"] = [round1.pk]
 
     logger.info("report.initial: round with pk %s saved. session['round_pk'] set to pk", round1.pk)
     return redirect("report-tournament-players")

@@ -29,5 +29,6 @@ class CreateReportView(View):
 
     def get(self, request, *args, **kwargs):
         t_info = request.session["tournament_info"]
-        context = {"tournament_name": t_info["name"], "rounds": t_info["rounds"]}
+        rounds = request.session["round_pk_list"]
+        context = {"tournament_name": t_info["name"], "rounds": rounds}
         return render(request, "cfc_report/create/report.html", context)
