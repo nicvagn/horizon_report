@@ -3,11 +3,9 @@ urls for cfc_report
 """
 from django.urls import path
 
-from .constants import (BASE_URL_PREFIX, PLAYER_URL_PREFIX, REPORT_URL_PREFIX,
-                        ROUND_URL_PREFIX)
 from .views.create import chess_match, report
 from .views.create.report import ReportInfoFormView, CreateReportView
-from .views.create.round import create_round
+from .views.create.round import create_round_view
 from .views.index import IndexView
 from .views.player_views import (toggle_player_session_view,
                                  set_tournament_players, add_player_database)
@@ -16,6 +14,16 @@ from .views.see.details import tournament_detail
 # URL prefix constants for better readability and reusability
 TOURNAMENT_PLAYERS_PATH = "tournament-players"
 ADD_PLAYER_PATH = "add-player/"
+
+# URL constants to aid in portability
+# Base URL prefix for this app (defined for clarity and reuse)
+BASE_URL_PREFIX = ""
+# Path prefixes for specific subsections
+PLAYER_URL_PREFIX = f"{BASE_URL_PREFIX}player/"
+# Report URL prefix
+REPORT_URL_PREFIX = f"{BASE_URL_PREFIX}report/"
+# ROUND_URL_PREFIX
+ROUND_URL_PREFIX = f"{REPORT_URL_PREFIX}round/"
 
 urlpatterns = [
     # Index page
@@ -27,23 +35,25 @@ urlpatterns = [
 
     # Report-related operations
 
+    # # in progress
+    path(f"{REPORT_URL_PREFIX}in-progress", CreateReportView.as_view(),
+         name="report-create-overview"),
     # # initial and players
     path(f"{REPORT_URL_PREFIX}", ReportInfoFormView.as_view(),
-         name="create-report"),
+         name="create-report-initial"),
     path(f"{REPORT_URL_PREFIX}initial", report.initial,
          name="report-tournament-initial"),
     path(f"{REPORT_URL_PREFIX}{TOURNAMENT_PLAYERS_PATH}",
          set_tournament_players, name="report-tournament-players"),
 
     # # Round
-    path(f"{ROUND_URL_PREFIX}", create_round, name="report-create-round"),
+    path(f"{ROUND_URL_PREFIX}", create_round_view, name="report-create-round"),
     # # # Match creation
     path(f"{ROUND_URL_PREFIX}match", chess_match, name="report-create-match"),
 
-    path(f"{REPORT_URL_PREFIX}in-progress", CreateReportView.as_view(), name="report-create-overview"),
-
     # Details
-    path(f"{BASE_URL_PREFIX}details/tournament/<int:pk>/", tournament_detail, name="tournament-detail"),
+    path(f"{BASE_URL_PREFIX}details/tournament/<int:pk>/", tournament_detail,
+         name="tournament-detail"),
 
     # HTMX
     path(f"{REPORT_URL_PREFIX}select-player/<str:cfc_id>",

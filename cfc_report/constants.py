@@ -16,13 +16,3 @@
 DEBUG = True
 FILE_HANDLER = "CFC_REPORT_FileHandler.log"
 LOGGER_NAME = "CFC_REPORT"
-
-# URL constants to aid in portability
-# Base URL prefix for this app (defined for clarity and reuse)
-BASE_URL_PREFIX = ""
-# Path prefixes for specific subsections
-PLAYER_URL_PREFIX = f"{BASE_URL_PREFIX}player/"
-# Report URL prefix
-REPORT_URL_PREFIX = f"{BASE_URL_PREFIX}report/"
-# ROUND_URL_PREFIX
-ROUND_URL_PREFIX = f"{REPORT_URL_PREFIX}round/"

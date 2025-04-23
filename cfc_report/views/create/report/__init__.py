@@ -13,5 +13,5 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .overview import CreateReportView
-from .info import ReportInfoFormView, initial
+from .create_report_view import CreateReportView
+from .report_info_view import ReportInfoFormView, initial

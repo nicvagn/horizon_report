@@ -79,11 +79,12 @@ def initial(request):
 
     tournament.save()
 
-    logger.info("report.initial: tournament with pk %s saved. session['tournament_id'] set to pk", tournament.pk)
+    logger.info("report.initial: tournament with info %s and pk %s saved. session['tournament_id'] set to pk",
+                info, tournament.pk)
 
     request.session["tournament_id"] = tournament.pk
 
-    # create model for the first round
+    # create a model for the first round
     round1 = Round(tournament=tournament, round_num=1)
     round1.save()
     request.session["round_pk_list"] = [round1.pk]

@@ -83,7 +83,7 @@ def initial(request):
 
     request.session["tournament_id"] = tournament.pk
 
-    # create model for the first round
+    # create a model for the first round
     round1 = Round(tournament=tournament, round_num=1)
     round1.save()
     request.session["round_pk"] = round1.pk
