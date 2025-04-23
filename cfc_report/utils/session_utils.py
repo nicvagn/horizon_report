@@ -18,7 +18,6 @@ from django.http import HttpRequest
 
 from .. import logger
 from ..models.person_with_cfc_id_models import Player
-from ..serialize import PlayerSerializer
 
 # constant for session players key
 SESSION_PLAYERS_KEY = "players"
@@ -87,16 +86,19 @@ def get_session_players(request: HttpRequest) -> list[Player]:
         A list of the players in session
     """
     try:
-        players = request.session["players"]
+        session_players = request.session["players"]
+        players = []
+        for player_id in session_players:
+            players.append(Player.objects.get(cfc_id=players))
 
     # could be start of picking players
     except KeyError:
         logger.info("No session players got from request: %s", request)
         players = []
+    # players = PlayerSerializer.deserialize_list(players, Player)
+    # I do not understand sessions
 
-    players = PlayerSerializer.deserialize_list(players, Player)
-
-    logger.debug("Players in session: %s", players)
+    logger.debug("Players in session got from db: %s", players)
 
     return players
 
@@ -141,39 +143,37 @@ def create_player(name: str, cfc_id: int) -> Player:
     return player
 
 
-def toggle_player_in_session(session_players: list[Player], cfc_id: int) -> list[Player]:
+def toggle_player_in_session(session_ids: list[int], cfc_id: int) -> list[int]:
     """
-    Adds or removes a player with the given CFC ID from the session players.
+    Adds or removes a player with the given CFC ID from the session ids.
 
     Parameters
     ----------
-    session_players : list[Player]
-        Current list of players in the session.
+    session_ids : list[int]
+        Current list of players in the session by cfc id.
     cfc_id : int
         The CFC ID of the player to toggle.
 
     Returns
     -------
-    list[Player]
-        Updated list of players in the session.
+    list[int]
+        Updated list of cfc id's of players in the session.
     """
 
     # Find a player in the session with the given CFC ID
-    existing_player = next((player for player in session_players if player.cfc_id == cfc_id), None)
-
+    existing_id = None
+    for chess_id in session_ids:
+        if chess_id == cfc_id:
+            existing_id = True
+            break
     # If the player exists, remove them; otherwise, add a new one
-    if existing_player:
-        session_players = [player for player in session_players if player.cfc_id != cfc_id]
+    if existing_id:
+        session_ids.remove(cfc_id)
         logger.info("Removed player with CFC ID: %s from session.", cfc_id)
     else:
-        try:
-            new_player = Player.objects.get(cfc_id=cfc_id)
-            session_players.append(new_player)
-            logger.info("Added player with CFC ID: %s to session.", cfc_id)
-        except Player.DoesNotExist:
-            logger.warning("Player with CFC ID: %s does not exist.", cfc_id)
+        session_ids.append(cfc_id)
 
-    return session_players
+    return session_ids
 
 
 def get_tournament_info(request: HttpRequest) -> dict | None:

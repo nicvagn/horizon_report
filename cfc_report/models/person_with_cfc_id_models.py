@@ -60,7 +60,7 @@ class Player(PersonWithCfcId):
     """A chess player with a CFC id."""
 
     def __str__(self):
-        return f"Player: {self.name} CFC: {self.cfc_id}"
+        return f"{self.name} CFC: {self.cfc_id}"
 
 
 class TournamentDirector(PersonWithCfcId):

@@ -20,7 +20,6 @@ from django.shortcuts import render, reverse, redirect
 from .. import logger
 from ..models.person_with_cfc_id_models import Player
 from ..models.tournament import Roster, Tournament
-from ..serialize import PlayerSerializer
 from ..utils.session_utils import get_session_players, create_player
 
 # constant for session players key
@@ -94,6 +93,19 @@ def set_tournament_players(request: HttpRequest) -> HttpResponse:
 
     db_players = Player.objects.all()
     tournament_players = get_session_players(request)
+    # if the request is POST it is the form submission not initial get
+    # needed if no new players are chosen, and you want to confirm players
+    if request.method == "POST":
+        breakpoint()
+        t_id = request.session["tournament_id"]
+        tournament = Tournament.objects.get(pk=t_id)
+        roster, created = Roster.objects.get_or_create(tournament_id=t_id)
+        roster.save()
+        roster.players.set(tournament_players)
+
+        logger.info("Roster: %s created for tournament: %s", roster, tournament)
+        return redirect("report-create-round")
+
     context = {
         "title": "choose tournament players",
         "action_url": reverse("report-tournament-players"),
@@ -101,18 +113,6 @@ def set_tournament_players(request: HttpRequest) -> HttpResponse:
         "tournament_players": tournament_players,
         "include_nav_bar": False,
     }
-
-    # if the request is POST it is the form submission not initial get
-    # needed if no new players are chosen, and you want to confirm players
-    if request.method == "POST":
-        t_id = request.session["tournament_id"]
-        tournament = Tournament.objects.get(pk=t_id)
-        roster = Roster.objects.create(tournament_id=t_id)
-        roster.players.set(tournament_players)
-        roster.save()
-
-        logger.info("Roster: %s created for tournament: %s", roster, tournament)
-        return redirect("report-create-round")
 
     logger.debug(
         "db_players: %s \n tournament_players: %s \n context: %s",
@@ -153,6 +153,9 @@ def toggle_player_session_view(request: HttpRequest,
     session_players = get_session_players(request)
 
     for player in session_players:
+        logger.debug(
+            "player: %s", player,
+        )
         if player.cfc_id == int(cfc_id):
             session_players.remove(player)
             logger.info("Removed player with CFC ID: %s from session.", cfc_id)
@@ -164,8 +167,7 @@ def toggle_player_session_view(request: HttpRequest,
         logger.info("Added player with CFC ID: %s to session.", cfc_id)
 
     # Serialize and set players in session to changed value
-    """uses custom serializer found in serialize.py"""
-    request.session["players"] = PlayerSerializer.serialize_list(session_players)
+    request.session["players"] = session_players
 
     db_players = Player.objects.all()
 

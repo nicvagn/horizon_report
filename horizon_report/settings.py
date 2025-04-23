@@ -75,7 +75,7 @@ class Dev(Configuration):
     SERIALIZATION_MODULES = {
         "json": "django.core.serializers.json",
     }
-
+    SESSION_ENGINE = 'django.contrib.sessions.backends.db'
     # Database
     # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
