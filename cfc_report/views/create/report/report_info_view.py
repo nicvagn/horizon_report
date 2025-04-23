@@ -79,8 +79,7 @@ def initial(request):
 
     tournament.save()
 
-    logger.info("report.initial: tournament with info %s and pk %s saved. session['tournament_id'] set to pk",
-                info, tournament.pk)
+    logger.info("report.initial: info: %s", info)
 
     request.session["tournament_id"] = tournament.pk
 

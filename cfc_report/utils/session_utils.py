@@ -197,6 +197,8 @@ def get_tournament_info(request: HttpRequest) -> dict | None:
         tournament = request.session.get("tournament_info", None)
         if not tournament:
             logger.warning("No tournament found in session for request: %s", request)
+        else:
+            logger.debug("tournament_info in session: %s", tournament)
         return tournament
     except KeyError:
         logger.error("Error accessing tournament information from session for request: %s", request)

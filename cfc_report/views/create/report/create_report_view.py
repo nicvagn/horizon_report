@@ -40,14 +40,17 @@ class CreateReportView(View):
         t_id = request.session["tournament_id"]
         t_info = request.session["tournament_info"]
         tournament = Tournament.objects.get(pk=t_id)
+        # Get players from the tournament roster
+        players = tournament.roster.players.all()
         # Fetch the tournament's built rounds
         rounds = Round.objects.filter(tournament=tournament).order_by('round_num')
 
-        logger.info("CreateReportView.get w tournament: %s rounds: %s"
-                    % (tournament, rounds))
+        logger.info("CreateReportView.get w tournament: %s rounds: %s players: %s"
+                    % (tournament, rounds, players))
 
         context = {
             "tournament_name": t_info["name"],
-            "rounds": rounds
+            "rounds": rounds,
+            "players": players
         }
         return render(request, self.template_name, context)

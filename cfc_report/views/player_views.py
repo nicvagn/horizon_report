@@ -19,6 +19,7 @@ from django.shortcuts import render, reverse, redirect
 
 from .. import logger
 from ..models.person_with_cfc_id_models import Player
+from ..models.tournament import Roster, Tournament
 from ..serialize import PlayerSerializer
 from ..utils.session_utils import get_session_players, create_player
 
@@ -101,10 +102,16 @@ def set_tournament_players(request: HttpRequest) -> HttpResponse:
         "include_nav_bar": False,
     }
 
-    # if the request is a POST it is the form submission not initial get
+    # if the request is POST it is the form submission not initial get
     # needed if no new players are chosen, and you want to confirm players
     if request.method == "POST":
-        # redirect request to build round url
+        t_id = request.session["tournament_id"]
+        tournament = Tournament.objects.get(pk=t_id)
+        roster = Roster.objects.create(tournament_id=t_id)
+        roster.players.set(tournament_players)
+        roster.save()
+
+        logger.info("Roster: %s created for tournament: %s", roster, tournament)
         return redirect("report-create-round")
 
     logger.debug(

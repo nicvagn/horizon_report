@@ -107,7 +107,7 @@ class Tournament(models.Model):
 
 
 class Round(models.Model):
-    """A Round in a cfc rated tournament
+    """A Round in a CFC-rated tournament
 
     Attributes
     ----------
@@ -123,7 +123,7 @@ class Round(models.Model):
 
 
 class Roster(models.Model):
-    """A roster of players in a cfc rated tournament
+    """A roster of players in a CFC-rated tournament
 
     Attributes
     ----------
@@ -131,11 +131,16 @@ class Roster(models.Model):
         the tournament this roster is for
     """
 
-    tournament = models.OneToOneField(Tournament, on_delete=models.CASCADE)
+    tournament = models.OneToOneField(
+        Tournament,
+        on_delete=models.CASCADE,
+        related_name='roster'
+    )
+    players = models.ManyToManyField("Player")
 
 
 class Match(models.Model):
-    """A cfc rated chess match
+    """A CFC-rated chess match
 
     Attributes
     ----------
