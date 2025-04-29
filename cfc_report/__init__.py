@@ -19,11 +19,11 @@ def setup_logger() -> logging.Logger:
     formatter = logging.Formatter(LOG_FORMAT)
 
     # Add file handler if specified
-    if FILE_HANDLER:
+    """if FILE_HANDLER:
         file_handler = logging.FileHandler(FILE_HANDLER)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
-
+    """
     # Add a console handler
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
@@ -34,3 +34,4 @@ def setup_logger() -> logging.Logger:
 
 # Initialize package logger
 logger = setup_logger()
+
