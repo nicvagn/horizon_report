@@ -44,7 +44,8 @@ urlpatterns = [
          name="create-report-initial"),
     path(f"{REPORT_URL_PREFIX}initial", tournament_initial,
          name="report-tournament-initial"),
-
+    path(f"{REPORT_URL_PREFIX}players/", TournamentPlayersView.as_view(),
+         name='report-tournament-players'),
     # # Round
     path(f"{ROUND_URL_PREFIX}", create_round_view, name="report-create-round"),
     # # # Match creation

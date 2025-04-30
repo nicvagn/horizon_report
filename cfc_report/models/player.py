@@ -91,14 +91,14 @@ class Player(models.Model):
         """Creates slug URL before saving the object."""
         self.slug = self._generate_slug()
         logger.info(
-            "PersonWithCfcId: (%s) saved and slug (%s) created for it",
+            "(%s) saved. slug (%s) created for it",
             self,
             self.slug
         )
         super().save(*args, **kwargs)
 
     def _generate_slug(self) -> str:
-        pass
+        return f"{self.__name__}|{self.cfc_id}"
 
     def get_absolute_url(self):
         pass

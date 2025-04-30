@@ -1,0 +1,63 @@
+{% extends "cfc_report/base/base.html" %}
+
+{% block page_title %}Select Tournament Players{% endblock %}
+
+{% block content %}
+<h1 class="title">Select Players for {{ tournament.tournament_name }}</h1>
+
+<div class="player-selection-container">
+    <!-- Available Players Table -->
+    <div class="add-players">
+        <h3>Add Players</h3>
+
+        <p>Add a player, gets info from CFC API</p>
+    </div>
+
+    <!-- Selected Players Table -->
+    <div class="selected-players">
+        <h3>Tournament Players</h3>
+        <table id="selected-players-list" class="players-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>CFC ID</th>
+                <th>Rating</th>
+                <th>Remove</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for player in selected_players %}
+            <tr>
+                <td>{{ player.name_first }} {{ player.name_last }}</td>
+                <td>{{ player.cfc_id }}</td>
+                <td>{{ player.regular_rating }}</td>
+                <td>
+                    <button
+                            hx-delete="{% url 'remove-tournament-player' %}"
+                            hx-vars="player_id:{{ player.id }}"
+                            hx-target="closest tr"
+                            hx-swap="outerHTML">
+                        Remove
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No players selected</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="action-buttons">
+    <a href="{% url 'create-report' %}">
+        <input type="button" value="Continue"/>
+    </a>
+    <a href="{% url 'add-new-player' %}">
+        <input type="button" value="Add New Player"/>
+    </a>
+</div>
+
+{% endblock %}
