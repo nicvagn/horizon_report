@@ -3,12 +3,13 @@ urls for cfc_report
 """
 from django.urls import path
 
-from .views.create import chess_match, report
-from .views.create.report import ReportInfoFormView, CreateReportView
+from .views.create.match import chess_match
 from .views.create.round import create_round_view
+from .views.database.create_player import add_player_database
+from .views.database.create_tournament import tournament_initial
 from .views.index import IndexView
-from .views.player_views import (toggle_player_session_view,
-                                 set_tournament_players, add_player_database)
+from .views.report.create_view import CreateReportView
+from .views.report.info_form_view import ReportInfoFormView
 from .views.see.details import tournament_detail
 
 # URL prefix constants for better readability and reusability
@@ -41,10 +42,8 @@ urlpatterns = [
     # # initial and players
     path(f"{REPORT_URL_PREFIX}", ReportInfoFormView.as_view(),
          name="create-report-initial"),
-    path(f"{REPORT_URL_PREFIX}initial", report.initial,
+    path(f"{REPORT_URL_PREFIX}initial", tournament_initial,
          name="report-tournament-initial"),
-    path(f"{REPORT_URL_PREFIX}{TOURNAMENT_PLAYERS_PATH}",
-         set_tournament_players, name="report-tournament-players"),
 
     # # Round
     path(f"{ROUND_URL_PREFIX}", create_round_view, name="report-create-round"),
@@ -56,7 +55,7 @@ urlpatterns = [
          name="tournament-detail"),
 
     # HTMX
-    path(f"{REPORT_URL_PREFIX}select-player/<str:cfc_id>",
-         toggle_player_session_view, name="report-toggle-player"),
+    # path(f"{REPORT_URL_PREFIX}select-player/<str:cfc_id>",
+    #     toggle_player_session_view, name="report-toggle-player"),
 
 ]

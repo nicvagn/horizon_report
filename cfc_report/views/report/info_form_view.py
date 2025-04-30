@@ -1,4 +1,4 @@
-"""Create a Report for a CFC Rated tournament."""
+"""Get info for Report for a CFC Rated tournament."""
 # Copyright (C) 2024 Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,14 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 
-from cfc_report import logger
 from cfc_report.forms.tournament_info_form import TournamentInfoForm
-from cfc_report.models import Tournament, Round
 from cfc_report.types import TournamentInfo
+from . import logger
 
 
 class ReportInfoFormView(FormView):
@@ -41,6 +39,8 @@ class ReportInfoFormView(FormView):
         This method sets the session tournament details and completes the
         form processing.
         """
+
+        logger.debug("ReportInfoFormView.form_valid form: %s" % form)
         self.set_session_tournament_info(form)
 
         return super().form_valid(form)
@@ -63,30 +63,4 @@ class ReportInfoFormView(FormView):
         }
         self.request.session["round_number"] = 1
         self.request.session["tournament_info"] = session_data
-
-
-def initial(request):
-    """Create database models from TournamentReportInfoFormView info"""
-
-    info = request.session["tournament_info"]
-    tournament = Tournament(
-        tournament_name=info["name"],
-        num_rounds=info["num_rounds"],
-        start_date=info["start_date"],
-        end_date=info["end_date"],
-        pairing_system=info["pairing_system"],
-        province=info["province"], )
-
-    tournament.save()
-
-    logger.info("report.initial: tournament with pk %s saved. session['tournament_id'] set to pk", tournament.pk)
-
-    request.session["tournament_id"] = tournament.pk
-
-    # create a model for the first round
-    round1 = Round(tournament=tournament, round_num=1)
-    round1.save()
-    request.session["round_pk"] = round1.pk
-
-    logger.info("report.initial: round with pk %s saved. session['round_pk'] set to pk", round1.pk)
-    return redirect("report-tournament-players")
+        logger.debug("set_session_tournament_info: %s" % session_data)

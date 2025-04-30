@@ -15,5 +15,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .match import chess_match
-from .report import ReportInfoFormView
+from horizon_report import setup_logger
+
+# module level logger configuration
+debug = True
+file_handler = None
+logger_name = __name__
+
+# Initialize package logger
+logger = setup_logger(debug, file_handler, logger_name)

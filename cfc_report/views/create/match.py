@@ -16,10 +16,8 @@
 
 from django.shortcuts import render
 
-from cfc_report import logger
 from cfc_report.models import (Match, Round, )
-from cfc_report.utils.session_utils import (get_session_players,
-                                            get_session_matches)
+from . import logger
 
 
 def chess_match(request):

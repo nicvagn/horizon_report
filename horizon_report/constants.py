@@ -1,4 +1,4 @@
-"""cfc_report admin.py"""
+""" define constants for cfc_report"""
 # Copyright (C) 2024 Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -13,12 +13,5 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.contrib import admin
-
-from .models.player import Player
-from .models.tournament import Match, Roster
-
-# Register your models here.
-admin.site.register(Player)
-admin.site.register(Roster)
-admin.site.register(Match)
+DEBUG = True
+FILE_HANDLER = "CFC_REPORT_FileHandler.log"

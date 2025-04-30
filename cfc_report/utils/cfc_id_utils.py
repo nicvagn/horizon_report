@@ -1,4 +1,4 @@
-"""ctr.py - models for CFC CTR Tournament report file."""
+"""Helpers for CFC ID etc"""
 # Copyright (C) 2024 Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -13,22 +13,34 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.db import models
 
-from cfc_report.models.tournament import Tournament
+import re
+
+from django.core.validators import RegexValidator
 
 
-class CTR(models.Model):
-    """model wrapping CFC CTR (Tournament Report) File format
+def is_cfc_id_valid(cfc_id: int) -> bool:
+    """Check if the provided CFC ID is valid.
 
-    Attributes
+    Parameters
     ----------
+    cfc_id : int
+        The CFC ID to validate
 
-    TBA
+    Returns
+    -------
+    bool
+        True if the CFC ID is valid (6 digits), False otherwise
     """
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    return bool(re.match(r'^\d{6}$', str(cfc_id)))
 
-    rounds = models.IntegerField()
 
-    def __str__(self):
-        return self.report.to_python()
+class CfcIdValidator(RegexValidator):
+    """Validates whether the provided CFC ID is a 6-digit numeric identifier."""
+
+    def __init__(self):
+        super().__init__(
+            regex=r'^\d{6}$',
+            message='CFC ID must be a 6-digit number.',
+            code='invalid_cfc_id'
+        )

@@ -18,7 +18,6 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, reverse, redirect
 
 from .. import logger
-from ..models.person_with_cfc_id_models import Player
 from ..models.tournament import Roster, Tournament
 from ..utils.session_utils import get_session_players, create_player
 

@@ -17,10 +17,10 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
-from cfc_report import logger
 from cfc_report.forms import RoundForm
 from cfc_report.models import Round, Tournament, Match
 from cfc_report.utils.session_utils import get_session_players
+from . import logger
 
 
 def _create_round(tournament, round_number):

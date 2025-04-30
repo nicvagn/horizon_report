@@ -1,17 +1,6 @@
 """
-cfc_id_field.py
-
-This module contains custom form field definitions for creating and handling
-form fields in the CFC (Custom Form Creator) report builder.
-
-The functionality provided here is focused on facilitating field-related
-features specifically designed for the report builder use case.
-
+cfc_id_field.pyi - form fields
 """
-
-# Metadata
-__author__ = "nrv"
-__version__ = "0.0.1"
 
 # Copyright (C) 2025 Nicolas Vaagen
 #
@@ -28,31 +17,35 @@ __version__ = "0.0.1"
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django import forms
-from django.core.validators import MaxValueValidator, MinValueValidator
+
+from cfc_report.utils.cfc_id_utils import CfcIdValidator
 
 
-class CfcIdField(forms.IntegerField):
-    """A CFC ID field for validating Canadian Federation Codes.
+class CfcIdField(forms.CharField):
+    """A CFC ID field for validating Canadian Federation id.
 
-    Validates that the ID is a 6-digit integer where:
-      - 100,000 <= ID <= 999,999 (inclusive).
+    Validates that the ID is a 6-digit integer
 
     Attributes
     ----------
-    MIN_VALUE : int
-        The minimum value allowed for the CFC ID (inclusive).
-    MAX_VALUE : int
-        The maximum value allowed for the CFC ID (inclusive).
-    DEFAULT_VALIDATORS : list
-        default validators applied to the field.
+    default_validators : list
+        List of validators applied to the field. Contains CfcIdValidator.
+    widget : TextInput
+        The widget used for rendering the field.
+    error_messages : dict
+        Custom error messages for validation failures.
     """
-    MIN_VALUE = 100000
-    MAX_VALUE = 999999
-    DEFAULT_VALIDATORS = [
-        MinValueValidator(MIN_VALUE),
-        MaxValueValidator(MAX_VALUE)
-    ]
+    default_validators = [CfcIdValidator()]
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault("validators", self.DEFAULT_VALIDATORS)
+        kwargs.setdefault('widget', forms.TextInput(
+            attrs={'maxlength': '6', 'pattern': r'\d{6}'}))
+        kwargs.setdefault('max_length', 6)
+        kwargs.setdefault('min_length', 6)
+        kwargs.setdefault('error_messages', {
+            'invalid': 'Enter a valid CFC ID (6 digits)',
+            'required': 'CFC ID is required',
+            'max_length': 'CFC ID must be exactly 6 digits',
+            'min_length': 'CFC ID must be exactly 6 digits',
+        })
         super().__init__(*args, **kwargs)

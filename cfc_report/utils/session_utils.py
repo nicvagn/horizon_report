@@ -17,7 +17,7 @@
 from django.http import HttpRequest
 
 from .. import logger
-from ..models.person_with_cfc_id_models import Player
+from ..models.player import Player
 
 # constant for session players key
 SESSION_PLAYERS_KEY = "players"

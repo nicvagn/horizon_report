@@ -1,5 +1,6 @@
-""" define constants for cfc_report"""
-# Copyright (C) 2024 Nicolas Vaagen
+"""utils module for creating a cfc report"""
+
+# Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -13,6 +14,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-DEBUG = True
-FILE_HANDLER = "CFC_REPORT_FileHandler.log"
-LOGGER_NAME = "CFC_REPORT"
+
+from horizon_report import setup_logger
+
+# module level logger configuration
+debug = True
+file_handler = None
+logger_name = __name__
+
+# Initialize package logger
+logger = setup_logger(debug, file_handler, logger_name)

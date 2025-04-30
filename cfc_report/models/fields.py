@@ -1,5 +1,5 @@
 """fields for database models for CFC rated tournament"""
-# Copyright (C) 2024  Nicolas Vaagen
+# Copyright (C) 2024 Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -13,23 +13,30 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from ..utils.cfc_id_utils import CfcIdValidator
 
-class CfcIdField(models.IntegerField):
-    """A CFC ID field, for storing a cfc id number in a db.
+
+class CfcIdField(models.CharField):
+    """A CFC ID field, for storing a CFC ID number in a database.
+
     Attributes
     ----------
-    validators :
-        int in field x must be x where 1000000 > x > 99999
+    validators : list
+        List of validators applied to the field. Contains CfcIdValidator to ensure
+        the ID follows the CFC format requirements.
+    default : str
+        Default value for the field set to "000000".
     """
-    validators = [MinValueValidator(100000), MaxValueValidator(999999)]
+    validators = [CfcIdValidator]
 
     def __str__(self):
         return str(super())
 
     def __init__(self, *args, **kwargs):
+        kwargs.setdefault("default", "000000")
+        kwargs["max_length"] = 6
         super().__init__(*args, **kwargs)
 
 
