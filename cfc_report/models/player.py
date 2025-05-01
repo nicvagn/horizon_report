@@ -22,7 +22,8 @@ from .. import logger
 
 
 class Player(models.Model):
-    """A player with a CFC id, associated with tournaments. The base model for CFC API.
+    """A player with a CFC id, associated with tournaments.
+    The base model for CFC API.
 
     Attributes
     ----------
@@ -107,16 +108,41 @@ class Player(models.Model):
         return f"{self.name_first} {self.name_last} ({self.cfc_id})"
 
     @classmethod
-    def create(cls, name: str, cfc_id: str) -> "Player":
+    def create(cls, player_info: dict) -> "Player":
         """
         Factory method to create a new instance of Player.
 
+
         Parameters
         ----------
-        name : str
-            Full name of the player in format "First Last"
-        cfc_id : str
-            Canadian Federation of Chess ID number
+        player_info : dict - JSON response from the API.
+            example:
+            {
+                'cfc_id': 123123,
+                'cfc_expiry': '2020-01-02',
+                'fide_id': 0,
+                'name_first': 'Michael',
+                'name_last': 'Williams',
+                'addr_city': "St.John's",
+                'addr_province': 'NL',
+                'regular_rating': 200,
+                'regular_indicator': 11,
+                'quick_rating': 200,
+                'quick_indicator': 11,
+                'events': [{'id': 199806005,
+                    'name': 'MacDonald Dr RR',
+                    'date_end': '1998-05-14',
+                    'rating_type': 'R',
+                    'games_played': 11,
+                    'score': 0.0,
+                    'rating_pre': 0,
+                    'rating_perf': 0,
+                    'rating_post': 200,
+                    'rating_indicator': 11}],
+                'orgarb': [],
+                'is_organizer': False,
+                'is_arbiter': False
+            },
 
         Returns
         -------
@@ -126,23 +152,20 @@ class Player(models.Model):
         Raises
         ------
         ValueError
-            If the name format is invalid (doesn't contain first and
-             last name separated by a space)
+            if the player_info is incomplete
         """
-        # Split the full name into parts
-        name_parts = name.strip().split()
-        if len(name_parts) < 2:
-            raise ValueError("Name must include both first and last name")
 
-        # Extract first and last name
-        name_first = name_parts[0]
-        name_last = " ".join(name_parts[1:])  # Join remaining parts as last name
+        player = Player(cfc_id=player_info["cfc_id"],
+                        fide_id=player_info["cfc_expiry"],
+                        name_first=player_info["name_first"],
+                        name_last=player_info["name_last"],
+                        addr_city=player_info["addr_city"],
+                        addr_province=player_info["addr_province"],
+                        regular_rating=player_info["regular_rating"],
+                        regular_indicator=player_info['regular_indicator'],
+                        quick_rating=player_info['quick_rating'],
+                        quick_indicator=player_info['quick_indicator'],)
 
-        # Create and return a new player instance
-        return cls(
-            name_first=name_first,
-            name_last=name_last,
-            cfc_id=cfc_id,
-            regular_rating=0,
-            quick_rating=0
-        )
+        logger.debug("Created: %s with CFC ID: %s", player, player.cfc_id)
+
+        return player
