@@ -103,6 +103,9 @@ class Player(models.Model):
     def get_absolute_url(self):
         pass
 
+    def __str__(self):
+        return f"{self.name_first} {self.name_last} ({self.cfc_id})"
+
     @classmethod
     def create(cls, name: str, cfc_id: str) -> "Player":
         """
