@@ -26,7 +26,7 @@ NEW_PLAYER_TEMPLATE = "cfc_report/create/add-player-system-form.html"
 TOURNAMENT_PLAYER_FORM = "cfc_report/create/player-form.html"
 
 
-def _is_cfc_id_valid(cfc_id: str | int) -> bool:
+def is_cfc_id_valid(cfc_id: str | int) -> bool:
     """Validates whether the provided CFC ID is a 6-digit numeric identifier.
 
     Parameters
@@ -45,7 +45,7 @@ def _is_cfc_id_valid(cfc_id: str | int) -> bool:
 
 
 def _validate_player_data(data: dict) -> str | None:
-    """Validates player data from submitted form.
+    """Validates player data from the submitted form.
 
     Parameters
     ----------
@@ -62,7 +62,7 @@ def _validate_player_data(data: dict) -> str | None:
 
     if not player_name or not player_cfc_id:
         return "Both Player Name and CFC ID are required."
-    if not _is_cfc_id_valid(player_cfc_id):
+    if not is_cfc_id_valid(player_cfc_id):
         return "CFC ID is invalid. Please provide a valid 6-digit number."
     return None
 
@@ -129,7 +129,7 @@ def create_player(name: str, cfc_id: int) -> Player:
     if not name or not cfc_id:
         raise ValueError("Both Player Name and CFC ID are required.")
     # validate cfc id
-    if not _is_cfc_id_valid(cfc_id):
+    if not is_cfc_id_valid(cfc_id):
         raise ValueError("CFC ID is invalid. Please provide a valid 6-digit number.")
 
     player = Player.create(name, cfc_id)

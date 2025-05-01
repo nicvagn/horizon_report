@@ -23,7 +23,7 @@ SESSION_PLAYERS_KEY = "players"
 NEW_PLAYER_TEMPLATE = "cfc_report/create/add-player-system-form.html"
 TOURNAMENT_PLAYER_FORM = "cfc_report/create/player-form.html"
 
-from .session_utils import _is_cfc_id_valid
+from .session_utils import is_cfc_id_valid
 
 
 def create_player(name: str, cfc_id: str) -> Player:
@@ -52,7 +52,7 @@ def create_player(name: str, cfc_id: str) -> Player:
     if not name or not cfc_id:
         raise ValueError("Both Player Name and CFC ID are required.")
     # validate cfc id
-    if not _is_cfc_id_valid(cfc_id):
+    if not is_cfc_id_valid(cfc_id):
         raise ValueError("CFC ID is invalid. Please provide a valid 6-digit number.")
 
     player = Player.create(name, cfc_id)

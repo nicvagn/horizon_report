@@ -16,7 +16,7 @@
 
 from django.shortcuts import redirect
 
-from cfc_report.models.tournament import Tournament, Round
+from cfc_report.models import Tournament, Round
 from . import logger
 
 

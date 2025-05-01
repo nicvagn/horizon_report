@@ -1,5 +1,5 @@
-"""cfc_report admin.py"""
-# Copyright (C) 2024 Nicolas Vaagen
+"""Data model for a CFC rated tournament round"""
+# Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -13,13 +13,24 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django.contrib import admin
 
-from .models.match import Match
-from .models.player import Player
-from .models.roster import Roster
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 
-# Register your models here.
-admin.site.register(Player)
-admin.site.register(Roster)
-admin.site.register(Match)
+from cfc_report.models.tournament import Tournament
+
+
+class Round(models.Model):
+    """A Round in a CFC-rated tournament
+
+    Attributes
+    ----------
+    round_num : IntegerField
+        the round of its tournament this is
+    """
+
+    round_num = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(999)]
+    )
+
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)

@@ -17,7 +17,7 @@
 from django.shortcuts import render
 from django.views import View
 
-from cfc_report.models.tournament import Tournament, Round
+from cfc_report.models import Tournament, Round
 from . import logger
 
 
