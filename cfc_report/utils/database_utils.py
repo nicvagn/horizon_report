@@ -23,8 +23,10 @@ SESSION_PLAYERS_KEY = "players"
 NEW_PLAYER_TEMPLATE = "cfc_report/create/add-player-system-form.html"
 TOURNAMENT_PLAYER_FORM = "cfc_report/create/player-form.html"
 
+from .session_utils import _is_cfc_id_valid
 
-def create_player(name: str, cfc_id: int) -> Player:
+
+def create_player(name: str, cfc_id: str) -> Player:
     """Helper function to create a player and save it to the database.
 
     Notes
@@ -35,7 +37,7 @@ def create_player(name: str, cfc_id: int) -> Player:
     ----------
     name : str
         The name of the player to be created.
-    cfc_id : int
+    cfc_id : str
         The CFC ID of the player to be created.
 
     Raises
@@ -50,7 +52,7 @@ def create_player(name: str, cfc_id: int) -> Player:
     if not name or not cfc_id:
         raise ValueError("Both Player Name and CFC ID are required.")
     # validate cfc id
-    if not is_cfc_id_valid(cfc_id):
+    if not _is_cfc_id_valid(cfc_id):
         raise ValueError("CFC ID is invalid. Please provide a valid 6-digit number.")
 
     player = Player.create(name, cfc_id)

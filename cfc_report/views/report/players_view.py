@@ -14,3 +14,30 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render, redirect
+from django.views import View
+
+from cfc_report.models.player import Player
+
+
+class TournamentPlayersView(View):
+    """view for selecting players in a Report for a CFC Rated tournament."""
+
+    template_name = "cfc_report/create/tournament-players.html"
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Handle GET request - display available players."""
+        players = Player.objects.all()
+        return render(request, self.template_name, {'players': players})
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Handle POST request - process selected players."""
+        selected_players = request.POST.getlist('selected_players')
+        if not selected_players:
+            return render(request, self.template_name, {
+                'error': 'Please select at least one player'
+            })
+
+        request.session['players'] = selected_players
+        return redirect('report-create-round')

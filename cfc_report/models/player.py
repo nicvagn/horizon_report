@@ -98,13 +98,13 @@ class Player(models.Model):
         super().save(*args, **kwargs)
 
     def _generate_slug(self) -> str:
-        return f"{self.__name__}|{self.cfc_id}"
+        return f"{type(self).__name__}|{self.cfc_id}"
 
     def get_absolute_url(self):
         pass
 
     @classmethod
-    def create(cls, name: str, cfc_id: int) -> "Player":
+    def create(cls, name: str, cfc_id: str) -> "Player":
         """
         Factory method to create a new instance of Player.
 
@@ -112,7 +112,7 @@ class Player(models.Model):
         ----------
         name : str
             Full name of the player in format "First Last"
-        cfc_id : int
+        cfc_id : str
             Canadian Federation of Chess ID number
 
         Returns

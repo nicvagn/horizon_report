@@ -10,6 +10,7 @@ from .views.database.create_tournament import tournament_initial
 from .views.index import IndexView
 from .views.report.create_view import CreateReportView
 from .views.report.info_form_view import ReportInfoFormView
+from .views.report.players_view import TournamentPlayersView
 from .views.see.details import tournament_detail
 
 # URL prefix constants for better readability and reusability
@@ -34,6 +35,10 @@ urlpatterns = [
     path(f"{PLAYER_URL_PREFIX}{ADD_PLAYER_PATH}",
          add_player_database, name="add-new-player"),
 
+    path(f"{PLAYER_URL_PREFIX}{ADD_PLAYER_PATH}by-id/<str:cfc_id>/",
+         add_player_database,
+         name="add-cfc-player-by-id"),
+
     # Report-related operations
 
     # # in progress
@@ -46,7 +51,7 @@ urlpatterns = [
          name="report-tournament-initial"),
     path(f"{REPORT_URL_PREFIX}players/", TournamentPlayersView.as_view(),
          name='report-tournament-players'),
-    # # Round
+    # Round
     path(f"{ROUND_URL_PREFIX}", create_round_view, name="report-create-round"),
     # # # Match creation
     path(f"{ROUND_URL_PREFIX}match", chess_match, name="report-create-match"),

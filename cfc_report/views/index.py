@@ -25,7 +25,7 @@ class IndexView(TemplateView):
     template_name = "cfc_report/index.html"
 
     def get_context_data(self, **kwargs):
-        """Get players in system, and reports for homepage."""
+        """Get players in the system, and reports for homepage."""
         context = super().get_context_data(**kwargs)
         context["players"] = Player.objects.all()
         return context
