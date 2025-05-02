@@ -18,7 +18,6 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 
 from cfc_report.utils import cfc_api_utils
-from cfc_report.utils.database_utils import create_player
 from . import logger
 
 # constant for session players key
@@ -102,7 +101,7 @@ def add_player_database(request: HttpRequest, cfc_id: str = None) -> HttpRespons
     logger.debug("Processing add_player_database for request method: %s",
                  request.method)
 
-    # only proccess request if it is a POST, else show add player form
+    # only process request if it is a POST, else show the 'add player' form
     if request.method != "POST":
         return render(request, NEW_PLAYER_TEMPLATE)
 
@@ -116,6 +115,7 @@ def add_player_database(request: HttpRequest, cfc_id: str = None) -> HttpRespons
         })
 
     try:
+        breakpoint()
         player = create_player(p_info)
         logger.info("Successfully created player from CFC ID: %s", player)
     except ValueError as exc:

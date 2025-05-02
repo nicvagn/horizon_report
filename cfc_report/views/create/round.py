@@ -19,7 +19,6 @@ from django.shortcuts import render
 
 from cfc_report.forms import RoundForm
 from cfc_report.models import Round, Tournament, Match
-from cfc_report.utils.session_utils import get_session_players
 from . import logger
 
 
@@ -72,7 +71,8 @@ def create_round_view(request: HttpRequest, round_num=None) -> HttpResponse:
     matches = Match.objects.filter(
         round__tournament_id=t_id) if t_id else []
 
-    players = get_session_players(request)
+    players = None
+    breakpoint()
 
     context = {"form": form, "round_number": request.session.get("round_number"),
                "matches": matches, "players": players}
