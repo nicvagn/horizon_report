@@ -21,6 +21,7 @@
     {% include "cfc_report/show/partials/match-list.html" %}
 </section>
 
+{% if rounds %}
 <span>
   <h2>Created Rounds:</h2>
 </span>
@@ -28,36 +29,11 @@
 
 {% for round in rounds %}
 <div class="tournament-round">
-    <h3>Round: {{ round.number }}</h3>
+    {{ round }}
 
-    <h4>Matches:</h4>
-    <div id="round-matches">
-        <table>
-            <tr>
-                <th>White</th>
-                <th>Black</th>
-                <th>Result</th>
-            </tr>
-            {% for match in round.matches %}
-
-            <div id="{{match.pk}}">
-                <tr>
-                    <td>{{ match.white }}</td>
-                    <td>{{ match.black }}</td>
-                    <td>{{ match.winner }}</td>
-                </tr>
-                <a
-                        data-hx-target="#{{match.pk}}"
-                        data-hx-swap="outerHTML"
-                        data-hx-post="{{ match.get_absolute_url }}"
-                >Select</a>
-            </div>
-            {% endfor %}
-        </table>
-
-    </div>
 </div>
 {% endfor %}
+{% endif %}
 
 <span>
   <a href="{% url 'report-create-overview' %}">

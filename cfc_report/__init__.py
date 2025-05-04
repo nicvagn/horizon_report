@@ -1,37 +1,25 @@
-"""Logger setup for the package.
+"""module for creating a cfc report"""
+# Copyright (C) 2024  Nicolas Vaagen
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-This module configures logging for the package-level operations.
-"""
-import logging
+from horizon_report import setup_logger
 
-from .constants import DEBUG, FILE_HANDLER, LOGGER_NAME
-
-# Extracted constants for logging config
-LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-
-
-def setup_logger() -> logging.Logger:
-    """Set up and return configured logger for the package."""
-    logger: logging.Logger = logging.getLogger(LOGGER_NAME)
-    logger.setLevel(logging.DEBUG if DEBUG else logging.INFO)
-
-    # Configure logging format
-    formatter = logging.Formatter(LOG_FORMAT)
-
-    # Add file handler if specified
-    """if FILE_HANDLER:
-        file_handler = logging.FileHandler(FILE_HANDLER)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-    """
-    # Add a console handler
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
-
-    return logger
-
+# module level logger configuration
+debug = True
+file_handler = None
+logger_name = __name__
 
 # Initialize package logger
-logger = setup_logger()
-
+logger = setup_logger(debug, file_handler, logger_name)

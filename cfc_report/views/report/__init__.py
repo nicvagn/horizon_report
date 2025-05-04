@@ -1,4 +1,3 @@
-""" define constants for cfc_report"""
 # Copyright (C) 2024 Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -13,16 +12,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-DEBUG = True
-FILE_HANDLER = "CFC_REPORT_FileHandler.log"
-LOGGER_NAME = "CFC_REPORT"
+from horizon_report import setup_logger
 
-# URL constants to aid in portability
-# Base URL prefix for this app (defined for clarity and reuse)
-BASE_URL_PREFIX = ""
-# Path prefixes for specific subsections
-PLAYER_URL_PREFIX = f"{BASE_URL_PREFIX}player/"
-# Report URL prefix
-REPORT_URL_PREFIX = f"{BASE_URL_PREFIX}report/"
-# ROUND_URL_PREFIX
-ROUND_URL_PREFIX = f"{REPORT_URL_PREFIX}round/"
+# module level logger configuration
+debug = True
+file_handler = None
+logger_name = __name__
+
+# Initialize package logger
+logger = setup_logger(debug, file_handler, logger_name)

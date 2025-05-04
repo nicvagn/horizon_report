@@ -20,6 +20,7 @@ import datetime
 from django import forms
 from django.core.exceptions import ValidationError
 
+from cfc_report.utils.cfc_id_utils import is_cfc_id_valid
 from .fields import CfcIdField, PairingSystemField, ProvinceField
 
 
@@ -39,7 +40,7 @@ class TournamentInfoForm(forms.Form):
     pairing_system : PairingSystem
         The pairing system used in this tournament.
     province : Province
-        The canadian province this tournament was held
+        The Canadian province this tournament was held
     to_cfc : CfcIdField
         The CFC ID of the TournamentOrganizer
     td_cfc : CfcIdField
@@ -132,7 +133,8 @@ class TournamentInfoForm(forms.Form):
     def clean_to_cfc(self):
         """Validate the CFC ID format for the Tournament Organizer."""
         to_cfc = self.cleaned_data['to_cfc']
-        if to_cfc < 100000 or to_cfc > 999999:
+
+        if not is_cfc_id_valid(to_cfc):
             raise ValidationError('Tournament Organizer CFC ID must be a 6-digit number.')
         return to_cfc
 
@@ -143,6 +145,7 @@ class TournamentInfoForm(forms.Form):
     def clean_td_cfc(self):
         """Validate the CFC ID format for the Tournament Director."""
         td_cfc = self.cleaned_data['td_cfc']
-        if td_cfc < 100000 or td_cfc > 999999:
+
+        if not is_cfc_id_valid(td_cfc):
             raise ValidationError('Tournament Director CFC ID must be a 6-digit number.')
         return td_cfc

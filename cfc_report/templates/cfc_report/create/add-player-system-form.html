@@ -31,11 +31,6 @@ Add Player
 <form action='{% url "add-new-player" %}' method="post">
     {% csrf_token %}
     <p>
-        <label for="name">Name: </label>
-        <input id="name" name="player_name" type="text" value="" placeholder="Player Name"/>
-    </p>
-
-    <p>
         <label for="cfc_id">CFC ID: </label>
         <input id="cfc_id" name="player_cfc_id" type="text" value="" placeholder="Player CFC ID"/>
     </p>

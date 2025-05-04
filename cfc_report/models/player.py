@@ -1,0 +1,174 @@
+"""player models for CFC report builder"""
+# Copyright (C) 2024 Nicolas Vaagen
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+from django.db import models
+
+from .. import logger
+from .fields import CfcIdField
+from .tournament import Tournament
+
+
+class Player(models.Model):
+    """A player with a CFC id, associated with tournaments.
+    The base model for CFC API.
+
+    Attributes
+    ----------
+    Identification:
+        cfc_id : CfcIdField
+            Canadian Federation of Chess ID (primary key)
+        fide_id : IntegerField
+            International Chess Federation ID
+        cfc_expiry : DateField
+            Expiration date of CFC membership
+
+    Personal Info:
+        name_first : CharField
+            Player's first name
+        name_last : CharField
+            Player's last name
+        addr_city : CharField
+            City of residence
+        addr_province : CharField
+            Province of residence (2-letter code)
+
+    Ratings:
+        regular_rating : IntegerField
+            Standard chess rating
+        regular_indicator : IntegerField
+            Indicator for regular rating confidence
+        quick_rating : IntegerField
+            Quick chess rating
+        quick_indicator : IntegerField
+            Indicator for quick rating confidence
+
+    Relations:
+        tournaments : ManyToManyField
+            Tournaments this player participated in
+        slug : SlugField
+            URL-friendly unique identifier
+
+    Notes
+    -----
+    player is the base model used in the CFC API.
+    Players can be both organizers and directors.
+    """
+
+    # Identification
+    cfc_id: CfcIdField = CfcIdField(primary_key=True)
+    fide_id: models.IntegerField = models.IntegerField(default=0)
+    cfc_expiry: models.DateField = models.DateField(null=True)
+
+    # Personal Information
+    name_first: models.CharField = models.CharField(
+        default="John", max_length=40)
+    name_last: models.CharField = models.CharField(
+        default="Doe", max_length=40)
+    addr_city: models.CharField = models.CharField(max_length=80, null=True)
+    addr_province: models.CharField = models.CharField(max_length=2, null=True)
+
+    # Ratings
+    regular_rating: models.IntegerField = models.IntegerField(default=0)
+    regular_indicator: models.IntegerField = models.IntegerField(default=0)
+    quick_rating: models.IntegerField = models.IntegerField(default=0)
+    quick_indicator: models.IntegerField = models.IntegerField(null=True)
+
+    # Relations
+    tournaments = models.ManyToManyField(Tournament)
+    slug: models.SlugField = models.SlugField(
+        default="", unique=True, null=False)
+
+    def save(self, *args, **kwargs):
+        """Creates slug URL before saving the object."""
+        self.slug = self._generate_slug()
+        logger.info(
+            "(%s) saved. slug (%s) created for it",
+            self,
+            self.slug
+        )
+        super().save(*args, **kwargs)
+
+    def _generate_slug(self) -> str:
+        return f"{type(self).__name__}|{self.cfc_id}"
+
+    def get_absolute_url(self):
+        pass
+
+    def __str__(self):
+        return f"{self.name_first} {self.name_last} ({self.cfc_id})"
+
+    @classmethod
+    def create(cls, player_info: dict) -> "Player":
+        """
+        Factory method to create a new instance of Player.
+
+
+        Parameters
+        ----------
+        player_info : dict - JSON response from the API.
+            example:
+            {
+                'cfc_id': 123123,
+                'cfc_expiry': '2020-01-02',
+                'fide_id': 0,
+                'name_first': 'Michael',
+                'name_last': 'Williams',
+                'addr_city': "St.John's",
+                'addr_province': 'NL',
+                'regular_rating': 200,
+                'regular_indicator': 11,
+                'quick_rating': 200,
+                'quick_indicator': 11,
+                'events': [{'id': 199806005,
+                    'name': 'MacDonald Dr RR',
+                    'date_end': '1998-05-14',
+                    'rating_type': 'R',
+                    'games_played': 11,
+                    'score': 0.0,
+                    'rating_pre': 0,
+                    'rating_perf': 0,
+                    'rating_post': 200,
+                    'rating_indicator': 11}],
+                'orgarb': [],
+                'is_organizer': False,
+                'is_arbiter': False
+            },
+
+        Returns
+        -------
+        Player
+            New instance of Player with the basic information set
+
+        Raises
+        ------
+        ValueError
+            if the player_info is incomplete
+        """
+
+        player = Player(cfc_id=player_info["cfc_id"],
+                        fide_id=player_info["cfc_expiry"],
+                        name_first=player_info["name_first"],
+                        name_last=player_info["name_last"],
+                        addr_city=player_info["addr_city"],
+                        addr_province=player_info["addr_province"],
+                        regular_rating=player_info["regular_rating"],
+                        regular_indicator=player_info['regular_indicator'],
+                        quick_rating=player_info['quick_rating'],
+                        quick_indicator=player_info['quick_indicator'],)
+
+        logger.debug("Created: %s with CFC ID: %s", player, player.cfc_id)
+
+        return player

@@ -1,6 +1,5 @@
 """cfc_report admin.py"""
-# horizon_pair
-# Copyright (C) 2024  Nicolas Vaagen
+# Copyright (C) 2024 Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -16,13 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.contrib import admin
 
-from .models.person_with_cfc_id_models import Player, TournamentDirector, TournamentOrganizer
-from .models.tournament import Match, Roster
+from .models.match import Match
+from .models.player import Player
+from .models.roster import Roster
 
 # Register your models here.
-Roster
 admin.site.register(Player)
 admin.site.register(Roster)
-admin.site.register(TournamentDirector)
-admin.site.register(TournamentOrganizer)
 admin.site.register(Match)

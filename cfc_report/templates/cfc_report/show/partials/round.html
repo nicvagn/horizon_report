@@ -1,35 +1,34 @@
-
 <span>
-  <h1>Tournament Round: {{ round_number }}</h1>
+  <h3>Tournament Round: {{ round_number }}</h3>
 </span>
 
 <section id="round-{{ round_number }}">
-  <h4>Matches:</h4>
+    <h5>Matches:</h5>
     <table>
-      <tr>
-        <th>White</th>
-        <th>Black</th>
-        <th>Result</th>
-      </tr>
-      {% for match in round.matches %}
+        <tr>
+            <th>White</th>
+            <th>Black</th>
+            <th>Result</th>
+        </tr>
+        {% for match in round.matches %}
 
-      <div id="{{match.pk}}">
-      <tr>
-        <td>{{ match.white }}</td>
-        <td>{{ match.black }}</td>
-        <td>{{ match.winner }}</td>
-      </tr>
-        <a
-         data-hx-target="#{{match.pk}}"
-         data-hx-swap="outerHTML"
-         data-hx-post="{{ match.get_absolute_url }}"
-        >Select</a>
-       </div>
-      {% endfor %}
+        <div id="{{match.pk}}">
+            <tr>
+                <td>{{ match.white }}</td>
+                <td>{{ match.black }}</td>
+                <td>{{ match.winner }}</td>
+            </tr>
+            <a
+                    data-hx-target="#{{match.pk}}"
+                    data-hx-swap="outerHTML"
+                    data-hx-post="{{ match.get_absolute_url }}"
+            >Select</a>
+        </div>
+        {% endfor %}
     </table>
-  {% include "cfc_report/show/partials/match-list.html" %}
-  <hr>
-  <h4>Players:</h4>
-  {% include "cfc_report/show/partials/player-list.html" %}
-  <hr>
+    {% include "cfc_report/show/partials/match-list.html" %}
+    <hr>
+    <h5>Players:</h5>
+    {% include "cfc_report/show/partials/players.html" %}
+    <hr>
 </section>

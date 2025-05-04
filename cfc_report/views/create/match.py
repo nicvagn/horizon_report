@@ -16,10 +16,8 @@
 
 from django.shortcuts import render
 
-from cfc_report import logger
 from cfc_report.models import (Match, Round, )
-from cfc_report.utils.session_utils import (get_session_players,
-                                            get_session_matches)
+from . import logger
 
 
 def chess_match(request):
@@ -52,7 +50,7 @@ def chess_match(request):
         white = match_info["white"]
         logger.debug("CFC ids(black: %s, white: %s)", black, white)
         rnd = Round.objects.get(pk=request.session["round_pk"])
-        # create the chess match model, and save it to the db
+        # create the chess match model and save it to the db
         match = Match(white=white, black=black, result=result,
                       round=rnd)
         logger.debug(

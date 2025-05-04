@@ -1,5 +1,5 @@
 """ctr.py - models for CFC CTR Tournament report file."""
-# Copyright (C) 2024  Nicolas Vaagen
+# Copyright (C) 2024 Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -21,8 +21,8 @@ from cfc_report.models.tournament import Tournament
 class CTR(models.Model):
     """model wrapping CFC CTR (Tournament Report) File format
 
-    Attrabutes
-    ---------
+    Attributes
+    ----------
 
     TBA
     """
