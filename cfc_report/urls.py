@@ -40,17 +40,20 @@ urlpatterns = [
          name="add-cfc-player-by-id"),
 
     # Report-related operations
+    # # initial and players
+    path(f"{REPORT_URL_PREFIX}", ReportInfoFormView.as_view(),
+         name="create-report-initial"),
 
     # # in progress
     path(f"{REPORT_URL_PREFIX}in-progress", CreateReportView.as_view(),
          name="create-report-overview"),
-    # # initial and players
-    path(f"{REPORT_URL_PREFIX}", ReportInfoFormView.as_view(),
-         name="create-report-initial"),
+
     path(f"{REPORT_URL_PREFIX}initial", tournament_initial,
          name="report-tournament-initial"),
+
     path(f"{REPORT_URL_PREFIX}players/", TournamentPlayersView.as_view(),
          name='report-tournament-players'),
+
     # # Round
     path(f"{ROUND_URL_PREFIX}", create_round_view, name="report-create-round"),
     # # # Match creation

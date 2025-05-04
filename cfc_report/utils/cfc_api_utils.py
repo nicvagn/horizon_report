@@ -84,8 +84,11 @@ def get_player_info(cfc_id: str):
         api_info = r.json()
         logger.debug("CFC API response: %s", api_info)
 
+        if "name_first" not in api_info["player"]:
+            raise ValueError(f"cfc id: {cfc_id} did not return a player")
+
         return api_info["player"]
+
     except requests.exceptions.RequestException as e:
-        raise requests.exceptions.RequestException(f"Failed to get player data: {e}")
-    except ValueError as e:
-        raise ValueError(f"Invalid response from API: {e}")
+        raise requests.exceptions.RequestException(
+            f"Failed to make request: {e}")

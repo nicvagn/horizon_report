@@ -40,7 +40,7 @@ class TournamentInfoForm(forms.Form):
     pairing_system : PairingSystem
         The pairing system used in this tournament.
     province : Province
-        The canadian province this tournament was held
+        The Canadian province this tournament was held
     to_cfc : CfcIdField
         The CFC ID of the TournamentOrganizer
     td_cfc : CfcIdField

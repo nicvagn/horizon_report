@@ -15,13 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.db import models
 
-from cfc_report.models.tournament import Tournament
-
 
 class TMS(models.Model):
     """model wrapping CFC TMS (Tournament Report) File format
-    Attrabutes
-    ---------
+    Attributes
+    ----------
 
     TBA
     """

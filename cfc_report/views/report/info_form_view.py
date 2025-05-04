@@ -18,8 +18,30 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 
 from cfc_report.forms.tournament_info_form import TournamentInfoForm
-from cfc_report.types import TournamentInfo
+from cfc_report.models.tournament import Tournament
 from . import logger
+
+
+def create_tournament(form: TournamentInfoForm) -> Tournament:
+    """Creates (involves save) Tournament instance from form data.
+
+    Args:
+        form (TournamentInfoForm): The validated form containing tournament data.
+
+    Returns:
+        Tournament: The created Tournament instance.
+    """
+    tournament = Tournament.objects.create(
+        name=form.cleaned_data.get("name"),
+        num_rounds=form.cleaned_data.get("num_rounds"),
+        start_date=form.cleaned_data.get("start_date"),
+        end_date=form.cleaned_data.get("end_date"),
+        pairing_system=form.cleaned_data.get("pairing_system"),
+        province=form.cleaned_data.get("province"),
+        to_cfc=form.cleaned_data.get("to_cfc"),
+        td_cfc=form.cleaned_data.get("td_cfc"),
+    )
+    return tournament
 
 
 class ReportInfoFormView(FormView):
@@ -41,26 +63,18 @@ class ReportInfoFormView(FormView):
         """
 
         logger.debug("ReportInfoFormView.form_valid form: %s" % form)
-        self.set_session_tournament_info(form)
-
+        t = create_tournament(form)
+        logger.debug(
+            "ReportInfoFormView.form_valid - Created Tournament model" % t)
+        self.set_session_tournament_info(t)
         return super().form_valid(form)
 
-    def set_session_tournament_info(self, form: TournamentInfoForm):
+    def set_session_tournament_info(self, tournament: Tournament):
         """Sets tournament information in the user's session for later use.
 
         Args:
-            form (TournamentInfoForm): The form containing valid tournament data.
+             (TournamentInfoForm): The form containing valid tournament data.
         """
-        session_data: TournamentInfo = {
-            "name": form.cleaned_data.get("name"),
-            "num_rounds": form.cleaned_data.get("num_rounds"),
-            "start_date": form.cleaned_data.get("start_date"),
-            "end_date": form.cleaned_data.get("end_date"),
-            "pairing_system": form.cleaned_data.get("pairing_system"),
-            "province": form.cleaned_data.get("province"),
-            "to_cfc": form.cleaned_data.get("to_cfc"),
-            "td_cfc": form.cleaned_data.get("td_cfc"),
-        }
         self.request.session["round_number"] = 1
-        self.request.session["tournament_info"] = session_data
-        logger.debug("set_session_tournament_info: %s" % session_data)
+        self.request.session["tournament_id"] = tournament.id
+        logger.debug("set 'tournament_id' and 'round_number' in session")

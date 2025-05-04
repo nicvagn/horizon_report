@@ -62,7 +62,7 @@ class PairingSystemField(models.CharField):
 
 
 class ProvinceField(models.CharField):
-    """A canadian province field
+    """A Canadian province field
 
     Attributes
     ----------
