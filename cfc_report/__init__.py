@@ -1,5 +1,4 @@
 """module for creating a cfc report"""
-
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
