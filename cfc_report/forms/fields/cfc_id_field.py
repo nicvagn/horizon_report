@@ -1,7 +1,4 @@
-"""
-cfc_id_field.pyi - form fields
-"""
-
+"""cfc_id_field.py - form fields"""
 # Copyright (C) 2025 Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,15 +13,14 @@ cfc_id_field.pyi - form fields
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from django import forms
-
 from cfc_report.utils.cfc_id_utils import CfcIdValidator
+from django import forms
 
 
 class CfcIdField(forms.CharField):
     """A CFC ID field for validating Canadian Federation id.
 
-    Validates that the ID is a 6-digit integer
+    Validates that the ID is a 6-digit numeric string
 
     Attributes
     ----------
