@@ -35,10 +35,6 @@ urlpatterns = [
     path(f"{PLAYER_URL_PREFIX}{ADD_PLAYER_PATH}",
          add_player_database, name="add-new-player"),
 
-    path(f"{PLAYER_URL_PREFIX}{ADD_PLAYER_PATH}by-id/<str:cfc_id>/",
-         add_player_database,
-         name="add-cfc-player-by-id"),
-
     # Report-related operations
     # # initial and players
     path(f"{REPORT_URL_PREFIX}", ReportInfoFormView.as_view(),
@@ -62,9 +58,5 @@ urlpatterns = [
     # Details
     path(f"{BASE_URL_PREFIX}details/tournament/<int:pk>/", tournament_detail,
          name="tournament-detail"),
-
-    # HTMX
-    # path(f"{REPORT_URL_PREFIX}select-player/<str:cfc_id>",
-    #     toggle_player_session_view, name="report-toggle-player"),
 
 ]
