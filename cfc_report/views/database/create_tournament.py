@@ -25,7 +25,7 @@ def tournament_initial(request):
 
     info = request.session["tournament_info"]
     tournament = Tournament(
-        tournament_name=info["name"],
+        name=info["name"],
         num_rounds=info["num_rounds"],
         start_date=info["start_date"],
         end_date=info["end_date"],

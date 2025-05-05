@@ -68,7 +68,8 @@ def add_player_database(request: HttpRequest) -> HttpResponse:
 
         try:
             player = Player.create(p_info)
-            logger.info("Successfully created player from CFC ID: %s. Player info %s", player, p_info)
+            player.save()
+            logger.info("Successfully created (and saved) player from CFC ID: %s. Player info %s", player, p_info)
         except ValueError as exc:
             logger.error("Failed to create player with CFC ID '%s': %s",
                          cfc_id, exc)
