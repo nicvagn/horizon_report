@@ -16,9 +16,9 @@
 
 from django.db import models
 
+from .. import logger
 from .fields import CfcIdField
 from .tournament import Tournament
-from .. import logger
 
 
 class Player(models.Model):
@@ -73,8 +73,10 @@ class Player(models.Model):
     cfc_expiry: models.DateField = models.DateField(null=True)
 
     # Personal Information
-    name_first: models.CharField = models.CharField(max_length=40)
-    name_last: models.CharField = models.CharField(max_length=40)
+    name_first: models.CharField = models.CharField(
+        default="John", max_length=40)
+    name_last: models.CharField = models.CharField(
+        default="Doe", max_length=40)
     addr_city: models.CharField = models.CharField(max_length=80, null=True)
     addr_province: models.CharField = models.CharField(max_length=2, null=True)
 
@@ -86,7 +88,8 @@ class Player(models.Model):
 
     # Relations
     tournaments = models.ManyToManyField(Tournament)
-    slug: models.SlugField = models.SlugField(default="", unique=True, null=False)
+    slug: models.SlugField = models.SlugField(
+        default="", unique=True, null=False)
 
     def save(self, *args, **kwargs):
         """Creates slug URL before saving the object."""
