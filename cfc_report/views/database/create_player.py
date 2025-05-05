@@ -101,9 +101,13 @@ def add_player_database(request: HttpRequest, cfc_id: str = None) -> HttpRespons
     logger.debug("Processing add_player_database for request method: %s",
                  request.method)
 
-    # only process request if it is a POST, else show the 'add player' form
+    # only process the request if it is a POST, else show the 'add player' form
     if request.method != "POST":
         return render(request, NEW_PLAYER_TEMPLATE)
+
+    # if the cfc id is not included in the url, get it form the form
+    if not cfc_id:
+        cfc_id = request.POST.get("cfc_id")
 
     p_info = cfc_api_utils.get_player_info(cfc_id)
 
@@ -115,7 +119,6 @@ def add_player_database(request: HttpRequest, cfc_id: str = None) -> HttpRespons
         })
 
     try:
-        breakpoint()
         player = create_player(p_info)
         logger.info("Successfully created player from CFC ID: %s", player)
     except ValueError as exc:

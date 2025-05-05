@@ -1,4 +1,4 @@
-""" work with, and produce ctr cfc file """
+""" work with and produce ctr cfc file """
 # horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -27,7 +27,7 @@ class CtrCreationException(Exception):
     pass
 
 
-def make_match_report(self, m: Match, player: Player) -> List[str]:
+def make_match_report(m: Match, player: Player) -> List[str]:
     """make a match part of ctr report file for a given player
     returns: a list of strings to be written to ctr_report one per line"""
 
@@ -112,20 +112,17 @@ def CTR_builder(session, name=None, rounds=None,
 
     # get the pairing abbreviation
     if pairing_system == "Swiss":
-        pairing_abriviation = "S"
+        pairing_abbreviation = "S"
     else:
-        # Round Robin is default,
+        # Round Robin is the default;
         # I think this works ie: I think there are only 2 options
-        pairing_abriviation = "R"
+        pairing_abbreviation = "R"
 
     """List with one index per CTR line"""
-    ctr: List[str] = []
+    ctr: List[str] = [f'''"{name}","{province}","0","{pairing_abbreviation}","{
+    date}","{num_players}","{td_cfc_id}","{to_cfc_id}"''']
 
     # start by building the 1st line of the ctr
-    ctr.append(
-        f'''"{name}","{province}","0","{pairing_abriviation}","{
-        date}","{num_players}","{td_cfc_id}","{to_cfc_id}"'''
-    )
 
     logger.info("CTR_builder(...) made: ctr: %s", ctr)
 
@@ -151,10 +148,10 @@ def ctr_to_str(ctr) -> str:
     """take a ctr prototype and return a ctr report as a string
 
     """
-    ctr = ""
+    ctr_str = ""
     for line in ctr:
-        ctr += line + "\n"
-    return ctr
+        ctr_str += line + "\n"
+    return ctr_str
 
 
 if __name__ == "__main__":
@@ -167,7 +164,7 @@ if __name__ == "__main__":
          "date_year": "1",
          "date_month": "1",
          "date_day": "1", }
-    ctr = CTR_builder(T)
+    ctr_test = CTR_builder(T)
 
-    print(ctr)
-    ctr.write_to_file()
+    print(ctr_test)
+    ctr_test.write_to_file()
