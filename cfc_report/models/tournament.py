@@ -16,8 +16,8 @@
 
 from django.db import models
 
-from .. import logger
 from .fields import PairingSystemField, ProvinceField
+from .. import logger
 
 
 class Tournament(models.Model):
@@ -43,13 +43,14 @@ class Tournament(models.Model):
 
     SLUG_FORMAT = "{name}|{date}"
 
-    tournament_name = models.CharField(
+    name = models.CharField(
         help_text="Name of the tournament.",
         max_length=60,
         default="the tournament"
     )
     num_rounds = models.IntegerField()
     start_date = models.DateField(null=True)
+    rating_type = models.CharField(max_length=1, null=True)
     end_date = models.DateField(null=True)
     pairing_system = PairingSystemField()
     province = ProvinceField()
