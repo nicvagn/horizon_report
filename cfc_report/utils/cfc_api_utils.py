@@ -85,10 +85,10 @@ def get_player_info(cfc_id: str):
         logger.debug("CFC API response: %s", api_info)
 
         if "name_last" not in api_info["player"]:
-            raise ValueError(f"cfc id: {cfc_id} did not return a player")
+            raise ValueError(f"{api_path} did not return a player")
 
         return api_info["player"]
 
-    except httpx.exceptions.RequestException as e:
-        raise httpx.exceptions.RequestException(
-            f"Failed to make request: {e}")
+    except httpx.HTTPError as e:
+        raise httpx.HTTPError(
+            f"HTTP error: {e}")

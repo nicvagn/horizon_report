@@ -63,7 +63,7 @@ def add_player_database(request: HttpRequest) -> HttpResponse:
 
         if not p_info["name_first"]:
             return render(request, NEW_PLAYER_TEMPLATE, {
-                "error": f"Could not find player with CFC ID: {cfc_id}"
+                "error": f"Could not find player with CFC ID: {player_cfc_id}"
             })
 
         try:
@@ -71,8 +71,8 @@ def add_player_database(request: HttpRequest) -> HttpResponse:
             player.save()
             logger.info("Successfully created (and saved) player from CFC ID: %s. Player info %s", player, p_info)
         except ValueError as exc:
-            logger.error("Failed to create player with CFC ID '%s': %s",
-                         cfc_id, exc)
+            logger.error("Failed to create player with CFC ID '%s' -- %s",
+                         player_cfc_id, exc)
             return render(request, NEW_PLAYER_TEMPLATE, {
                 "error": str(exc)
             })
@@ -83,7 +83,7 @@ def add_player_database(request: HttpRequest) -> HttpResponse:
         logger.error("Failed to add player - %s", exc)
         return render(request, NEW_PLAYER_TEMPLATE, {
             "method": request.method,
-            "error": "Invalid CFC ID format. Please use a 6-digit number."
+            "error": "No player returned from CFC API."
         })
 
 
