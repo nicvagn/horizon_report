@@ -6,7 +6,6 @@ from django.urls import path
 from .views.create.match import chess_match
 from .views.create.round import create_round_view
 from .views.database.create_player import add_player_database
-from .views.database.create_tournament import tournament_initial
 from .views.index import IndexView
 from .views.report.create_view import CreateReportView
 from .views.report.info_form_view import ReportInfoFormView
@@ -35,10 +34,6 @@ urlpatterns = [
     path(f"{PLAYER_URL_PREFIX}{ADD_PLAYER_PATH}",
          add_player_database, name="add-new-player"),
 
-    path(f"{PLAYER_URL_PREFIX}{ADD_PLAYER_PATH}by-id/<str:cfc_id>/",
-         add_player_database,
-         name="add-cfc-player-by-id"),
-
     # Report-related operations
     # # initial and players
     path(f"{REPORT_URL_PREFIX}", ReportInfoFormView.as_view(),
@@ -47,9 +42,6 @@ urlpatterns = [
     # # in progress
     path(f"{REPORT_URL_PREFIX}in-progress", CreateReportView.as_view(),
          name="create-report-overview"),
-
-    path(f"{REPORT_URL_PREFIX}initial", tournament_initial,
-         name="report-tournament-initial"),
 
     path(f"{REPORT_URL_PREFIX}players/", TournamentPlayersView.as_view(),
          name='report-tournament-players'),
@@ -62,9 +54,5 @@ urlpatterns = [
     # Details
     path(f"{BASE_URL_PREFIX}details/tournament/<int:pk>/", tournament_detail,
          name="tournament-detail"),
-
-    # HTMX
-    # path(f"{REPORT_URL_PREFIX}select-player/<str:cfc_id>",
-    #     toggle_player_session_view, name="report-toggle-player"),
 
 ]

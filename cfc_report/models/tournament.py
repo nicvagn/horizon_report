@@ -16,8 +16,8 @@
 
 from django.db import models
 
+from .fields import PairingSystemField, ProvinceField, CfcIdField
 from .. import logger
-from .fields import PairingSystemField, ProvinceField
 
 
 class Tournament(models.Model):
@@ -43,7 +43,7 @@ class Tournament(models.Model):
 
     SLUG_FORMAT = "{name}|{date}"
 
-    tournament_name = models.CharField(
+    name = models.CharField(
         help_text="Name of the tournament.",
         max_length=60,
         default="the tournament"
@@ -51,8 +51,13 @@ class Tournament(models.Model):
     num_rounds = models.IntegerField()
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
+    rating_type = models.CharField(max_length=1, null=True)
     pairing_system = PairingSystemField()
     province = ProvinceField()
+
+    to_cfc = CfcIdField(null=True)
+    td_cfc = CfcIdField(null=True)
+
     slug = models.SlugField(null=True, unique=True)
 
     def _generate_slug(self):

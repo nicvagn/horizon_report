@@ -16,9 +16,9 @@
 
 from django.db import models
 
-from .. import logger
 from .fields import CfcIdField
 from .tournament import Tournament
+from .. import logger
 
 
 class Player(models.Model):
@@ -159,7 +159,7 @@ class Player(models.Model):
         """
 
         player = Player(cfc_id=player_info["cfc_id"],
-                        fide_id=player_info["cfc_expiry"],
+                        fide_id=player_info["fide_id"],
                         name_first=player_info["name_first"],
                         name_last=player_info["name_last"],
                         addr_city=player_info["addr_city"],
@@ -167,7 +167,7 @@ class Player(models.Model):
                         regular_rating=player_info["regular_rating"],
                         regular_indicator=player_info['regular_indicator'],
                         quick_rating=player_info['quick_rating'],
-                        quick_indicator=player_info['quick_indicator'],)
+                        quick_indicator=player_info['quick_indicator'], )
 
         logger.debug("Created: %s with CFC ID: %s", player, player.cfc_id)
 

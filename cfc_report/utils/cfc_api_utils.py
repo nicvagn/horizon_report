@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import requests
+import httpx
 
 from . import logger
 
@@ -70,7 +70,7 @@ def get_player_info(cfc_id: str):
 
     Raises
     ------
-    requests.exceptions.RequestException
+    httpx.exceptions.RequestException
         If the API request fails for any reason
     ValueError
         If the response is not valid JSON
@@ -78,17 +78,17 @@ def get_player_info(cfc_id: str):
     api_path = f"/api/player/v1/{cfc_id}"
 
     try:
-        r = requests.get(URL_STUB + api_path)
+        r = httpx.get(URL_STUB + api_path)
         r.raise_for_status()
 
         api_info = r.json()
         logger.debug("CFC API response: %s", api_info)
 
-        if "name_first" not in api_info["player"]:
-            raise ValueError(f"cfc id: {cfc_id} did not return a player")
+        if "name_last" not in api_info["player"]:
+            raise ValueError(f"{api_path} did not return a player")
 
         return api_info["player"]
 
-    except requests.exceptions.RequestException as e:
-        raise requests.exceptions.RequestException(
-            f"Failed to make request: {e}")
+    except httpx.HTTPError as e:
+        raise httpx.HTTPError(
+            f"HTTP error: {e}")
