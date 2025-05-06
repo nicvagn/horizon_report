@@ -22,7 +22,7 @@ from cfc_report.models.tournament import Tournament
 from . import logger
 
 
-def create_tournament(form: TournamentInfoForm) -> Tournament:
+def valid_form_create_tournament(form: TournamentInfoForm) -> Tournament:
     """Creates (involves save) Tournament instance from form data.
 
     Args:
@@ -63,9 +63,9 @@ class ReportInfoFormView(FormView):
         """
 
         logger.debug("ReportInfoFormView.form_valid form: %s" % form)
-        t = create_tournament(form)
+        t = valid_form_create_tournament(form)
         logger.debug(
-            "ReportInfoFormView.form_valid - Created Tournament model" % t)
+            "ReportInfoFormView.form_valid - Created Tournament model: %s" % t)
         self.set_session_tournament_info(t)
         return super().form_valid(form)
 

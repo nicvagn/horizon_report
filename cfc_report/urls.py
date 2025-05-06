@@ -8,7 +8,8 @@ from .views.create.round import create_round_view
 from .views.database.create_player import add_player_database
 from .views.index import IndexView
 from .views.report.create_view import CreateReportView
-from .views.report.info_form_view import ReportInfoFormView
+from .views.report.info_form_view import (ReportInfoFormView,
+                                          valid_form_create_tournament)
 from .views.report.players_view import TournamentPlayersView
 from .views.see.details import tournament_detail
 
@@ -38,6 +39,10 @@ urlpatterns = [
     # # initial and players
     path(f"{REPORT_URL_PREFIX}", ReportInfoFormView.as_view(),
          name="create-report-initial"),
+
+    # # initial - creates the tournament model and sets session vars
+    path(f"{REPORT_URL_PREFIX}", valid_form_create_tournament,
+         name="report-tournament-initial"),
 
     # # in progress
     path(f"{REPORT_URL_PREFIX}in-progress", CreateReportView.as_view(),

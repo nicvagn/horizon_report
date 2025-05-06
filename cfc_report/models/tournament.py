@@ -64,7 +64,7 @@ class Tournament(models.Model):
         """Generate a slug using the tournament name and start date."""
 
         slug = self.SLUG_FORMAT.format(
-            name=self.tournament_name,
+            name=self.name,
             date=self.start_date,
         )
 
@@ -105,4 +105,4 @@ class Tournament(models.Model):
 
     def __str__(self):
         """String representation of the Tournament."""
-        return self.tournament_name
+        return self.slug
