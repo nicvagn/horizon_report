@@ -49,7 +49,7 @@ class ReportInfoFormView(FormView):
     tournament."""
     template_name = "cfc_report/base/base-form.html"
     form_class = TournamentInfoForm
-    success_url = reverse_lazy("report-tournament-initial")
+    success_url = reverse_lazy("report-tournament-players")
     extra_context = {
         "title": "Enter tournament information",
         "submit_btn_txt": "Pick Players",
