@@ -18,9 +18,9 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 
-from . import logger
 from cfc_report.models.player import Player
 from cfc_report.utils import cfc_api_utils
+from . import logger
 
 # constant for session players key
 SESSION_PLAYERS_KEY = "players"
@@ -32,32 +32,28 @@ TOURNAMENT_PLAYER_FORM = "cfc_report/create/player-form.html"
 class TournamentPlayersView(View):
     """view for selecting players in a Report for a CFC Rated tournament."""
 
-    template_name = "cfc_report/create/tournament-players.html"
+    template_name = "cfc_report/report/players/tournament-players.html"
 
     def get(self, request: HttpRequest) -> HttpResponse:
         """Handle GET request - display available players."""
-        players = Player.objects.all()
+
+        players = request.session.get(SESSION_PLAYERS_KEY)
         return render(request, self.template_name, {'players': players})
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """Handle POST request - process selected players."""
-        selected_players = request.POST.getlist('selected_players')
-        if not selected_players:
+        tournament_players = request.POST.getlist(SESSION_PLAYERS_KEY)
+        if not tournament_players:
             return render(request, self.template_name, {
                 'error': 'Please select at least one player'
             })
 
-        request.session['players'] = selected_players
-        return redirect('report-create-round')
+        request.session[SESSION_PLAYERS_KEY] = tournament_players
+        return render(request, self.template_name, {'players': players})
 
 
 def add_player_tournament(request: HttpRequest) -> HttpResponse:
     """View to add a player to the report/tournament.
-
-    Notes
-    -----
-    Side effects:
-    - Modifies the database via `create_player`.
 
     Parameters
     ----------
@@ -67,44 +63,55 @@ def add_player_tournament(request: HttpRequest) -> HttpResponse:
     Returns
     -------
     HttpResponse
-        The rendered response for the player add page.
+        Redirects to tournament players page
     """
-    logger.debug("Processing add_player_database for request method: %s",
-                 request.method)
+    logger.debug("Processing add_player_tournament for request: %s", request)
+
     if request.method != "POST":
-        return render(request, NEW_PLAYER_TEMPLATE)
+        return redirect('report-tournament-players')
 
     player_data = request.POST
     logger.debug("Received POST data: %s", player_data)
+
     try:
-        player_cfc_id = player_data["player_cfc_id"]
+        player = create_player_from_cfc_id(player_data.get("player_cfc_id"))
 
-        # get player info from cfc api
-        p_info = cfc_api_utils.get_player_info(player_cfc_id)
+        request.session[SESSION_PLAYERS_KEY] += player
+        logger.info("Added player: %s", player)
 
-        logger.debug("Received player info: %s", p_info)
+        return redirect('report-tournament-players')
+    except (ValueError, KeyError) as e:
+        logger.error("Failed to add player: %s", str(e))
+        # Here you might want to add proper error handling, like showing an error message to user
+        raise e
 
-        if not p_info["name_first"]:
-            return render(request, NEW_PLAYER_TEMPLATE, {
-                "error": f"Could not find player with CFC ID: {player_cfc_id}"
-            })
 
-        try:
-            player = Player.create(p_info)
-            player.save()
-            logger.info("Successfully created (and saved) player from CFC ID: %s. Player info %s", player, p_info)
-        except ValueError as exc:
-            logger.error("Failed to create player with CFC ID '%s' -- %s",
-                         player_cfc_id, exc)
-            return render(request, NEW_PLAYER_TEMPLATE, {
-                "error": str(exc)
-            })
+def create_player_from_cfc_id(cfc_id: str | None) -> Player:
+    """Create a player from CFC ID by fetching data from CFC API.
 
-        logger.info("Successfully added player: %s", player)
-        return redirect('index')
-    except (ValueError, UnboundLocalError) as exc:
-        logger.error("Failed to add player - %s", exc)
-        return render(request, NEW_PLAYER_TEMPLATE, {
-            "method": request.method,
-            "error": "No player returned from CFC API."
-        })
+    Parameters
+    ----------
+    cfc_id : str | None
+        The CFC ID of the player
+
+    Returns
+    -------
+    Player
+        Created player instance
+
+    Raises
+    ------
+    ValueError
+        If CFC ID is invalid or player info cannot be retrieved
+    """
+    if not cfc_id:
+        raise ValueError("CFC ID is required")
+
+    player_info = cfc_api_utils.get_player_info(cfc_id)
+    logger.debug("Received player info: %s", player_info)
+
+    if not player_info.get("name_first"):
+        raise ValueError(f"Could not find player with CFC ID: {cfc_id}")
+
+
+    return player

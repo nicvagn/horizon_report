@@ -1,0 +1,43 @@
+{% extends "cfc_report/base/base.html" %}
+
+{% block page_title %}Enter Tournament Rounds{% endblock %}
+
+{% block nav_bar %}
+<a href="/" class="padded">
+    <input id="home_btn" type="button" value="Exit"/>
+</a>
+{% endblock %}
+
+{% block content %}
+
+<section id="round-builder">
+    <h1>Building round number {{ round_number }} </h1>
+
+    <a href="{% url 'report-create-match' %}">
+        <button>Enter matches</button>
+    </a>
+
+    <h4>Entered Matches:</h4>
+    {% include "cfc_report/show/partials/match-list.html" %}
+</section>
+
+{% if rounds %}
+<span>
+  <h2>Created Rounds:</h2>
+</span>
+<hr>
+
+{% for round in rounds %}
+<div class="tournament-round">
+    {{ round }}
+
+</div>
+{% endfor %}
+{% endif %}
+
+<span>
+  <a href="{% url 'report-create-overview' %}">
+    <input id="confirm_round_btn" type="button" value="finish round"/>
+  </a>
+</span>
+{% endblock %}

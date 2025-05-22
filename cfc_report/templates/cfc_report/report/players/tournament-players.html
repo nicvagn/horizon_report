@@ -8,8 +8,7 @@
 <div class="player-selection-container">
     <div class="add-players">
         <h3>Add Player to the tournament report</h3>
-        <p>Add a player, gets info from CFC API</p>
-        {% include "cfc_report/create/partials/add-player-cfc-api.html" %}
+        {% include "cfc_report/report/players/tournament-players-form.html" %}
     </div>
 
     <!-- Selected Players Table -->
@@ -53,9 +52,6 @@
 <div class="action-buttons">
     <a href="{% url 'create-report-overview' %}">
         <input type="button" value="Continue"/>
-    </a>
-    <a href="{% url 'add-new-player' %}">
-        <input type="button" value="Add New Player"/>
     </a>
 </div>
 

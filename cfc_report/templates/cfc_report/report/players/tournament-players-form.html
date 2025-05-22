@@ -1,0 +1,11 @@
+<form action='{% url "report-tournament-add-player" %}' method="post">
+    {% csrf_token %}
+    <p>
+        <label for="cfc_id">CFC ID: </label>
+        <input id="cfc_id" name="player_cfc_id" type="text" value="" placeholder="Player CFC ID"/>
+    </p>
+
+    <span>
+        <input id="add_player_btn" type="submit" value="add"/>
+    </span>
+</form>
