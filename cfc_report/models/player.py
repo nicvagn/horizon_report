@@ -92,7 +92,22 @@ class Player(models.Model):
         default="", unique=True, null=False)
 
     def save(self, *args, **kwargs):
-        """Creates slug URL before saving the object."""
+        """
+        Save the current instance to the database, ensuring a unique slug. overrides
+        save behavior by automatically generating a slug and add `force_update` flag and logs the action
+        to **kwargs.
+
+        Parameters
+        ----------
+        args : tuple
+            Positional arguments passed to the parent save method.
+        kwargs : dict
+            Keyword arguments passed to the parent save method. Includes a default
+            `force_update` flag set to `True`.
+        """
+
+        kwargs["force_update"] = True
+
         self.slug = self._generate_slug()
         logger.info(
             "(%s) saved. slug (%s) created for it",
@@ -172,3 +187,11 @@ class Player(models.Model):
         logger.debug("Created: %s with CFC ID: %s", player, player.cfc_id)
 
         return player
+
+    @classmethod
+    def create_player_if_not_exists(cls, player_info: dict) -> "Player":
+        if not Player.objects.filter(cfc_id=player_info['cfc_id']).exists():
+            player = Player.create(player_info)
+            player.save()
+            return player, True  # Created new player
+        return Player.objects.get(cfc_id=player_info['cfc_id']), False  # Player already existed

@@ -37,7 +37,8 @@ class TournamentPlayersView(View):
     def get(self, request: HttpRequest) -> HttpResponse:
         """Handle GET request - display available players."""
 
-        players = request.session.get(SESSION_PLAYERS_KEY)
+        players = request.session.get(SESSION_PLAYERS_KEY, default=[])
+
         return render(request, self.template_name, {'players': players})
 
     def post(self, request: HttpRequest) -> HttpResponse:
@@ -76,13 +77,19 @@ def add_player_tournament(request: HttpRequest) -> HttpResponse:
     try:
         player = create_player_from_cfc_id(player_data.get("player_cfc_id"))
 
-        request.session[SESSION_PLAYERS_KEY] += player
-        logger.info("Added player: %s", player)
+        player.save()  # SIDE EFFECT, player saved to database
+
+        players = request.session.get(SESSION_PLAYERS_KEY, default=[])
+
+        players.append(player_data.get("player_cfc_id"))
+
+        request.session[SESSION_PLAYERS_KEY] = players
+        logger.info("Added player: %s. Tournament players: %s", player, players)
 
         return redirect('report-tournament-players')
     except (ValueError, KeyError) as e:
         logger.error("Failed to add player: %s", str(e))
-        # Here you might want to add proper error handling, like showing an error message to user
+        # Here you might want to add proper error handling
         raise e
 
 
@@ -109,10 +116,10 @@ def create_player_from_cfc_id(cfc_id: str | None) -> Player:
 
     player_info = cfc_api_utils.get_player_info(cfc_id)
 
-    logger.debug("Received player info: %s", player_info)
-    # TODO Make player
-    raise Exception("not implemented")
-    if not player_info.get("name_first"):
-        raise ValueError(f"Could not find player with CFC ID: {cfc_id}")
+    player, created = Player.create_player_if_not_exists(player_info)
+    if created:
+        logger.info("Successfully created player from CFC ID: %s. Player info %s", player, player_info)
+    else:
+        logger.info("Successfully got player from CFC ID: %s. Player info %s", player, player_info)
 
     return player

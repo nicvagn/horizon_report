@@ -5,7 +5,7 @@ from django.urls import path
 
 from .views.create.match import chess_match
 from .views.create.round import create_round_view
-from .views.database.create_player import add_player_database
+from .views.database.add_player_database import add_player_database
 from .views.index import IndexView
 from .views.report.create_view import CreateReportView
 from .views.report.info_form_view import (ReportInfoFormView,
