@@ -108,10 +108,11 @@ def create_player_from_cfc_id(cfc_id: str | None) -> Player:
         raise ValueError("CFC ID is required")
 
     player_info = cfc_api_utils.get_player_info(cfc_id)
-    logger.debug("Received player info: %s", player_info)
 
+    logger.debug("Received player info: %s", player_info)
+    # TODO Make player
+    raise Exception("not implemented")
     if not player_info.get("name_first"):
         raise ValueError(f"Could not find player with CFC ID: {cfc_id}")
-
 
     return player
