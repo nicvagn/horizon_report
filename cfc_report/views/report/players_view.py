@@ -45,9 +45,8 @@ class TournamentPlayersView(View):
         """Handle POST request - process selected players."""
         tournament_players = request.POST.getlist(SESSION_PLAYERS_KEY)
         if not tournament_players:
-            return render(request, self.template_name, {
-                'error': 'Please select at least one player'
-            })
+            return render(request, self.template_name,
+                          {'error': 'Please select at least one player'})
 
         request.session[SESSION_PLAYERS_KEY] = tournament_players
         return render(request, self.template_name, {'players': players})
@@ -77,14 +76,13 @@ def add_player_tournament(request: HttpRequest) -> HttpResponse:
     try:
         player = create_player_from_cfc_id(player_data.get("player_cfc_id"))
 
-        player.save()  # SIDE EFFECT, player saved to database
-
         players = request.session.get(SESSION_PLAYERS_KEY, default=[])
 
         players.append(player_data.get("player_cfc_id"))
 
         request.session[SESSION_PLAYERS_KEY] = players
-        logger.info("Added player: %s. Tournament players: %s", player, players)
+        logger.info("Added player: %s. Tournament players: %s", player,
+                    players)
 
         request.session.modified = True
         return redirect('report-players')
@@ -94,7 +92,9 @@ def add_player_tournament(request: HttpRequest) -> HttpResponse:
         # Here you might want to add proper error handling
         raise e
 
-def remove_player_tournament(request: HttpRequest, id_to_rm=None) -> HttpResponse:
+
+def remove_player_tournament(request: HttpRequest,
+                             id_to_rm=None) -> HttpResponse:
     """View to remove a player from the report/tournament.
 
     Parameters
@@ -107,7 +107,8 @@ def remove_player_tournament(request: HttpRequest, id_to_rm=None) -> HttpRespons
     HttpResponse
         Redirects to tournament players page
     """
-    logger.debug("Processing remove_player_tournament for request: %s", request)
+    logger.debug("Processing remove_player_tournament for request: %s",
+                 request)
 
     if id_to_rm is None:
         logger.error("remove_player_tournament called without cfc id")
@@ -119,10 +120,10 @@ def remove_player_tournament(request: HttpRequest, id_to_rm=None) -> HttpRespons
         # tell django that session has changed
         request.session.modified = True
     else:
-        logger.error("remove_player_tournament called wit id not in tournament.")
+        logger.error(
+            "remove_player_tournament called wit id not in tournament.")
 
     redirect("report-players")
-
 
 
 def create_player_from_cfc_id(cfc_id: str | None) -> Player:
@@ -150,8 +151,12 @@ def create_player_from_cfc_id(cfc_id: str | None) -> Player:
 
     player, created = Player.create_player_if_not_exists(player_info)
     if created:
-        logger.info("Successfully created player from CFC ID: %s. Player info %s", player, player_info)
+        logger.info(
+            "Successfully created (saved) player from CFC ID: %s. Player info %s",
+            player, player_info)
+        player.save()  # SIDE EFFECT, player saved to database
     else:
-        logger.info("Successfully got player from CFC ID: %s. Player info %s", player, player_info)
+        logger.info("Successfully got player from CFC ID: %s. Player info %s",
+                    player, player_info)
 
     return player
