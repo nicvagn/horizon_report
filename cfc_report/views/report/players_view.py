@@ -69,7 +69,7 @@ def add_player_tournament(request: HttpRequest) -> HttpResponse:
     logger.debug("Processing add_player_tournament for request: %s", request)
 
     if request.method != "POST":
-        return redirect('report-tournament-players')
+        return redirect('report-players')
 
     player_data = request.POST
     logger.debug("Received POST data: %s", player_data)
@@ -86,11 +86,43 @@ def add_player_tournament(request: HttpRequest) -> HttpResponse:
         request.session[SESSION_PLAYERS_KEY] = players
         logger.info("Added player: %s. Tournament players: %s", player, players)
 
-        return redirect('report-tournament-players')
+        request.session.modified = True
+        return redirect('report-players')
+
     except (ValueError, KeyError) as e:
         logger.error("Failed to add player: %s", str(e))
         # Here you might want to add proper error handling
         raise e
+
+def remove_player_tournament(request: HttpRequest, id_to_rm=None) -> HttpResponse:
+    """View to remove a player from the report/tournament.
+
+    Parameters
+    ----------
+    request : HttpRequest
+        The HTTP request object.
+
+    Returns
+    -------
+    HttpResponse
+        Redirects to tournament players page
+    """
+    logger.debug("Processing remove_player_tournament for request: %s", request)
+
+    if id_to_rm is None:
+        logger.error("remove_player_tournament called without cfc id")
+        return redirect('report-players')
+
+    # remove id from the SESSION_PLAYERS list
+    if id_to_rm in request.session[SESSION_PLAYERS_KEY]:
+        del request.session[SESSION_PLAYERS_KEY][id_to_rm]
+        # tell django that session has changed
+        request.session.modified = True
+    else:
+        logger.error("remove_player_tournament called wit id not in tournament.")
+
+    redirect("report-players")
+
 
 
 def create_player_from_cfc_id(cfc_id: str | None) -> Player:

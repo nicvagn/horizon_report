@@ -24,7 +24,7 @@ from .fields import CfcIdField, PairingSystemField, ProvinceField
 
 
 class TournamentInfoForm(forms.Form):
-    """for getting info on a CFC rated tournament
+    """for getting info for a CFC rated tournament
 
     Attributes
     ----------
@@ -87,7 +87,7 @@ class TournamentInfoForm(forms.Form):
             raise ValidationError('Start date must be <= the end date.')
         # datetime objects are not json serializable
         return start_date.isoformat()
-    
+
     end_date = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         label="End Date",

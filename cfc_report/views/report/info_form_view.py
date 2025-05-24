@@ -62,7 +62,6 @@ class ReportInfoFormView(FormView):
         form processing.
         """
 
-        logger.debug("ReportInfoFormView.form_valid form: %s" % form)
         t = valid_form_create_tournament(form)
         logger.debug(
             "ReportInfoFormView.form_valid - Created Tournament model: %s" % t)

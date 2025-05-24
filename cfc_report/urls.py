@@ -10,7 +10,8 @@ from .views.index import IndexView
 from .views.report.create_view import CreateReportView
 from .views.report.info_form_view import (ReportInfoFormView,
                                           valid_form_create_tournament)
-from .views.report.players_view import TournamentPlayersView, add_player_tournament
+from .views.report.players_view import (TournamentPlayersView, add_player_tournament,
+                                        remove_player_tournament)
 from .views.see.details import tournament_detail
 
 # URL prefix constants for better readability and reusability
@@ -49,10 +50,12 @@ urlpatterns = [
          name="create-report-overview"),
     # # tournament players
     path(f"{REPORT_URL_PREFIX}players/", TournamentPlayersView.as_view(),
-         name='report-tournament-players'),
-
+         name='report-players'),
+    # # # add - rm
     path(f"{REPORT_URL_PREFIX}players/add", add_player_tournament,
-         name='report-tournament-add-player'),
+         name='report-add-player'),
+    path(f"{REPORT_URL_PREFIX}players/remove", remove_player_tournament,
+         name='report-remove-player'),
 
     # # Round
     path(f"{ROUND_URL_PREFIX}", create_round_view, name="report-create-round"),

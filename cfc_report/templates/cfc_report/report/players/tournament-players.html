@@ -3,7 +3,6 @@
 {% block page_title %}Select Tournament Players{% endblock %}
 
 {% block content %}
-<h1 class="title">Select Players for {{ tournament.tournament_name }}</h1>
 
 <div class="player-selection-container">
     <div class="add-players">
@@ -14,7 +13,7 @@
     <!-- Selected Players Table -->
     <div class="selected-players">
         <h3>Tournament Players</h3>
-        <table id="selected-players-list" class="players-table">
+        <table id="tournament-players-list" class="players-table">
             <thead>
             <tr>
                 <th>Name</th>
@@ -24,14 +23,14 @@
             </tr>
             </thead>
             <tbody>
-            {% for player in selected_players %}
+            {% for player in players %}
             <tr>
                 <td>{{ player.name_first }} {{ player.name_last }}</td>
                 <td>{{ player.cfc_id }}</td>
                 <td>{{ player.regular_rating }}</td>
                 <td>
                     <button
-                            hx-delete="{% url 'remove-tournament-player' %}"
+                            hx-delete="{% url 'report-remove-player' %}"
                             hx-vars="player_id:{{ player.id }}"
                             hx-target="closest tr"
                             hx-swap="outerHTML">
