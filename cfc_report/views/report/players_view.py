@@ -14,12 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, redirect
-from django.views import View
-
 from cfc_report.models.player import Player
 from cfc_report.utils import cfc_api_utils
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import redirect, render
+from django.views import View
+
 from . import logger
 
 # constant for session players key
@@ -43,12 +43,12 @@ class TournamentPlayersView(View):
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """Handle POST request - process selected players."""
-        tournament_players = request.POST.getlist(SESSION_PLAYERS_KEY)
-        if not tournament_players:
+        players = request.POST.getlist(SESSION_PLAYERS_KEY)
+        if not players:
             return render(request, self.template_name,
                           {'error': 'Please select at least one player'})
 
-        request.session[SESSION_PLAYERS_KEY] = tournament_players
+        request.session[SESSION_PLAYERS_KEY] = players
         return render(request, self.template_name, {'players': players})
 
 
