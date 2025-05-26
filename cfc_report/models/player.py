@@ -103,10 +103,7 @@ class Player(models.Model):
             Positional arguments passed to the parent save method.
         kwargs : dict
             Keyword arguments passed to the parent save method. Includes a default
-            `force_update` flag set to `True`.
         """
-
-        kwargs["force_update"] = True
 
         self.slug = self._generate_slug()
         logger.info(
@@ -192,6 +189,5 @@ class Player(models.Model):
     def create_player_if_not_exists(cls, player_info: dict) -> "Player":
         if not Player.objects.filter(cfc_id=player_info['cfc_id']).exists():
             player = Player.create(player_info)
-            player.save()
             return player, True  # Created new player
         return Player.objects.get(cfc_id=player_info['cfc_id']), False  # Player already existed

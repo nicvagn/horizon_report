@@ -17,9 +17,8 @@
 # Copyright (C) 2024  Nicolas Vaagen
 from typing import List
 
-# make a ctr tournament report file
-from cfc_report import logger
 from cfc_report.models import CTR, Match, Player
+from . import logger
 
 
 class CtrCreationException(Exception):

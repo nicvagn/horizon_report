@@ -18,7 +18,7 @@
             <tr>
                 <th>Name</th>
                 <th>CFC ID</th>
-                <th>Rating</th>
+                <th>Regular Rating</th>
                 <th>Remove</th>
             </tr>
             </thead>
@@ -30,8 +30,7 @@
                 <td>{{ player.regular_rating }}</td>
                 <td>
                     <button
-                            hx-delete="{% url 'report-remove-player' %}"
-                            hx-vars="player_id:{{ player.id }}"
+                            hx-get="{% url 'report-remove-player' player.cfc_id %}"
                             hx-target="closest tr"
                             hx-swap="outerHTML">
                         Remove

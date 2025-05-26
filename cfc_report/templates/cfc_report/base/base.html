@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 {% load static %}
+{% load django_htmx %}
 
 <html lang="en">
 
@@ -25,7 +26,7 @@
     <link rel="stylesheet" href="{% static 'pico.min.css' %}">
     <link rel="stylesheet" href="{% static 'styles.css' %}">
     <!-- HTMX -->
-    <script src="{% static 'htmx.min.js' %}" defer></script>
+    {% htmx_script %}
     <link rel="shortcut icon" type="image/png" href="{% static 'images/pawn-60.png' %}">
     <title>{% block page_title %}base.html title{% endblock %}</title>
 </head>

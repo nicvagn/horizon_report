@@ -14,12 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from cfc_report.models.player import Player
-from cfc_report.utils import cfc_api_utils
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views import View
 
+from cfc_report.models.player import Player
+from cfc_report.utils import cfc_api_utils
 from . import logger
 
 # constant for session players key
@@ -37,7 +37,16 @@ class TournamentPlayersView(View):
     def get(self, request: HttpRequest) -> HttpResponse:
         """Handle GET request - display available players."""
 
-        players = request.session.get(SESSION_PLAYERS_KEY, default=[])
+        player_ids = request.session.get(SESSION_PLAYERS_KEY, default=[])
+        players = []
+        for cfc_id in player_ids:
+            p = get_player_from_cfc_id(cfc_id)
+
+            if not p:
+                raise RuntimeError("player no got from cfc_id: %s", cfc_id)
+
+            logger.info("added Player %s to tournament players", p)
+            players.append(p)
 
         return render(request, self.template_name, {'players': players})
 
@@ -73,17 +82,15 @@ def add_player_tournament(request: HttpRequest) -> HttpResponse:
     player_data = request.POST
     logger.debug("Received POST data: %s", player_data)
 
+    player_cfc_id = player_data.get("player_cfc_id")
+    report_players = request.session.get(SESSION_PLAYERS_KEY, default=[])
     try:
-        player = create_player_from_cfc_id(player_data.get("player_cfc_id"))
+        player = get_player_from_cfc_id(player_cfc_id)
+        report_players.append(player_data.get("player_cfc_id"))
 
-        players = request.session.get(SESSION_PLAYERS_KEY, default=[])
-
-        players.append(player_data.get("player_cfc_id"))
-
-        request.session[SESSION_PLAYERS_KEY] = players
-        logger.info("Added player: %s. Tournament players: %s", player,
-                    players)
-
+        request.session[SESSION_PLAYERS_KEY] = report_players
+        logger.info("Added player: %s. Report players: %s", player,
+                    report_players)
         request.session.modified = True
         return redirect('report-players')
 
@@ -94,7 +101,7 @@ def add_player_tournament(request: HttpRequest) -> HttpResponse:
 
 
 def remove_player_tournament(request: HttpRequest,
-                             id_to_rm=None) -> HttpResponse:
+                             cfc_id=None) -> HttpResponse:
     """View to remove a player from the report/tournament.
 
     Parameters
@@ -105,29 +112,32 @@ def remove_player_tournament(request: HttpRequest,
     Returns
     -------
     HttpResponse
-        Redirects to tournament players page
+        an empty response to swap into html
     """
-    logger.debug("Processing remove_player_tournament for request: %s",
-                 request)
 
-    if id_to_rm is None:
+    if cfc_id is None:
         logger.error("remove_player_tournament called without cfc id")
         return redirect('report-players')
 
+    logger.debug("Processing remove_player_tournament for request: %s",
+                 request)
+
     # remove id from the SESSION_PLAYERS list
-    if id_to_rm in request.session[SESSION_PLAYERS_KEY]:
-        del request.session[SESSION_PLAYERS_KEY][id_to_rm]
-        # tell django that session has changed
+    if cfc_id in request.session[SESSION_PLAYERS_KEY]:
+        request.session[SESSION_PLAYERS_KEY].remove(cfc_id)
+        # tell django that the session has changed
         request.session.modified = True
     else:
         logger.error(
-            "remove_player_tournament called wit id not in tournament.")
+            "remove_player_tournament called with cfc_id not in tournament. id: %s",
+            cfc_id)
 
-    redirect("report-players")
+    # return an empty response to be swaped in
+    return HttpResponse("")
 
 
-def create_player_from_cfc_id(cfc_id: str | None) -> Player:
-    """Create a player from CFC ID by fetching data from CFC API.
+def get_player_from_cfc_id(cfc_id: str) -> Player:
+    """Get or create a player from CFC ID by fetching data from CFC API.
 
     Parameters
     ----------
@@ -154,7 +164,6 @@ def create_player_from_cfc_id(cfc_id: str | None) -> Player:
         logger.info(
             "Successfully created (saved) player from CFC ID: %s. Player info %s",
             player, player_info)
-        player.save()  # SIDE EFFECT, player saved to database
     else:
         logger.info("Successfully got player from CFC ID: %s. Player info %s",
                     player, player_info)

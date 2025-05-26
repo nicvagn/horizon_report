@@ -10,7 +10,8 @@ from .views.index import IndexView
 from .views.report.create_view import CreateReportView
 from .views.report.info_form_view import (ReportInfoFormView,
                                           valid_form_create_tournament)
-from .views.report.players_view import (TournamentPlayersView, add_player_tournament,
+from .views.report.players_view import (TournamentPlayersView,
+                                        add_player_tournament,
                                         remove_player_tournament)
 from .views.see.details import tournament_detail
 
@@ -34,27 +35,34 @@ urlpatterns = [
 
     # Player-related operations
     path(f"{PLAYER_URL_PREFIX}{ADD_PLAYER_PATH}",
-         add_player_database, name="add-new-player"),
+         add_player_database,
+         name="add-new-player"),
 
     # Report-related operations
     # # initial and players
-    path(f"{REPORT_URL_PREFIX}", ReportInfoFormView.as_view(),
+    path(f"{REPORT_URL_PREFIX}",
+         ReportInfoFormView.as_view(),
          name="create-report-initial"),
 
     # # initial - creates the tournament model and sets session vars
-    path(f"{REPORT_URL_PREFIX}", valid_form_create_tournament,
+    path(f"{REPORT_URL_PREFIX}",
+         valid_form_create_tournament,
          name="report-tournament-initial"),
 
     # # in progress
-    path(f"{REPORT_URL_PREFIX}in-progress", CreateReportView.as_view(),
+    path(f"{REPORT_URL_PREFIX}in-progress",
+         CreateReportView.as_view(),
          name="create-report-overview"),
     # # tournament players
-    path(f"{REPORT_URL_PREFIX}players/", TournamentPlayersView.as_view(),
+    path(f"{REPORT_URL_PREFIX}players/",
+         TournamentPlayersView.as_view(),
          name='report-players'),
     # # # add - rm players
-    path(f"{REPORT_URL_PREFIX}players/add", add_player_tournament,
+    path(f"{REPORT_URL_PREFIX}players/add",
+         add_player_tournament,
          name='report-add-player'),
-    path(f"{REPORT_URL_PREFIX}players/remove", remove_player_tournament,
+    path(f"{REPORT_URL_PREFIX}players/remove/<str:cfc_id>",
+         remove_player_tournament,
          name='report-remove-player'),
 
     # # Round
@@ -63,7 +71,7 @@ urlpatterns = [
     path(f"{ROUND_URL_PREFIX}match", chess_match, name="report-create-match"),
 
     # Details
-    path(f"{BASE_URL_PREFIX}details/tournament/<int:pk>/", tournament_detail,
+    path(f"{BASE_URL_PREFIX}details/tournament/<int:pk>/",
+         tournament_detail,
          name="tournament-detail"),
-
 ]
