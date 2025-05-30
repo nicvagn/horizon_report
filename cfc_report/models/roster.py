@@ -16,8 +16,6 @@
 
 from django.db import models
 
-from cfc_report.models.tournament import Tournament
-
 
 class Roster(models.Model):
     """A roster of players in a CFC-rated tournament
@@ -28,9 +26,4 @@ class Roster(models.Model):
         the tournament this roster is for
     """
 
-    tournament = models.OneToOneField(
-        Tournament,
-        on_delete=models.CASCADE,
-        related_name='roster'
-    )
     players = models.ManyToManyField("Player")
