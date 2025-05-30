@@ -60,7 +60,7 @@ class Tournament(models.Model):
     to_cfc = CfcIdField(null=True)
     td_cfc = CfcIdField(null=True)
 
-    roster = models.OneToOneField(Roster, on_delete=models.CASCADE, default=False)
+    roster = models.OneToOneField(Roster, on_delete=models.CASCADE, null=True)
 
     def _generate_slug(self):
         """Generate a slug using the tournament name and start date."""
