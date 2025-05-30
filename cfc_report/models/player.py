@@ -22,7 +22,8 @@ from .. import logger
 
 
 class Player(models.Model):
-    """A player with a CFC id, associated with tournaments. The base model for CFC API.
+    """A player with a CFC id, associated with tournaments.
+    The base model for CFC API.
 
     Attributes
     ----------
@@ -72,8 +73,10 @@ class Player(models.Model):
     cfc_expiry: models.DateField = models.DateField(null=True)
 
     # Personal Information
-    name_first: models.CharField = models.CharField(max_length=40)
-    name_last: models.CharField = models.CharField(max_length=40)
+    name_first: models.CharField = models.CharField(
+        default="John", max_length=40)
+    name_last: models.CharField = models.CharField(
+        default="Doe", max_length=40)
     addr_city: models.CharField = models.CharField(max_length=80, null=True)
     addr_province: models.CharField = models.CharField(max_length=2, null=True)
 
@@ -85,10 +88,23 @@ class Player(models.Model):
 
     # Relations
     tournaments = models.ManyToManyField(Tournament)
-    slug: models.SlugField = models.SlugField(default="", unique=True, null=False)
+    slug: models.SlugField = models.SlugField(
+        default="", unique=True, null=False)
 
     def save(self, *args, **kwargs):
-        """Creates slug URL before saving the object."""
+        """
+        Save the current instance to the database, ensuring a unique slug. overrides
+        save behavior by automatically generating a slug and add `force_update` flag and logs the action
+        to **kwargs.
+
+        Parameters
+        ----------
+        args : tuple
+            Positional arguments passed to the parent save method.
+        kwargs : dict
+            Keyword arguments passed to the parent save method. Includes a default
+        """
+
         self.slug = self._generate_slug()
         logger.info(
             "(%s) saved. slug (%s) created for it",
@@ -98,22 +114,50 @@ class Player(models.Model):
         super().save(*args, **kwargs)
 
     def _generate_slug(self) -> str:
-        return f"{self.__name__}|{self.cfc_id}"
+        return f"{type(self).__name__}|{self.cfc_id}"
 
     def get_absolute_url(self):
         pass
 
+    def __str__(self):
+        return f"{self.name_first} {self.name_last} ({self.cfc_id})"
+
     @classmethod
-    def create(cls, name: str, cfc_id: int) -> "Player":
+    def create(cls, player_info: dict) -> "Player":
         """
         Factory method to create a new instance of Player.
 
+
         Parameters
         ----------
-        name : str
-            Full name of the player in format "First Last"
-        cfc_id : int
-            Canadian Federation of Chess ID number
+        player_info : dict - JSON response from the API.
+            example:
+            {
+                'cfc_id': 123123,
+                'cfc_expiry': '2020-01-02',
+                'fide_id': 0,
+                'name_first': 'Michael',
+                'name_last': 'Williams',
+                'addr_city': "St.John's",
+                'addr_province': 'NL',
+                'regular_rating': 200,
+                'regular_indicator': 11,
+                'quick_rating': 200,
+                'quick_indicator': 11,
+                'events': [{'id': 199806005,
+                    'name': 'MacDonald Dr RR',
+                    'date_end': '1998-05-14',
+                    'rating_type': 'R',
+                    'games_played': 11,
+                    'score': 0.0,
+                    'rating_pre': 0,
+                    'rating_perf': 0,
+                    'rating_post': 200,
+                    'rating_indicator': 11}],
+                'orgarb': [],
+                'is_organizer': False,
+                'is_arbiter': False
+            },
 
         Returns
         -------
@@ -123,23 +167,27 @@ class Player(models.Model):
         Raises
         ------
         ValueError
-            If the name format is invalid (doesn't contain first and
-             last name separated by a space)
+            if the player_info is incomplete
         """
-        # Split the full name into parts
-        name_parts = name.strip().split()
-        if len(name_parts) < 2:
-            raise ValueError("Name must include both first and last name")
 
-        # Extract first and last name
-        name_first = name_parts[0]
-        name_last = " ".join(name_parts[1:])  # Join remaining parts as last name
+        player = Player(cfc_id=player_info["cfc_id"],
+                        fide_id=player_info["fide_id"],
+                        name_first=player_info["name_first"],
+                        name_last=player_info["name_last"],
+                        addr_city=player_info["addr_city"],
+                        addr_province=player_info["addr_province"],
+                        regular_rating=player_info["regular_rating"],
+                        regular_indicator=player_info['regular_indicator'],
+                        quick_rating=player_info['quick_rating'],
+                        quick_indicator=player_info['quick_indicator'], )
 
-        # Create and return a new player instance
-        return cls(
-            name_first=name_first,
-            name_last=name_last,
-            cfc_id=cfc_id,
-            regular_rating=0,
-            quick_rating=0
-        )
+        logger.debug("Created: %s with CFC ID: %s", player, player.cfc_id)
+
+        return player
+
+    @classmethod
+    def create_player_if_not_exists(cls, player_info: dict) -> "Player":
+        if not Player.objects.filter(cfc_id=player_info['cfc_id']).exists():
+            player = Player.create(player_info)
+            return player, True  # Created new player
+        return Player.objects.get(cfc_id=player_info['cfc_id']), False  # Player already existed

@@ -1,0 +1,82 @@
+{% extends "cfc_report/base/base.html" %}
+<!-- horizon_pair
+# Copyright (C) 2024  Nicolas Vaagen
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+{% block page_title %}
+Add Match to Round
+{% endblock %}
+
+{% block nav_bar %}
+{% endblock %}
+
+{% block content %}
+<h1 class="title"></h1>
+
+<form action='{% url "report-create-match" %}' method="post">
+  {% csrf_token %}
+  <p>
+    <label for="white_name">White: </label>
+
+    <select
+      id="white_name"
+      name="white"
+      type="text"
+      value=""
+      placeholder="White Player"
+      required>
+      {% for p in tournament_players %}
+      <option value={{ p.cfc_id }}> {{p.name}}({{p.cfc_id}}) </option>
+      {% endfor %}
+    </select>
+  </p>
+
+  <p>
+    <label for="black_name">Black: </label>
+
+    <select
+      id="black_name"
+      name="black"
+      type="text"
+      value=""
+      placeholder="Black Player"
+      required>
+      {% for p in tournament_players %}
+      <option value={{ p.cfc_id }}> {{p.name}}({{p.cfc_id}}) </option>
+      {% endfor %}
+    </select>
+  </p>
+
+  <p>
+    <p>Result:</p>
+    <span>
+      <input type="radio" name="result" id="white_won" value="1 - 0" required>
+      <label for="white_won">White won</label>
+      <input type="radio" name="result" id="black_won" value="0 - 1" required>
+      <label for="black_won">Black won</label>
+      <input type="radio" name="result" id="none_won" value="0.5 - 0.5" required>
+      <label for="none_won">Draw</label>
+    </span>
+  </p>
+
+  <span>
+    <input id="add_match_btn" type="submit" value="add game" />
+    <a href="{% url 'report-create-round' %}">
+      <input type="button" value="done adding games to round" />
+    </a>
+  </span>
+</form>
+{% endblock %}

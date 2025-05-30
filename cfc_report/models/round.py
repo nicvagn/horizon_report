@@ -1,5 +1,4 @@
-{% extends "horizon_report/base/base.html" %}
-<!-- horizon_report
+"""Data model for a CFC rated tournament round"""
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,14 +13,24 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
 
-{% block title %} Horizon Report {% endblock %} 
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 
-{% block content %}
-<h1>Horizon Report</h1>
+from cfc_report.models.tournament import Tournament
 
-<button>Make Report</button>
-<button>Download Report</button>
-<button>Load Report</button>
-{% endblock %}
+
+class Round(models.Model):
+    """A Round in a CFC-rated tournament
+
+    Attributes
+    ----------
+    round_num : IntegerField
+        the round of its tournament this is
+    """
+
+    round_num = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(999)]
+    )
+
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)

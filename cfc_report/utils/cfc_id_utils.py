@@ -19,18 +19,18 @@ import re
 from django.core.validators import RegexValidator
 
 
-def is_cfc_id_valid(cfc_id: int) -> bool:
-    """Check if the provided CFC ID is valid.
+def is_cfc_id_valid(cfc_id: str | int) -> bool:
+    """Validates whether the provided CFC ID is a 6-digit numeric identifier.
 
     Parameters
     ----------
-    cfc_id : int
-        The CFC ID to validate
+    cfc_id : str | int
+        The CFC ID, this is a 6-char string of digits.
 
     Returns
     -------
     bool
-        True if the CFC ID is valid (6 digits), False otherwise
+        True if valid, False otherwise.
     """
     return bool(re.match(r'^\d{6}$', str(cfc_id)))
 

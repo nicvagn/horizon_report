@@ -13,7 +13,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# set up logging
 
 import datetime
 
@@ -25,7 +24,7 @@ from .fields import CfcIdField, PairingSystemField, ProvinceField
 
 
 class TournamentInfoForm(forms.Form):
-    """for getting info on a CFC rated tournament
+    """for getting info for a CFC rated tournament
 
     Attributes
     ----------
@@ -40,7 +39,7 @@ class TournamentInfoForm(forms.Form):
     pairing_system : PairingSystem
         The pairing system used in this tournament.
     province : Province
-        The canadian province this tournament was held
+        The Canadian province this tournament was held
     to_cfc : CfcIdField
         The CFC ID of the TournamentOrganizer
     td_cfc : CfcIdField
@@ -83,11 +82,10 @@ class TournamentInfoForm(forms.Form):
         """Ensure the start date is not in the past, and format it into an
         ISO 8601 string."""
         start_date = self.cleaned_data['start_date']
-
-        if start_date < datetime.date.today():
-            raise ValidationError('Start date cannot be in the past.')
-
-        # DateTime obj are not json serializable
+        end_date = self.cleaned_data.get('end_date')
+        if end_date and datetime.date.fromisoformat(start_date) > end_date:
+            raise ValidationError('Start date must be <= the end date.')
+        # datetime objects are not json serializable
         return start_date.isoformat()
 
     end_date = forms.DateField(
@@ -101,10 +99,11 @@ class TournamentInfoForm(forms.Form):
         """Validate that the end date occurs after the start date, and format it
             into an ISO 8601 string.
         """
-        start_date = self.cleaned_data.get('start_date')
         end_date = self.cleaned_data['end_date']
+        # get cleaned start date for validation
+        start_date = self.cleaned_data.get('start_date')
         if start_date and datetime.date.fromisoformat(start_date) > end_date:
-            raise ValidationError('End date must be <= the start date.')
+            raise ValidationError('End date must be >= the start date.')
         return end_date.isoformat()
 
     pairing_system = PairingSystemField(

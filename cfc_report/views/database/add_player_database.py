@@ -17,7 +17,8 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 
-from cfc_report.utils.database_utils import create_player
+from cfc_report.models.player import Player
+from cfc_report.utils import cfc_api_utils
 from . import logger
 
 # constant for session players key
@@ -47,24 +48,40 @@ def add_player_database(request: HttpRequest) -> HttpResponse:
     """
     logger.debug("Processing add_player_database for request method: %s",
                  request.method)
-
     if request.method != "POST":
         return render(request, NEW_PLAYER_TEMPLATE)
 
     player_data = request.POST
     logger.debug("Received POST data: %s", player_data)
-
     try:
-        player_name = player_data["player_name"]
-        player_cfc_id = int(player_data["player_cfc_id"])
-        player = create_player(player_name, player_cfc_id)
+        player_cfc_id = player_data["player_cfc_id"]
+
+        # get player info from cfc api
+        p_info = cfc_api_utils.get_player_info(player_cfc_id)
+
+        logger.debug("Received player info: %s", p_info)
+
+        if not p_info["name_first"]:
+            return render(request, NEW_PLAYER_TEMPLATE, {
+                "error": f"Could not find player with CFC ID: {player_cfc_id}"
+            })
+
+        try:
+            player = Player.create(p_info)
+            player.save()
+            logger.info("Successfully created (and saved) player from CFC ID: %s. Player info %s", player, p_info)
+        except ValueError as exc:
+            logger.error("Failed to create player with CFC ID '%s' -- %s",
+                         player_cfc_id, exc)
+            return render(request, NEW_PLAYER_TEMPLATE, {
+                "error": str(exc)
+            })
+
         logger.info("Successfully added player: %s", player)
+        return redirect('index')
     except (ValueError, UnboundLocalError) as exc:
-        logger.error("Failed to add player with CFC ID '%s': %s",
-                     player_cfc_id, exc)
+        logger.error("Failed to add player - %s", exc)
         return render(request, NEW_PLAYER_TEMPLATE, {
             "method": request.method,
-            "error": "Invalid CFC ID format. Please use a 6-digit number."
+            "error": "No player returned from CFC API."
         })
-
-    return redirect("index")

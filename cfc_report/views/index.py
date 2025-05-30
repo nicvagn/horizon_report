@@ -16,16 +16,8 @@
 
 from django.views.generic import TemplateView
 
-from cfc_report.models import Player
-
 
 class IndexView(TemplateView):
-    """ index page for cfc_report """
+    """index page for cfc report builder"""
 
     template_name = "cfc_report/index.html"
-
-    def get_context_data(self, **kwargs):
-        """Get players in system, and reports for homepage."""
-        context = super().get_context_data(**kwargs)
-        context["players"] = Player.objects.all()
-        return context

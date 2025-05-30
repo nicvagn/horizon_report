@@ -3,38 +3,34 @@
 {% block page_title %}Select Tournament Players{% endblock %}
 
 {% block content %}
-<h1 class="title">Select Players for {{ tournament.tournament_name }}</h1>
 
 <div class="player-selection-container">
-    <!-- Available Players Table -->
     <div class="add-players">
-        <h3>Add Players</h3>
-
-        <p>Add a player, gets info from CFC API</p>
+        <h3>Add Player to the tournament report</h3>
+        {% include "cfc_report/report/players/tournament-players-form.html" %}
     </div>
 
     <!-- Selected Players Table -->
     <div class="selected-players">
         <h3>Tournament Players</h3>
-        <table id="selected-players-list" class="players-table">
+        <table id="tournament-players-list" class="players-table">
             <thead>
             <tr>
                 <th>Name</th>
                 <th>CFC ID</th>
-                <th>Rating</th>
+                <th>Regular Rating</th>
                 <th>Remove</th>
             </tr>
             </thead>
             <tbody>
-            {% for player in selected_players %}
+            {% for player in players %}
             <tr>
                 <td>{{ player.name_first }} {{ player.name_last }}</td>
                 <td>{{ player.cfc_id }}</td>
                 <td>{{ player.regular_rating }}</td>
                 <td>
                     <button
-                            hx-delete="{% url 'remove-tournament-player' %}"
-                            hx-vars="player_id:{{ player.id }}"
+                            hx-get="{% url 'report-remove-player' player.cfc_id %}"
                             hx-target="closest tr"
                             hx-swap="outerHTML">
                         Remove
@@ -52,11 +48,8 @@
 </div>
 
 <div class="action-buttons">
-    <a href="{% url 'create-report' %}">
+    <a href="{% url 'create-report-overview' %}">
         <input type="button" value="Continue"/>
-    </a>
-    <a href="{% url 'add-new-player' %}">
-        <input type="button" value="Add New Player"/>
     </a>
 </div>
 

@@ -17,7 +17,7 @@
 from django.shortcuts import render
 from django.views import View
 
-from cfc_report.models.tournament import Tournament, Round
+from cfc_report.models import Tournament, Round
 from . import logger
 
 
@@ -37,9 +37,10 @@ class CreateReportView(View):
         Returns:
             Rendered template with tournament and rounds context
         """
+        logger.debug("CreateReportView.get(...). session: %s", request.session)
         t_id = request.session["tournament_id"]
         t_info = request.session["tournament_info"]
-        tournament = Tournament.objects.get(pk=t_id)
+        tournament = Tournament.objects.get_or_create(pk=t_id)
         # Get players from the tournament roster
         players = tournament.roster.players.all()
         # Fetch the tournament's built rounds

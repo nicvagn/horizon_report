@@ -15,8 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.contrib import admin
 
+from .models.match import Match
 from .models.player import Player
-from .models.tournament import Match, Roster
+from .models.roster import Roster
 
 # Register your models here.
 admin.site.register(Player)

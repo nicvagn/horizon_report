@@ -1,4 +1,4 @@
-"""module for creating a cfc report"""
+"""Data model for a CFC rated tournament roster of Players"""
 # Copyright (C) 2024  Nicolas Vaagen
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,11 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from horizon_report import setup_logger
+from django.db import models
 
-# module level logger configuration
-debug = True
-file_handler = None
-logger_name = __name__
-# Initialize package logger
-logger = setup_logger(debug, file_handler, logger_name)
+from cfc_report.models.tournament import Tournament
+
+
+class Roster(models.Model):
+    """A roster of players in a CFC-rated tournament
+
+    Attributes
+    ----------
+    tournament : OneToOneField
+        the tournament this roster is for
+    """
+
+    tournament = models.OneToOneField(
+        Tournament,
+        on_delete=models.CASCADE,
+        related_name='roster'
+    )
+    players = models.ManyToManyField("Player")
