@@ -1,7 +1,7 @@
 {% extends "cfc_report/base/base.html" %}
 {% block page_title %} Horizon Report {% endblock %}
 {% block content %}
-<h1 class="title">SK Horizon CC: CFC Report Builder</h1>
+<h1 class="title">SK Horizon Chess: CFC Report Builder</h1>
 <h3>Available Reports:</h3>
 <ul>
     {% if reports|length < 1 %}
@@ -14,12 +14,8 @@
     {% endfor %}
 </ul>
 <hr>
-{% include "cfc_report/show/partials/players.html" with players_heading="Players in system:" %}
 
 <a href="{% url 'create-report-initial' %}">
     <input id="create_report_btn" type="button" value="create report"/>
-</a>
-<a href="{% url 'add-new-player' %}">
-    <input id="add_player_btn" type="button" value="add player"/>
 </a>
 {% endblock %}
