@@ -39,8 +39,7 @@ class CreateReportView(View):
         """
         logger.debug("CreateReportView.get(...). session: %s", request.session)
         t_id = request.session["tournament_id"]
-        t_info = request.session["tournament_info"]
-        tournament = Tournament.objects.get_or_create(pk=t_id)
+        tournament, created = Tournament.objects.get_or_create(pk=t_id)
         # Get players from the tournament roster
         players = tournament.roster.players.all()
         # Fetch the tournament's built rounds
@@ -50,7 +49,7 @@ class CreateReportView(View):
                     % (tournament, rounds, players))
 
         context = {
-            "tournament_name": t_info["name"],
+            "tournament_name": tournament.name,
             "rounds": rounds,
             "players": players
         }

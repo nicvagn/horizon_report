@@ -16,6 +16,8 @@
 
 from django.db import models
 
+from .player import Player
+
 
 class Roster(models.Model):
     """A roster of players in a CFC-rated tournament
@@ -26,4 +28,4 @@ class Roster(models.Model):
         the tournament this roster is for
     """
 
-    players = models.ManyToManyField("Player")
+    players = models.ManyToManyField(Player)

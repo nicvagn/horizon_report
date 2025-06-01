@@ -108,6 +108,7 @@ def remove_player_tournament(request: HttpRequest,
     ----------
     request : HttpRequest
         The HTTP request object.
+    cfc_id : id of player to remove
 
     Returns
     -------

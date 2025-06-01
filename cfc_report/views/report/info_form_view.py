@@ -18,6 +18,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 
 from cfc_report.forms.tournament_info_form import TournamentInfoForm
+from cfc_report.models.roster import Roster
 from cfc_report.models.tournament import Tournament
 from . import logger
 
@@ -31,6 +32,9 @@ def valid_form_create_tournament(form: TournamentInfoForm) -> Tournament:
     Returns:
         Tournament: The created Tournament instance.
     """
+    # create an empty roster for a tournament
+    roster = Roster.objects.create()
+
     tournament = Tournament.objects.create(
         name=form.cleaned_data.get("name"),
         num_rounds=form.cleaned_data.get("num_rounds"),
@@ -40,6 +44,7 @@ def valid_form_create_tournament(form: TournamentInfoForm) -> Tournament:
         province=form.cleaned_data.get("province"),
         to_cfc=form.cleaned_data.get("to_cfc"),
         td_cfc=form.cleaned_data.get("td_cfc"),
+        roster=roster,
     )
     return tournament
 

@@ -18,7 +18,6 @@ from django.db import models
 
 from . import logger
 from .fields import PairingSystemField, ProvinceField, CfcIdField
-from .roster import Roster
 
 
 class Tournament(models.Model):
@@ -26,7 +25,7 @@ class Tournament(models.Model):
 
     Attributes
     ----------
-    tournament_name : models.CharField
+    name : models.CharField
         The name of the tournament.
     num_rounds : models.IntegerField
         The number of rounds in the tournament.
@@ -60,7 +59,7 @@ class Tournament(models.Model):
     to_cfc = CfcIdField(null=True)
     td_cfc = CfcIdField(null=True)
 
-    roster = models.OneToOneField(Roster, on_delete=models.CASCADE, null=True)
+    roster = models.OneToOneField("Roster", on_delete=models.CASCADE, null=True)
 
     def _generate_slug(self):
         """Generate a slug using the tournament name and start date."""
@@ -107,4 +106,4 @@ class Tournament(models.Model):
 
     def __str__(self):
         """String representation of the Tournament."""
-        return self.slug
+        return str(self.slug)
