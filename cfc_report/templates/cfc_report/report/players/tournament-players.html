@@ -4,6 +4,10 @@
 
 {% block content %}
 
+{% if error|length > 0 %}
+  <h5>{{ error }}</h5>
+{% endif %}
+
 <div class="player-selection-container">
     <div class="add-players">
         <h3>Add Player to the tournament report</h3>
