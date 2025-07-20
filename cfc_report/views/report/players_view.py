@@ -61,8 +61,9 @@ class TournamentPlayersView(View):
         request.session[SESSION_PLAYERS_KEY] = players
         return render(request, TOURNAMENT_PLAYER_FORM, {'players': players})
 
-    def add_player_tournament(self, request: HttpRequest) -> HttpResponse:
-        """View to add a player to the report/tournament.
+
+def add_player_tournament(request: HttpRequest) -> HttpResponse:
+    """View to add a player to the report/tournament.
 
         Parameters
         ----------
@@ -74,35 +75,34 @@ class TournamentPlayersView(View):
         HttpResponse
             Redirects to tournament players page
         """
-        logger.debug("Processing add_player_tournament for request: %s",
-                     request)
+    logger.debug("Processing add_player_tournament for request: %s", request)
 
-        if request.method != "POST":
-            return redirect('report-players')
+    if request.method != "POST":
+        return redirect('report-players')
 
-        player_data = request.POST
-        logger.debug("Received POST data: %s", player_data)
+    player_data = request.POST
+    logger.debug("Received POST data: %s", player_data)
 
-        player_cfc_id = player_data.get("player_cfc_id")
-        report_players = request.session.get(SESSION_PLAYERS_KEY, default=[])
-        try:
-            player = get_player_from_cfc_id(player_cfc_id)
-            report_players.append(player_data.get("player_cfc_id"))
+    player_cfc_id = player_data.get("player_cfc_id")
+    report_players = request.session.get(SESSION_PLAYERS_KEY, default=[])
+    try:
+        player = get_player_from_cfc_id(player_cfc_id)
+        report_players.append(player_data.get("player_cfc_id"))
 
-            request.session[SESSION_PLAYERS_KEY] = report_players
-            logger.info("Added player: %s. Report players: %s", player,
-                        report_players)
-            request.session.modified = True
-            return redirect('report-players')
+        request.session[SESSION_PLAYERS_KEY] = report_players
+        logger.info("Added player: %s. Report players: %s", player,
+                    report_players)
+        request.session.modified = True
+        return redirect('report-players')
 
-        except (ValueError, KeyError) as e:
-            logger.error("Failed to add player: %s", str(e))
-            return self.get(request, error=str(e))
+    except (ValueError, KeyError) as e:
+        logger.error("Failed to add player: %s", str(e))
+        return self.get(request, error=str(e))
 
-    def remove_player_tournament(self,
-                                 request: HttpRequest,
-                                 cfc_id=None) -> HttpResponse:
-        """View to remove a player from the report/tournament.
+
+def remove_player_tournament(request: HttpRequest,
+                             cfc_id=None) -> HttpResponse:
+    """View to remove a player from the report/tournament.
 
         Parameters
         ----------
@@ -116,25 +116,25 @@ class TournamentPlayersView(View):
             an empty response to swap into html
         """
 
-        if cfc_id is None:
-            logger.error("remove_player_tournament called without cfc id")
-            return redirect('report-players')
+    if cfc_id is None:
+        logger.error("remove_player_tournament called without cfc id")
+        return redirect('report-players')
 
-        logger.debug("Processing remove_player_tournament for request: %s",
-                     request)
+    logger.debug("Processing remove_player_tournament for request: %s",
+                 request)
 
-        # remove id from the SESSION_PLAYERS list
-        if cfc_id in request.session[SESSION_PLAYERS_KEY]:
-            request.session[SESSION_PLAYERS_KEY].remove(cfc_id)
-            # tell django that the session has changed
-            request.session.modified = True
-        else:
-            logger.error(
-                "remove_player_tournament called with cfc_id not in tournament. id: %s",
-                cfc_id)
+    # remove id from the SESSION_PLAYERS list
+    if cfc_id in request.session[SESSION_PLAYERS_KEY]:
+        request.session[SESSION_PLAYERS_KEY].remove(cfc_id)
+        # tell django that the session has changed
+        request.session.modified = True
+    else:
+        logger.error(
+            "remove_player_tournament called with cfc_id not in tournament. id: %s",
+            cfc_id)
 
-        # return an empty response to be swaped in
-        return HttpResponse("")
+    # return an empty response to be swaped in
+    return HttpResponse("")
 
 
 def get_player_from_cfc_id(cfc_id: str) -> Player:
