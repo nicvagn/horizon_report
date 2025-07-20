@@ -65,16 +65,16 @@ class TournamentPlayersView(View):
 def add_player_tournament(request: HttpRequest) -> HttpResponse:
     """View to add a player to the report/tournament.
 
-        Parameters
-        ----------
-        request : HttpRequest
-            The HTTP request object.
+    Parameters
+    ----------
+    request : HttpRequest
+        The HTTP request object.
 
-        Returns
-        -------
-        HttpResponse
-            Redirects to tournament players page
-        """
+    Returns
+    -------
+    HttpResponse
+        Redirects to tournament players page
+    """
     logger.debug("Processing add_player_tournament for request: %s", request)
 
     if request.method != "POST":
@@ -97,24 +97,24 @@ def add_player_tournament(request: HttpRequest) -> HttpResponse:
 
     except (ValueError, KeyError) as e:
         logger.error("Failed to add player: %s", str(e))
-        return self.get(request, error=str(e))
+        return redirect('report-players')
 
 
 def remove_player_tournament(request: HttpRequest,
                              cfc_id=None) -> HttpResponse:
     """View to remove a player from the report/tournament.
 
-        Parameters
-        ----------
-        request : HttpRequest
-            The HTTP request object.
-        cfc_id : id of player to remove
+    Parameters
+    ----------
+    request : HttpRequest
+        The HTTP request object.
+    cfc_id : id of player to remove
 
-        Returns
-        -------
-        HttpResponse
-            an empty response to swap into html
-        """
+    Returns
+    -------
+    HttpResponse
+        an empty response to swap into html
+    """
 
     if cfc_id is None:
         logger.error("remove_player_tournament called without cfc id")
