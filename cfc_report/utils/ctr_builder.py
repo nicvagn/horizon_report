@@ -1,4 +1,5 @@
-""" work with and produce ctr cfc file """
+"""work with and produce ctr cfc file."""
+
 # horizon_pair
 # Copyright (C) 2024  Nicolas Vaagen
 #
@@ -17,22 +18,23 @@
 # Copyright (C) 2024  Nicolas Vaagen
 from typing import List
 
-from cfc_report.models import CTR, Match, Player
+from models import Match, Player
 from . import logger
 
 
 class CtrCreationException(Exception):
-    """Something went wrong with ctr creation"""
+    """Something went wrong with ctr creation."""
+
     pass
 
 
 def make_match_report(m: Match, player: Player) -> List[str]:
-    """make a match part of ctr report file for a given player
-    returns: a list of strings to be written to ctr_report one per line"""
+    """Make a match part of ctr report file for a given player
 
-    logger.info(
-        "make_match_report entered with match: %s, and player: %s",
-        m, player)
+    returns: a list of strings to be written to ctr_report one per line
+    """
+
+    logger.info("make_match_report entered with match: %s, and player: %s", m, player)
     match_result = m.result
     if match_result == player.cfc_id:
         res = "W"
@@ -59,9 +61,16 @@ def make_match_report(m: Match, player: Player) -> List[str]:
     return match_report
 
 
-def CTR_builder(session, name=None, rounds=None,
-                pairing_system=None, to_cfc_id=None, td_cfc_id=None,
-                province=None, date=None) -> CTR:
+def CTR_builder(
+    session,
+    name=None,
+    rounds=None,
+    pairing_system=None,
+    to_cfc_id=None,
+    td_cfc_id=None,
+    province=None,
+    date=None,
+) -> CTR:
     """Build a CTR model
 
     Parameters
@@ -92,8 +101,14 @@ def CTR_builder(session, name=None, rounds=None,
         "CTR_builder entered w -- session_services: %s, name: %s,  \
         rounds: %s, pairing_system: %s, TO CFC: %s, TD CFC: %s, \
         date: %s",
-        session, name, rounds, pairing_system, to_cfc_id, td_cfc_id,
-        date)
+        session,
+        name,
+        rounds,
+        pairing_system,
+        to_cfc_id,
+        td_cfc_id,
+        date,
+    )
 
     player_ids = session.get_player_ids()
     num_players = len(player_ids)
@@ -118,8 +133,8 @@ def CTR_builder(session, name=None, rounds=None,
         pairing_abbreviation = "R"
 
     """List with one index per CTR line"""
-    ctr: List[str] = [f'''"{name}","{province}","0","{pairing_abbreviation}","{
-    date}","{num_players}","{td_cfc_id}","{to_cfc_id}"''']
+    ctr: List[str] = [f""""{name}","{province}","0","{pairing_abbreviation}","{
+    date}","{num_players}","{td_cfc_id}","{to_cfc_id}"\n"""]
 
     # start by building the 1st line of the ctr
 
@@ -132,21 +147,15 @@ def CTR_builder(session, name=None, rounds=None,
 
         logger.info("building round: %s \nw: Matches: %s", rnd, matches)
         for match in matches:
-            match_report = make_match_report(
-                match, match.white
-            )
-            match_report += make_match_report(
-                match, match.black
-            )
+            match_report = make_match_report(match, match.white)
+            match_report += make_match_report(match, match.black)
             # append both players match reports to main report
             for line in match_report:
                 ctr.append(line)
 
 
 def ctr_to_str(ctr) -> str:
-    """take a ctr prototype and return a ctr report as a string
-
-    """
+    """take a ctr prototype and return a ctr report as a string"""
     ctr_str = ""
     for line in ctr:
         ctr_str += line + "\n"
@@ -155,14 +164,16 @@ def ctr_to_str(ctr) -> str:
 
 if __name__ == "__main__":
     # test
-    T = {"name": "my test tornament",
-         "rounds": 4,
-         "pairing_system": "Swiss",
-         "td_cfc": "111111",
-         "to_cfc": "222222",
-         "date_year": "1",
-         "date_month": "1",
-         "date_day": "1", }
+    T = {
+        "name": "my test tournament",
+        "rounds": 4,
+        "pairing_system": "Swiss",
+        "td_cfc": "111111",
+        "to_cfc": "222222",
+        "date_year": "1",
+        "date_month": "1",
+        "date_day": "1",
+    }
     ctr_test = CTR_builder(T)
 
     print(ctr_test)

@@ -55,12 +55,10 @@ urlpatterns = [
     path(f"{REPORT_URL_PREFIX}players/",
          TournamentPlayersView.as_view(),
          name='report-players'),
-
     path(f"{REPORT_URL_PREFIX}players/add",
          add_player_tournament,
          name='report-add-player'),
-
-    path(f"{REPORT_URL_PREFIX}players/remove/<int:cfc_id>",
+    path(f"{REPORT_URL_PREFIX}players/remove/<str:cfc_id>",
          remove_player_tournament,
          name='report-remove-player'),
     # # Round

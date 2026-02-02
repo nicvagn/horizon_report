@@ -13,12 +13,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views import View
 
 from cfc_report.models.player import Player
+from cfc_report.models.tournament import Tournament
 from cfc_report.utils import cfc_api_utils
 from . import logger
 
@@ -35,9 +36,11 @@ class TournamentPlayersView(View):
     def get(self, request: HttpRequest, error=None) -> HttpResponse:
         """Handle GET request - display available players."""
 
-        player_ids = request.session.get(SESSION_PLAYERS_KEY, default=[])
-        players = []
-        for cfc_id in player_ids:
+        t_id = request.session["tournament_id"]
+        tournament = Tournament.objects.get(pk=t_id)
+
+        players = tournament.roster
+        for cfc_id in players:
             p = get_player_from_cfc_id(cfc_id)
 
             if not p:
@@ -97,6 +100,7 @@ def add_player_tournament(request: HttpRequest) -> HttpResponse:
 
     except (ValueError, KeyError) as e:
         logger.error("Failed to add player: %s", str(e))
+        messages.info(request, "Failed to add player.")
         return redirect('report-players')
 
 
@@ -118,6 +122,7 @@ def remove_player_tournament(request: HttpRequest,
 
     if cfc_id is None:
         logger.error("remove_player_tournament called without cfc id")
+        messages.info(request, "No CFC id provided")
         return redirect('report-players')
 
     logger.debug("Processing remove_player_tournament for request: %s",
@@ -130,8 +135,9 @@ def remove_player_tournament(request: HttpRequest,
         request.session.modified = True
     else:
         logger.error(
-            "remove_player_tournament called with cfc_id not in tournament. id: %s",
-            cfc_id)
+            "remove_player_tournament called with cfc_id not in tournament. id: %s, \nplayers: %s",
+            cfc_id, request.session[SESSION_PLAYERS_KEY])
+        messages.info(request, "Failed to remove player with id: %s" % cfc_id)
 
     # return an empty response to be swaped in
     return HttpResponse("")

@@ -24,8 +24,8 @@ class Roster(models.Model):
 
     Attributes
     ----------
-    tournament : OneToOneField
-        the tournament this roster is for
+    players : ManyToManyField
+        players in Roster
     """
 
     players = models.ManyToManyField(Player)

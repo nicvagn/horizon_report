@@ -68,9 +68,11 @@ class ReportInfoFormView(FormView):
         """
 
         t = valid_form_create_tournament(form)
+        t.save()
         logger.debug(
-            "ReportInfoFormView.form_valid - Created Tournament model: %s" % t)
+            "ReportInfoFormView.form_valid - Created (and saved in db) Tournament model: %s" % t)
         self.set_session_tournament_info(t)
+
         return super().form_valid(form)
 
     def set_session_tournament_info(self, tournament: Tournament):

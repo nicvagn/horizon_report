@@ -37,9 +37,10 @@ class CreateReportView(View):
         Returns:
             Rendered template with tournament and rounds context
         """
-        logger.debug("CreateReportView.get(...). session: %s", request.session)
+        logger.debug("CreateReportView.get(...). entered with session: %s", request.session)
         t_id = request.session["tournament_id"]
-        tournament, created = Tournament.objects.get_or_create(pk=t_id)
+        logger.debug("session tournament id: %s", t_id)
+        tournament = Tournament.objects.get(pk=t_id)
         # Get players from the tournament roster
         players = tournament.roster.players.all()
         # Fetch the tournament's built rounds
